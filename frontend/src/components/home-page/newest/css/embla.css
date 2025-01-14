@@ -1,0 +1,21 @@
+.newest_embla {
+ width: 100%;
+  margin: auto;
+  --slide-height: 19rem;
+  --slide-spacing: 0px;
+  --slide-size: 23%;
+}
+.newest_embla__viewport {
+  overflow-x: hidden;
+}
+.newest_embla__container {
+  display: flex;
+  touch-action: pan-y pinch-zoom;
+  margin-left: calc(var(--slide-spacing) * -1);
+}
+.newest_embla__slide {
+  transform: translate3d(0, 0, 0);
+  flex: 0 0 calc(var(--slide-size) - 70px);
+  min-width: 0;
+  padding-left: var(--slide-spacing);
+}
