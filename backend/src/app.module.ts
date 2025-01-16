@@ -6,9 +6,11 @@ import { CassandraModule } from './cassandra/cassandra.module';
 import { MovieController } from './movie/movie.controller';
 import { MovieService } from './movie/movie.service';
 import { MovieModule } from './movie/movie.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [CassandraModule, MovieModule],
+  imports: [CassandraModule, MovieModule, AuthModule, UsersModule],
   controllers: [AppController, MovieController],
   providers: [AppService, CassandraService, MovieService],
 })
