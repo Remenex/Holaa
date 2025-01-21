@@ -25,16 +25,12 @@ export default function Button<K extends keyof ButtonActions>({
     const action = buttonActions[actionId] as (
       ...args: ButtonActionParams<ButtonActions[K]>
     ) => void;
-
-    if (action) {
-      return () => action(...actionParams);
-    }
-    return undefined;
+    return () => action(...actionParams);
   }, [buttonActions, actionId, actionParams]);
 
   return (
     <button
-      className={`${small ? `px-4 py-2 rounded-lg` : `py-4 px-8 rounded-[30px]`} main-gradient text-white font-bold text-[18px] flex items-center duration-300 hover:hover-gradient`}
+      className={`${small ? `px-4 py-2 rounded-lg` : `py-4 px-8 rounded-[30px]`} main-gradient text-white font-bold text-[18px] flex items-center duration-300 hover:hover-gradient ${className}`}
       onClick={handleClick}
     >
       {iconImage && (

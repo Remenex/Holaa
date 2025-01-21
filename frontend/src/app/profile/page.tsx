@@ -3,6 +3,7 @@ import Footer from "@/components/li/footer";
 import Header from "@/components/li/header";
 import Profile from "@/components/li/profile";
 import Reactions from "@/components/li/reactions";
+import UserSettings from "@/components/li/settings";
 import BgImageOverlay from "@/components/lib/bg-image";
 import Image from "next/image";
 import { useState } from "react";
@@ -16,7 +17,7 @@ export default function ProfilePage() {
       <BgImageOverlay bigTitle="MOJ NALOG" linkTitle="PROFIL" />
       <div className="w-full flex justify-center">
         <div className="p-12 w-full max-w-[1600px]">
-          <div className="w-full bg-dark-gray flex justify-between py-3 px-10 rounded-xl">
+          <div className="w-full bg-dark-gray flex justify-between py-3 px-10 rounded-2xl">
             <div className="flex gap-2 items-center">
               <Image
                 src="/icons/user-profile.svg"
@@ -25,7 +26,7 @@ export default function ProfilePage() {
                 height={60}
               />
               <div className="mr-10">
-                <p className="text-xl">Aleksa Jovanovic</p>
+                <p className="text-2xl">Aleksa Jovanovic</p>
                 <p className="text-base gray-text">jaleksa388@gmail.com</p>
               </div>
               <div className="flex gap-8">
@@ -35,7 +36,7 @@ export default function ProfilePage() {
                     onClick={() => setActiveTab(tab)}
                     className={`pb-4 cursor-pointer ${
                       activeTab === tab
-                        ? "bg-clip-text text-transparent bg-custom-gradient"
+                        ? "bg-clip-text text-white bg-custom-gradient"
                         : "text-gray-400"
                     }`}
                     style={
@@ -67,7 +68,7 @@ export default function ProfilePage() {
           <div className="mt-8">
             {activeTab === "Profil" && <Profile />}
             {activeTab === "Reakcije" && <Reactions />}
-            {activeTab === "Podesavanja" && <p>Ovo su podešavanja.</p>}
+            {activeTab === "Podesavanja" && <UserSettings/> } 
           </div>
         </div>
       </div>

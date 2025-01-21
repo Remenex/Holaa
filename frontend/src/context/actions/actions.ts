@@ -4,4 +4,7 @@ export const buttonActions = {
   submitContactForm: (submitFromCallback: () => void) => submitFromCallback(),
   handleDialog: (handleDialogCallback: () => void) => handleDialogCallback(),
   redirect: (handleRedirectCallback: () => void) => handleRedirectCallback(),
+  handleSubmit: (handleSubmitCallback: () => void) => handleSubmitCallback(),
+  changePassword: (handleChangePasswordCallback: () => void) =>
+    handleChangePasswordCallback(),
 };
