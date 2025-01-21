@@ -1,4 +1,4 @@
-import Footer from "@/components/li/footer";
+/* eslint-disable @next/next/no-page-custom-font */
 import { ButtonActionProvider } from "@/context/actions";
 import { baloo2, bigShouldersDisplay } from "@/lib/fonts";
 import "./globals.css";
@@ -16,7 +16,7 @@ export default function RootLayout({
       <head>
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional"
         />
       </head>
       <body>

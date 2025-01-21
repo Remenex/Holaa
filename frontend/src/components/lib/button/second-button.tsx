@@ -34,7 +34,7 @@ export default function SecondButton<K extends keyof ButtonActions>({
   return (
     <div className="light-gradient rounded-[30px] p-[1px]">
       <button
-        className={`py-4 px-8 rounded-[30px] ${backgroundColor ?? `bg-dark-gray`} text-white font-bold text-[18px] flex items-center transparent`}
+        className={`py-4 px-8 rounded-[30px] ${backgroundColor ?? `bg-dark-gray`} text-white font-bold text-[18px] flex items-center transparent ${className}`}
         onClick={handleClick}
       >
         {iconImage && (

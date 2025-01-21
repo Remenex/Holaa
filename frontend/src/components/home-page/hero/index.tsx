@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import HeroSlide from "./slide";
 
 const OPTIONS: EmblaOptionsType = { loop: false };
-const SLIDES: Array<ReactNode> = [<HeroSlide/>, <HeroSlide/>, <HeroSlide/>];
+const SLIDES: Array<ReactNode> = [<HeroSlide key={1}/>, <HeroSlide key={2}/>, <HeroSlide key={3}/>];
 
 export default function HeroSlider() {
   // SLIDES.push(<Header />);

@@ -17,7 +17,7 @@ export default function Header() {
               </Link>
             </li>
             <li>
-              <Link href="/home" className="flex items-center text-xl gap-1">
+              <Link href="/movies" className="flex items-center text-xl gap-1">
                 <Icon icon="movie" iconSize={22} />
                 FILMOVI
               </Link>

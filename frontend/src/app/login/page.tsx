@@ -7,7 +7,7 @@ export default function LoginPage() {
   return (
     <div className="w-full">
       <Header />
-      <BgImageOverlay />
+      <BgImageOverlay bigTitle="MOJ NALOG" linkTitle="PRIJAVI SE" />
       <section className="loginSection mt-[150px]">
         <LoginForm />
       </section>

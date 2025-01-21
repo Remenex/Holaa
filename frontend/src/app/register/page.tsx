@@ -7,7 +7,7 @@ export default function RegisterPage() {
   return (
     <div className="w-full">
       <Header />
-      <BgImageOverlay />
+      <BgImageOverlay bigTitle="MOJ NALOG" linkTitle="REGISTRUJ SE" />
       <section className="loginSection mt-[150px]">
         <SignupForm />
       </section>

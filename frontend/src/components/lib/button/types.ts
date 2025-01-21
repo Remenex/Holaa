@@ -1,10 +1,4 @@
-type ButtonActions = {
-  test: () => void;
-  submitContactForm: (submitFromCallback: () => void) => void;
-  handleDialog: (handleDialogCallback: () => void) => void;
-  redirect: (handleRedirectCallback: () => void) => void;
-  handleSubmit: (handleSubmitCallback: () => void) => void;
-};
+import { ButtonActions } from "@/context/actions/types";
 
 type ButtonActionParams<T> = T extends (...args: infer P) => void ? P : never;
 
