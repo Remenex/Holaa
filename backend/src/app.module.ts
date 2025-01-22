@@ -8,10 +8,10 @@ import { MovieService } from './movie/movie.service';
 import { MovieModule } from './movie/movie.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-
+import { UsersController } from './users/controllers/users.controller';
 @Module({
   imports: [CassandraModule, MovieModule, AuthModule, UsersModule],
-  controllers: [AppController, MovieController],
+  controllers: [AppController, MovieController, UsersController],
   providers: [AppService, CassandraService, MovieService],
 })
 export class AppModule {}

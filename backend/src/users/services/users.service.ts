@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
 import { MainUserInfo } from '../dtos/user';
+import { UserRepository } from '../repository/user.repository';
 
 @Injectable()
 export class UsersService {
+  constructor(private userRepository: UserRepository) {}
+
   private compareTwoUsers(a: MainUserInfo, b: MainUserInfo) {
     return b.userId - a.userId;
   }
@@ -33,5 +36,9 @@ export class UsersService {
     };
     this.users.push(newUser);
     return of(newUser);
+  }
+
+  async getUsers() {
+    return await this.userRepository.getUsers();
   }
 }
