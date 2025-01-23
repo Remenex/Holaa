@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { mapping } from 'cassandra-driver';
 import { CassandraService } from 'src/cassandra/cassandra.service';
 import { User } from '../dtos/user';
+import { from, map, Observable } from 'rxjs';
 
 @Injectable()
 export class UserRepository implements OnModuleInit {
@@ -23,7 +24,9 @@ export class UserRepository implements OnModuleInit {
       .forModel('User');
   }
 
-  async getUsers() {
-    return (await this.userMapper.findAll()).toArray();
+  getUsers(): Observable<User[]> {
+    return from(this.userMapper.findAll()).pipe(
+      map((result) => result.toArray()),
+    );
   }
 }

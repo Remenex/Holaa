@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
-import { MainUserInfo } from '../dtos/user';
+import { MainUserInfo, User } from '../dtos/user';
 import { UserRepository } from '../repository/user.repository';
 
 @Injectable()
@@ -38,7 +38,7 @@ export class UsersService {
     return of(newUser);
   }
 
-  async getUsers() {
-    return await this.userRepository.getUsers();
+  getUsers(): Observable<User[]> {
+    return this.userRepository.getUsers();
   }
 }

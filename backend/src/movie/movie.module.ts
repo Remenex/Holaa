@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { CassandraModule } from 'src/cassandra/cassandra.module';
-import { MovieController } from './movie.controller';
-import { MovieService } from './movie.service';
-import { MovieRepository } from './movie.repository';
+import { MovieController } from './controllers/movie.controller';
+import { MovieService } from './services/movie.service';
+import { MovieRepository } from './repository/movie.repository';
 
 @Module({
   imports: [CassandraModule],
