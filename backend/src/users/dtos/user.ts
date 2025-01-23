@@ -1,10 +1,10 @@
 import { UUID } from 'crypto';
 
-export type MainUserInfo = {
-  userId: number;
+export interface MainUserInfo {
+  userId: UUID;
   username: string;
   password: string;
-};
+}
 
 export interface User {
   user_id: UUID;
@@ -15,4 +15,14 @@ export interface User {
   image: string;
   creation_date: Date;
   is_admin: boolean;
+}
+
+export interface CreateUser {
+  email: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  image?: string;
+  creation_date?: Date;
+  is_admin?: boolean;
 }

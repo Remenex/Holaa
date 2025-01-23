@@ -10,6 +10,7 @@ import { LocalAuthGuard } from './auth/guards/local-auth.guard';
 import { AuthService } from './auth/services/auth.service';
 import { JwtAuthGuard } from './auth/guards/jwt-auth-guard';
 import { catchError, firstValueFrom, from, map, Observable, of } from 'rxjs';
+import { CreateUser } from './users/dtos/user';
 
 @Controller()
 export class AppController {
@@ -30,11 +31,19 @@ export class AppController {
 
   @Post('auth/register')
   register(
-    @Body() { username, password }: { username: string; password: string },
+    @Body() userData: CreateUser,
   ): Observable<{ success: boolean; message: string }> {
-    return from(this.authService.register(username, password)).pipe(
+    return from(this.authService.register(userData)).pipe(
       map((result) => ({ success: true, message: result })),
       catchError((error) => of({ success: false, message: error })),
     );
   }
 }
+
+// {
+//   "email": "idjordje63@gmail.com",
+//   "password": "djole2002",
+//   "first_name": "Djordje",
+//   "last_name": "Ivanovic",
+//   "is_admin": false
+// }

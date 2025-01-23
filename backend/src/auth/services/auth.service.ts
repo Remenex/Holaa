@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  // ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -7,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { from, map, Observable, of, switchMap, throwError } from 'rxjs';
 import { UsersService } from 'src/users/services/users.service';
 import * as bcrypt from 'bcrypt';
+import { CreateUser } from 'src/users/dtos/user';
 
 @Injectable()
 export class AuthService {
@@ -47,9 +49,10 @@ export class AuthService {
     );
   }
 
-  register(username: string, password: string): Observable<string> {
-    return from(this.usersService.findOne(username)).pipe(
+  register(userData: CreateUser): Observable<string> {
+    return from(this.usersService.findOne(userData.email)).pipe(
       switchMap((user) => {
+        console.log('ovede sam');
         if (user) {
           return throwError(
             () =>
@@ -58,11 +61,12 @@ export class AuthService {
               ),
           );
         }
-        return from(bcrypt.hash(password, 10)).pipe(
+        return from(bcrypt.hash(userData.password, 10)).pipe(
           switchMap((hashedPassword) => {
-            return from(
-              this.usersService.createOne(username, hashedPassword),
-            ).pipe(
+            const newUser = { ...userData };
+            newUser.password = hashedPassword;
+            console.log(newUser);
+            return from(this.usersService.createOne(newUser)).pipe(
               map((savedUser) => {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { password, ...userData } = savedUser;
