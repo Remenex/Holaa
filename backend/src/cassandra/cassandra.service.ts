@@ -20,4 +20,8 @@ export class CassandraService {
     }
     return new mapping.Mapper(this.client, mappingOptions);
   }
+
+  executeQuery(query: string, params: any[]) {
+    return this.client.execute(query, params, { prepare: true });
+  }
 }

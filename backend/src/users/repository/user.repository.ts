@@ -32,9 +32,25 @@ export class UserRepository implements OnModuleInit {
   }
 
   findUser(email: string): Observable<User> {
-    return from(this.userMapper.find({ email })).pipe(
+    const query = 'SELECT * FROM users WHERE email = ? LIMIT 1';
+    return from(this.cassandraService.executeQuery(query, [email])).pipe(
       map((result) => {
-        return result.first();
+        if (result.rows.length === 0) {
+          return null;
+        }
+        const row = result.rows[0];
+        const user: User = {
+          user_id: row.get('user_id'),
+          email: row.get('email'),
+          password: row.get('password'),
+          first_name: row.get('first_name'),
+          last_name: row.get('last_name'),
+          image: row.get('image'),
+          creation_date: row.get('creation_date'),
+          is_admin: row.get('is_admin'),
+        };
+        console.log('Pronassao sam usera:', user);
+        return user;
       }),
       catchError((error) => {
         console.error('Greška prilikom pretrage korisnika:', error);

@@ -52,7 +52,6 @@ export class AuthService {
   register(userData: CreateUser): Observable<string> {
     return from(this.usersService.findOne(userData.email)).pipe(
       switchMap((user) => {
-        console.log('ovede sam');
         if (user) {
           return throwError(
             () =>
