@@ -1,10 +1,10 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { mapping } from 'cassandra-driver';
 import { CassandraService } from 'src/cassandra/cassandra.service';
-import { CreateUser, User } from '../dtos/user';
+import { CreateUser, UpdateUser, User } from '../dtos/user';
 import { catchError, from, map, Observable, of } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-
+import { UUID } from 'crypto';
 @Injectable()
 export class UserRepository implements OnModuleInit {
   constructor(private cassandraService: CassandraService) {}
@@ -49,7 +49,6 @@ export class UserRepository implements OnModuleInit {
           creation_date: row.get('creation_date'),
           is_admin: row.get('is_admin'),
         };
-        console.log('Pronassao sam usera:', user);
         return user;
       }),
       catchError((error) => {
@@ -68,5 +67,33 @@ export class UserRepository implements OnModuleInit {
       ...userData,
     };
     return from(this.userMapper.insert(newUser)).pipe(map(() => newUser));
+  }
+
+  updateUser(uuid: UUID, userData: UpdateUser): Observable<boolean> {
+    return from(this.userMapper.update({ user_id: uuid, ...userData })).pipe(
+      map((result) => result.wasApplied()),
+      catchError((error) => {
+        console.log('Greska prilikom azuriranja korisnika', error);
+        return of(false);
+      }),
+    );
+  }
+
+  getUserPasswordById(uuid: UUID): Promise<string> {
+    const query = 'SELECT password FROM users WHERE user_id = ?';
+    return this.cassandraService.executeQuery(query, [uuid]).then((result) => {
+      if (result.rows.length === 0) return null;
+      return result.rows[0].get('password');
+    });
+  }
+
+  updatePassword(uuid: UUID, newPassword: string): Observable<boolean> {
+    const query = 'UPDATE users SET password = ? WHERE user_id = ?';
+    return from(
+      this.cassandraService.executeQuery(query, [newPassword, uuid]),
+    ).pipe(
+      map(() => true),
+      catchError(() => of(false)),
+    );
   }
 }

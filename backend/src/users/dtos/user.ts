@@ -12,9 +12,9 @@ export interface User {
   password: string;
   first_name: string;
   last_name: string;
-  image: string;
-  creation_date: Date;
-  is_admin: boolean;
+  image?: string;
+  creation_date?: Date;
+  is_admin?: boolean;
 }
 
 export interface CreateUser {
@@ -25,4 +25,13 @@ export interface CreateUser {
   image?: string;
   creation_date?: Date;
   is_admin?: boolean;
+}
+export interface UpdateUser {
+  first_name: string;
+  last_name: string;
+}
+
+export interface UpdatePassword {
+  old_password: string;
+  new_password: string;
 }

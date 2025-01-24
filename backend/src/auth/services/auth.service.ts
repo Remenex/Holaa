@@ -64,7 +64,6 @@ export class AuthService {
           switchMap((hashedPassword) => {
             const newUser = { ...userData };
             newUser.password = hashedPassword;
-            console.log(newUser);
             return from(this.usersService.createOne(newUser)).pipe(
               map((savedUser) => {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
