@@ -2,9 +2,11 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { mapping } from 'cassandra-driver';
 import { CassandraService } from 'src/cassandra/cassandra.service';
 import { CreateUser, UpdateUser, User } from '../dtos/user';
-import { catchError, from, map, Observable, of } from 'rxjs';
+import { catchError, from, map, Observable, of, switchMap } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { UUID } from 'crypto';
+import { join } from 'path';
+import { promises as fs } from 'fs';
 @Injectable()
 export class UserRepository implements OnModuleInit {
   constructor(private cassandraService: CassandraService) {}
@@ -94,6 +96,45 @@ export class UserRepository implements OnModuleInit {
     ).pipe(
       map(() => true),
       catchError(() => of(false)),
+    );
+  }
+
+  // updateProfileImage(uuid: UUID, imagePath: string): Observable<boolean> {
+  //   return from(
+  //     this.userMapper.update({ user_id: uuid, image: imagePath }),
+  //   ).pipe(
+  //     map((result) => result.wasApplied()),
+  //     catchError((error) => {
+  //       console.log('Greska priliko promene profilne slike: ', error);
+  //       return of(false);
+  //     }),
+  //   );
+  // }
+
+  updateProfileImage(uuid: UUID, imagePath: string): Observable<boolean> {
+    return from(this.userMapper.get({ user_id: uuid })).pipe(
+      switchMap((user) => {
+        if (user?.image) {
+          const currentImagePath = join(__dirname, '../../../', user.image);
+          return from(fs.access(currentImagePath)).pipe(
+            switchMap(() => from(fs.unlink(currentImagePath))),
+            catchError((error) => {
+              console.log('Greska pri brisanju trenutne slike:', error);
+              return of(null);
+            }),
+          );
+        }
+        return of(null);
+      }),
+      switchMap(() =>
+        from(this.userMapper.update({ user_id: uuid, image: imagePath })).pipe(
+          map((result) => result.wasApplied()),
+          catchError((error) => {
+            console.log('Greska prilikom promene profilne slike:', error);
+            return of(false);
+          }),
+        ),
+      ),
     );
   }
 }

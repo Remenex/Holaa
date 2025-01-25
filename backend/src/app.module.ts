@@ -9,8 +9,17 @@ import { MovieModule } from './movie/movie.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { UsersController } from './users/controllers/users.controller';
+import { MulterModule } from '@nestjs/platform-express';
 @Module({
-  imports: [CassandraModule, MovieModule, AuthModule, UsersModule],
+  imports: [
+    CassandraModule,
+    MovieModule,
+    AuthModule,
+    UsersModule,
+    MulterModule.register({
+      dest: './uploads',
+    }),
+  ],
   controllers: [AppController, MovieController, UsersController],
   providers: [AppService, CassandraService, MovieService],
 })

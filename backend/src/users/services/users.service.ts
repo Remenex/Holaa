@@ -107,4 +107,26 @@ export class UsersService {
       }),
     );
   }
+
+  updateProfileImage(
+    uuid: UUID,
+    imagePath: string,
+  ): Observable<{ success: boolean; message: string }> {
+    return from(this.userRepository.updateProfileImage(uuid, imagePath)).pipe(
+      map((result) => {
+        if (result)
+          return { success: true, message: 'Uspesno azurirana slika' };
+        return {
+          success: false,
+          message: 'Doslo je do greske prilikom azuriranja profilne slike',
+        };
+      }),
+      catchError((error) => {
+        throw new HttpException(
+          `Greška prilikom ažuriranja korisnika: ${error.message}`,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }),
+    );
+  }
 }

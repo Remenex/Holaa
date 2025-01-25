@@ -1,8 +1,19 @@
-import { Body, Controller, Get, Param, Put } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Put,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { from, Observable } from 'rxjs';
 import { UpdatePassword, UpdateUser, User } from '../dtos/user';
 import { UUID } from 'crypto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage, Express } from 'multer';
 
 @Controller('users')
 export class UsersController {
@@ -27,5 +38,35 @@ export class UsersController {
     @Body() passwords: UpdatePassword,
   ): Observable<{ success: boolean; message: string }> {
     return from(this.userService.updatePassword(id, passwords));
+  }
+
+  @Put('/updateProfileImage/:id')
+  @UseInterceptors(
+    FileInterceptor('picture', {
+      storage: diskStorage({
+        destination: './uploads/users',
+        filename: (req, file, cb) => {
+          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+          cb(null, `${uniqueSuffix}-${file.originalname}`);
+        },
+      }),
+      fileFilter: (req, file, cb) => {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png)$/)) {
+          return cb(new Error('Only image files are allowed!'), false);
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  @UseInterceptors()
+  updateProfileImage(
+    @Param('id') id: UUID,
+    @UploadedFile() file: Express.Multer.File,
+  ): Observable<{ success: boolean; message: string }> {
+    if (!file) {
+      throw new BadRequestException('No file uploaded!');
+    }
+    const picturePath = file.path;
+    return from(this.userService.updateProfileImage(id, picturePath));
   }
 }
