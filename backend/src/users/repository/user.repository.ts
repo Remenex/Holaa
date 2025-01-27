@@ -33,6 +33,16 @@ export class UserRepository implements OnModuleInit {
     );
   }
 
+  getUser(id: UUID): Observable<User> {
+    return from(this.userMapper.find({ user_id: id })).pipe(
+      map((result) => result.first()),
+      catchError((error) => {
+        console.log('Ne postoji korisnim sa prosledjenim id-jem: ', error);
+        return of(null);
+      }),
+    );
+  }
+
   findUser(email: string): Observable<User> {
     const query = 'SELECT * FROM users WHERE email = ? LIMIT 1';
     return from(this.cassandraService.executeQuery(query, [email])).pipe(
