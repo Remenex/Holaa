@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Put,
@@ -22,6 +23,11 @@ export class UsersController {
   @Get('/users')
   getUsers(): Observable<User[]> {
     return this.userService.getUsers();
+  }
+
+  @Get('/user/:email')
+  getUserData(@Param('email') email: string): Observable<User> {
+    return from(this.userService.getUserData(email));
   }
 
   @Put('/update/:id')
@@ -68,5 +74,12 @@ export class UsersController {
     }
     const picturePath = file.path;
     return from(this.userService.updateProfileImage(id, picturePath));
+  }
+
+  @Delete('/delete/:id')
+  deleteProfile(
+    @Param('id') id: UUID,
+  ): Observable<{ success: boolean; message: string }> {
+    return from(this.userService.deleteProfile(id));
   }
 }

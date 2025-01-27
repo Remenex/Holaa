@@ -99,18 +99,6 @@ export class UserRepository implements OnModuleInit {
     );
   }
 
-  // updateProfileImage(uuid: UUID, imagePath: string): Observable<boolean> {
-  //   return from(
-  //     this.userMapper.update({ user_id: uuid, image: imagePath }),
-  //   ).pipe(
-  //     map((result) => result.wasApplied()),
-  //     catchError((error) => {
-  //       console.log('Greska priliko promene profilne slike: ', error);
-  //       return of(false);
-  //     }),
-  //   );
-  // }
-
   updateProfileImage(uuid: UUID, imagePath: string): Observable<boolean> {
     return from(this.userMapper.get({ user_id: uuid })).pipe(
       switchMap((user) => {
@@ -132,6 +120,32 @@ export class UserRepository implements OnModuleInit {
           catchError((error) => {
             console.log('Greska prilikom promene profilne slike:', error);
             return of(false);
+          }),
+        ),
+      ),
+    );
+  }
+
+  deleteProfile(uuid: UUID): Observable<boolean> {
+    return from(this.userMapper.get({ userId: uuid })).pipe(
+      switchMap((user) => {
+        if (user?.image && user?.image !== '/') {
+          return from(fs.unlink(user.image)).pipe(
+            map(() => user),
+            catchError((error) => {
+              console.log('Greska prilikom brisanja profilne slike: ', error);
+              return of(user);
+            }),
+          );
+        }
+        return of(user);
+      }),
+      switchMap(() =>
+        from(this.userMapper.remove({ userId: uuid })).pipe(
+          map((result) => result.wasApplied()),
+          catchError((error) => {
+            console.log('Greska prilikom brisanja naloga: ', error);
+            return of(false); // U slučaju greške vraćamo false
           }),
         ),
       ),

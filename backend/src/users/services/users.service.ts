@@ -31,11 +31,21 @@ export class UsersService {
   }
 
   createOne(userData: CreateUser): Observable<User> {
-    return this.userRepository.createOne(userData);
+    return from(this.userRepository.createOne(userData));
   }
 
   getUsers(): Observable<User[]> {
-    return this.userRepository.getUsers();
+    return from(this.userRepository.getUsers());
+  }
+
+  getUserData(email: string): Observable<User> {
+    return from(this.userRepository.findUser(email)).pipe(
+      map((result) => {
+        const res = result;
+        res.password = null;
+        return res;
+      }),
+    );
   }
 
   updateUser(
@@ -124,6 +134,24 @@ export class UsersService {
       catchError((error) => {
         throw new HttpException(
           `Greška prilikom ažuriranja korisnika: ${error.message}`,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }),
+    );
+  }
+
+  deleteProfile(uuid: UUID): Observable<{ success: boolean; message: string }> {
+    return from(this.userRepository.deleteProfile(uuid)).pipe(
+      map((result) => {
+        if (result) return { success: true, message: 'Uspesno obrisan profil' };
+        return {
+          success: false,
+          message: 'Doslo je do greske prilikom brisanja profila',
+        };
+      }),
+      catchError((error) => {
+        throw new HttpException(
+          `Greska prilikom brisanja profila: ${error.message}`,
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }),
