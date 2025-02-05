@@ -7,19 +7,23 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { MovieService } from '../services/movie.service';
-import { from, Observable } from 'rxjs';
-import { CreateMovie, Movie } from '../dtos/movie.model';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage, Express } from 'multer';
+import { from, Observable } from 'rxjs';
+import { CassandraService } from 'src/cassandra/cassandra.service';
+import { CreateMovie, Movie } from '../dtos/movie.model';
+import { MovieService } from '../services/movie.service';
 
 @Controller('movie')
 export class MovieController {
-  constructor(private moviService: MovieService) {}
+  constructor(
+    private movieService: MovieService,
+    private cassandraService: CassandraService,
+  ) {}
 
   @Get('/movies')
   getMovies(): Observable<Movie[]> {
-    return this.moviService.getMovies();
+    return this.movieService.getMovies();
   }
 
   @Post('/addMovie')
@@ -79,6 +83,6 @@ export class MovieController {
       ...data,
     };
 
-    return from(this.moviService.createMovie(movieData));
+    return from(this.movieService.createMovie(movieData));
   }
 }
