@@ -1,14 +1,13 @@
 import {
   ConflictException,
-  // ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { from, map, Observable, of, switchMap, throwError } from 'rxjs';
-import { UsersService } from 'src/users/services/users.service';
 import * as bcrypt from 'bcrypt';
+import { from, map, Observable, of, switchMap, throwError } from 'rxjs';
 import { CreateUser } from 'src/users/dtos/user';
+import { UsersService } from 'src/users/services/users.service';
 
 @Injectable()
 export class AuthService {
