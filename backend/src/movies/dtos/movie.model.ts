@@ -1,9 +1,16 @@
 import { UUID } from 'crypto';
 
 export interface Movie {
-  id: UUID;
+  movieId: string;
+  category: string;
+  creationDate: string;
+  description: string;
+  mainCharacterImage: string;
+  ownerId: string;
+  thumbnail: string;
   title: string;
-  imdb_rate: number;
+  trailer: string;
+  video: string;
 }
 
 export interface CreateMovie {

@@ -3,27 +3,36 @@ import {
   Body,
   Controller,
   Get,
+  Param,
+  ParseUUIDPipe,
   Post,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { UUID } from 'crypto';
 import { diskStorage, Express } from 'multer';
 import { from, Observable } from 'rxjs';
-import { CassandraService } from 'src/cassandra/cassandra.service';
 import { CreateMovie, Movie } from '../dtos/movie.model';
 import { MovieService } from '../services/movie.service';
 
 @Controller('movie')
 export class MovieController {
-  constructor(
-    private movieService: MovieService,
-    private cassandraService: CassandraService,
-  ) {}
+  constructor(private movieService: MovieService) {}
 
   @Get('/movies')
-  getMovies(): Observable<Movie[]> {
-    return this.movieService.getMovies();
+  getMovies(
+    @Query('title') title?: string,
+    @Query('category') category?: string,
+  ): Observable<Movie[]> {
+    const filters = { title, category };
+    return this.movieService.getMovies(filters);
+  }
+
+  @Get(':id')
+  getMovie(@Param('id', ParseUUIDPipe) id: UUID) {
+    return this.movieService.getMovie(id);
   }
 
   @Post('/addMovie')

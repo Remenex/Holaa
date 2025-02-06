@@ -1,10 +1,11 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { mapping } from 'cassandra-driver';
-import { CassandraService } from 'src/cassandra/cassandra.service';
-import { CreateMovie, Movie } from '../dtos/movie.model';
+import { UUID } from 'crypto';
 import { catchError, from, map, Observable, of, switchMap } from 'rxjs';
-import { v4 as uuidv4 } from 'uuid';
+import { CassandraService } from 'src/cassandra/cassandra.service';
 import { UserRepository } from 'src/users/repository/user.repository';
+import { v4 as uuidv4 } from 'uuid';
+import { CreateMovie, Movie } from '../dtos/movie.model';
 
 @Injectable()
 export class MovieRepository implements OnModuleInit {
@@ -29,9 +30,56 @@ export class MovieRepository implements OnModuleInit {
       .forModel('Movie');
   }
 
-  getMovies(): Observable<Movie[]> {
-    return from(this.movieMapper.findAll()).pipe(
-      map((result) => result.toArray()),
+  getMovies(filter?: {
+    title?: string;
+    category?: string;
+  }): Observable<Movie[]> {
+    let query = 'SELECT * FROM movies';
+    const conditions: string[] = [];
+    const params: any[] = [];
+
+    if (filter?.category) {
+      conditions.push('category = ?');
+      params.push(filter.category);
+    }
+
+    if (filter?.title) {
+      conditions.push('title = ?');
+      params.push(filter.title);
+    }
+
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ');
+    }
+
+    return from(this.cassandraService.executeQuery(query, params)).pipe(
+      map((result) => {
+        return result.rows.map((row) => ({
+          movieId: row.get('movie_id'),
+          category: row.get('category'),
+          creationDate: row.get('creation_date'),
+          description: row.get('description'),
+          mainCharacterImage: row.get('main_character_image'),
+          ownerId: row.get('owner_id'),
+          thumbnail: row.get('thumbnail'),
+          title: row.get('title'),
+          trailer: row.get('trailer'),
+          video: row.get('video'),
+        }));
+      }),
+    );
+  }
+
+  getMovieById(movieId: UUID): Observable<Movie | null> {
+    return from(this.movieMapper.get({ movie_id: movieId })).pipe(
+      map((movie) => (movie ? movie : null)),
+      catchError((error) => {
+        console.error(
+          `Greška pri dohvaćanju filma sa ID-jem ${movieId}:`,
+          error,
+        );
+        return of(null);
+      }),
     );
   }
 
