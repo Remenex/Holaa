@@ -1,18 +1,15 @@
 import { Module } from '@nestjs/common';
+import { MulterModule } from '@nestjs/platform-express';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CassandraService } from './cassandra/cassandra.service';
-import { CassandraModule } from './cassandra/cassandra.module';
-import { MovieController } from './movies/controllers/movie.controller';
-import { MovieService } from './movies/services/movie.service';
-import { MovieModule } from './movies/movie.module';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
+import { MovieController } from './movies/controllers/movie.controller';
+import { MovieModule } from './movies/movie.module';
+import { MovieService } from './movies/services/movie.service';
 import { UsersController } from './users/controllers/users.controller';
-import { MulterModule } from '@nestjs/platform-express';
+import { UsersModule } from './users/users.module';
 @Module({
   imports: [
-    CassandraModule,
     MovieModule,
     AuthModule,
     UsersModule,
@@ -21,6 +18,6 @@ import { MulterModule } from '@nestjs/platform-express';
     }),
   ],
   controllers: [AppController, MovieController, UsersController],
-  providers: [AppService, CassandraService, MovieService],
+  providers: [AppService, MovieService],
 })
 export class AppModule {}
