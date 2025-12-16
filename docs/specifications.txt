@@ -1,7 +1,21 @@
 Specifikacija Baze Podataka - Holaa
 
-Tabela koja cuva podatke o filmovima (title, description, category, imdb_rate, thumbnail_image, main_actor_image, video, video_quality, triller). Za svakog korisnika se pamti (name, lastname, email, password). Za korisnika se pamte svi filmovi koje je pogledao, prijatelji sa kojima je gledao filmove, reakcije koje je korisnik ostavio za filmove, istorija poruka i cetova. Potrebno je voditi racuna koji filmovi su pogledani koliko puta, koliko svaki film ima pozitivnih a koliko negativnih reakcija i prosecno vreme gledanja. Prilikom gledanja filma korisnici mogu da pozovu druge korisnike da se pridruze gledanju filma. U okviru zahteva se pamti korisnik koji je poslao invite, korisnik koji je invajtan, film za koji je pozvan i status (prihvacen, odbijen). Gledaoci mogu da razmenjuju medjusobno poruke unutar glupnog ceta. Za svaki cet se pamti (ucesnici, datum kreiranja, poruke). Za svaku poruku se pamti (posiljalac, sadrzaj, vreme slanja). Korisnik moze da ima vise cetova. 
+Tabela koja cuva podatke o filmovima:
+(title, description, category, imdb_rate, thumbnail_image, main_actor_image, video, video_quality, triller).
+Za svakog korisnika se pamti (name, lastname, email, password).
+Za korisnika se pamte svi filmovi koje je pogledao, prijatelji sa kojima je gledao filmove,
+reakcije koje je korisnik ostavio za filmove, istorija poruka i cetova.
+Potrebno je voditi racuna koji filmovi su pogledani koliko puta,
+koliko svaki film ima pozitivnih a koliko negativnih reakcija i prosecno vreme gledanja.
+Prilikom gledanja filma korisnici mogu da pozovu druge korisnike da se pridruze gledanju filma.
+U okviru zahteva se pamti korisnik koji je poslao invite, korisnik koji je invajtan,
+film za koji je pozvan i status (prihvacen, odbijen).
+Gledaoci mogu da razmenjuju medjusobno poruke unutar glupnog ceta.
+Za svaki cet se pamti (ucesnici, datum kreiranja, poruke).
+Za svaku poruku se pamti (posiljalac, sadrzaj, vreme slanja).
+Korisnik moze da ima vise cetova. 
 
 
 
-Na osnovu podataka o filmu racunati popularnost filma po formuli: prosecno vreme gledanja * broj pregleda + pozitivne reakcije * 10 - negativne reakcije * 10. 
+Na osnovu podataka o filmu racunati popularnost filma po formuli:
+prosecno vreme gledanja * broj pregleda + pozitivne reakcije * 10 - negativne reakcije * 10. 
