@@ -1,20 +1,14 @@
-import { UUID } from 'crypto';
-
-export interface MainUserInfo {
-  userId: UUID;
-  username: string;
-  password: string;
-}
+import { ObjectId } from 'mongoose';
 
 export interface User {
-  user_id: UUID;
+  _id: ObjectId;
   email: string;
   password: string;
   first_name: string;
   last_name: string;
   image?: string;
   creation_date?: Date;
-  is_admin?: boolean;
+  role: string;
 }
 
 export interface CreateUser {
@@ -24,7 +18,7 @@ export interface CreateUser {
   last_name: string;
   image?: string;
   creation_date?: Date;
-  is_admin?: boolean;
+  role: string;
 }
 export interface UpdateUser {
   first_name: string;

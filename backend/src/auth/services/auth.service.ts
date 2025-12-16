@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/services/users.service';
+import { AuthLoginDto } from '../dtos/auth-login.dto';
 
 @Injectable()
 export class AuthService {
@@ -9,27 +10,14 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  // validateUser(username: string, password: string): Observable<any> {
-  //   return from(this.usersService.findOne(username)).pipe(
-  //     switchMap((user) => {
-  //       if (!user) {
-  //         return throwError(
-  //           () =>
-  //             new NotFoundException(
-  //               'Korisnik sa unetom email adresom ne postoji',
-  //             ),
-  //         );
-  //       }
-  //       return from(bcrypt.compare(password, user.password)).pipe(
-  //         map((isPasswordValid) => {
-  //           if (isPasswordValid) return user;
-  //           return null;
-  //         }),
-  //       );
-  //     }),
-  //   );
-  // }
-
+  async validateUser({ email, password }: AuthLoginDto) {
+    // const user = await this.usersService.findByEmail(username);
+    // if (!user) throw new NotFoundException('User not found');
+    // else if (!(await bcrypt.compare(password, user.password))) {
+    //   throw new UnauthorizedException();
+    // }
+    // return user;
+  }
   // login(user: any): Observable<string> {
   //   if (user) {
   //     const payload = { username: user.username, sub: user.userId };

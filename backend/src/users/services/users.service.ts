@@ -4,21 +4,17 @@ import { UserRepository } from '../repository/user.repository';
 export class UsersService {
   constructor(private userRepository: UserRepository) {}
 
-  // findOne(username: string): Observable<MainUserInfo | undefined> {
-  //   return from(this.userRepository.findUser(username)).pipe(
-  //     map((result) => {
-  //       if (result) {
-  //         const newMainUserInfo: MainUserInfo = {
-  //           userId: result.user_id,
-  //           username: result.email,
-  //           password: result.password,
-  //         };
-  //         return newMainUserInfo;
-  //       }
-  //       return null;
-  //     }),
-  //   );
-  // }
+  async findByEmail(email: string) {
+    // const user = await this.userRepository.findOne({
+    //   where: { id: id },
+    //   ...options,
+    // });
+    // if (user) {
+    //   const { password, ...userWithoutPassword } = user;
+    //   return userWithoutPassword;
+    // }
+    return null;
+  }
 
   // createOne(userData: CreateUser): Observable<User> {
   //   return from(this.userRepository.createOne(userData));
