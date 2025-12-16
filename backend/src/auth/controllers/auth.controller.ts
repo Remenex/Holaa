@@ -1,10 +1,22 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { CreateUser } from 'src/users/dtos/user';
+import { UsersService } from 'src/users/services/users.service';
 import { JwtAuthGuard } from '../guards/jwt-auth-guard';
 import { AuthService } from '../services/auth.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UsersService,
+  ) {}
 
   // @UseGuards(LocalAuthGuard)
   // @Post('login')
@@ -19,15 +31,10 @@ export class AuthController {
     return req.user;
   }
 
-  // @Post('register')
-  // register(
-  //   @Body() userData: CreateUser,
-  // ): Observable<{ success: boolean; message: string }> {
-  //   return from(this.authService.register(userData)).pipe(
-  //     map((result) => ({ success: true, message: result })),
-  //     catchError((error) => of({ success: false, message: error })),
-  //   );
-  // }
+  @Post('register')
+  public register(@Body() userData: CreateUser) {
+    return this.userService.create(userData);
+  }
 }
 
 // {

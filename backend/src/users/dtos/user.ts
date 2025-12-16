@@ -17,7 +17,6 @@ export interface CreateUser {
   first_name: string;
   last_name: string;
   image?: string;
-  creation_date?: Date;
   role: string;
 }
 export interface UpdateUser {

@@ -1,24 +1,34 @@
-import { Injectable } from '@nestjs/common';
-import { UserRepository } from '../repository/user.repository';
+import { ConflictException, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import * as bcrypt from 'bcrypt';
+import { Model } from 'mongoose';
+import { CreateUser } from '../dtos/user';
+import { User } from '../entities/user.entity';
+
 @Injectable()
 export class UsersService {
-  constructor(private userRepository: UserRepository) {}
+  constructor(
+    @InjectModel(User.name)
+    private userModel: Model<User>,
+  ) {}
 
   async findByEmail(email: string) {
-    // const user = await this.userRepository.findOne({
-    //   where: { id: id },
-    //   ...options,
-    // });
-    // if (user) {
-    //   const { password, ...userWithoutPassword } = user;
-    //   return userWithoutPassword;
-    // }
-    return null;
+    return await this.userModel.findOne({ email }).lean();
   }
 
-  // createOne(userData: CreateUser): Observable<User> {
-  //   return from(this.userRepository.createOne(userData));
-  // }
+  async create(userData: CreateUser) {
+    if ((await this.userModel.findOne({ email: userData.email })) !== null) {
+      throw new ConflictException('Email already exists');
+    }
+
+    userData.password = await this.hashPassword(userData.password);
+
+    return (await this.userModel.create(userData)).toObject();
+  }
+
+  async hashPassword(password: string) {
+    return await bcrypt.hash(password, 6);
+  }
 
   // getUsers(): Observable<User[]> {
   //   return from(this.userRepository.getUsers());

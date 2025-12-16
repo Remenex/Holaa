@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ObjectId } from 'mongoose';
 
-@Schema()
+@Schema({ timestamps: true })
 export class Movie {
   _id: ObjectId;
 

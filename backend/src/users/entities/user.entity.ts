@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ObjectId } from 'mongoose';
 
-@Schema()
+@Schema({ timestamps: true })
 export class User {
   _id: ObjectId;
 
@@ -19,9 +19,6 @@ export class User {
 
   @Prop()
   image?: string;
-
-  @Prop()
-  creation_date?: Date;
 
   @Prop({ required: true })
   role: string;
