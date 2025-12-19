@@ -1,5 +1,6 @@
 
 import Link from "next/link";
+import { HTMLAttributeAnchorTarget } from "react";
 import SecondButton from "./second-button";
 
 export type Props = {
@@ -9,7 +10,7 @@ export type Props = {
   className?: string;
   backgroundColor?:string;
   url:string;
-  target:string;
+  target?: HTMLAttributeAnchorTarget;
 } & React.HTMLAttributes<HTMLButtonElement>;
 
 

@@ -1,29 +1,30 @@
 "use client";
 
-import type { ButtonActions } from "@/context/actions/types";
-import type { ButtonProps } from "./types";
-import Button from "./index";
 import Link from "next/link";
 import type { HTMLAttributeAnchorTarget } from "react";
+import Button from "./index";
 
-type Props<T extends keyof ButtonActions> = Omit<
-  ButtonProps<T>,
-  "actionId" | "actionParams"
-> & {
-  url: string;
+export type Props = {
+  text: string;
+  iconImage?: string;
+  iconSize?: number;
+  className?: string;
+  backgroundColor?:string;
+  url:string;
   target?: HTMLAttributeAnchorTarget;
-  rel?: string | undefined;
-};
+} & React.HTMLAttributes<HTMLButtonElement>;
 
-export default function RedirectButton<T extends keyof ButtonActions>({
+
+export default function RedirectButton({
   url,
   target,
   rel,
   ...regularProps
-}: Props<T>) {
+}: Props) {
   return (
     <Link href={url} target={target} rel={rel}>
-      <Button {...regularProps} actionId={"test"} actionParams={[]} />
+      <Button {...regularProps}  />
     </Link>
   );
 }
+  
