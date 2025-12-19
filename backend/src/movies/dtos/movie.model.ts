@@ -1,7 +1,7 @@
-import { UUID } from 'crypto';
+import { ObjectId } from 'mongoose';
 
 export interface Movie {
-  movieId: string;
+  _id: ObjectId;
   category: string;
   creationDate: string;
   description: string;
@@ -14,7 +14,7 @@ export interface Movie {
 }
 
 export interface CreateMovie {
-  id?: UUID;
+  _id: ObjectId;
   category: string;
   creation_date?: Date;
   description: string;

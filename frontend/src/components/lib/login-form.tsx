@@ -1,10 +1,10 @@
 "use client";
-import React from "react";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
-import Button from "./button";
 import Link from "next/link";
+import React from "react";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import Button from "./button";
 
 export function LoginForm() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -38,7 +38,7 @@ export function LoginForm() {
           <Input id="password" placeholder="••••••••" type="password" />
         </LabelInputContainer>
         <div className="flex items-center justify-between mt-8">
-          <Button text="PRIJAVA" actionParams={handleSubmit} small={true} />
+          <Button text="PRIJAVA" onClick={()=>handleSubmit} small={true} />
           <p className="font-display gray-text">
             Nemate nalog?{" "}
             <Link href="/register" className="font-bold font-display">

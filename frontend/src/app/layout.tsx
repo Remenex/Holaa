@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-page-custom-font */
-import { ButtonActionProvider } from "@/context/actions";
 import { baloo2, bigShouldersDisplay } from "@/lib/fonts";
 import "./globals.css";
 
@@ -20,7 +19,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <ButtonActionProvider>{children}</ButtonActionProvider>
+        {children}
       </body>
     </html>
   );

@@ -12,10 +12,10 @@ export class User {
   password: string;
 
   @Prop({ required: true })
-  first_name: string;
+  firstName: string;
 
   @Prop({ required: true })
-  last_name: string;
+  lastName: string;
 
   @Prop()
   image?: string;

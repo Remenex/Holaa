@@ -9,9 +9,6 @@ export class Movie {
   category: string;
 
   @Prop()
-  creationDate: string;
-
-  @Prop()
   description: string;
 
   @Prop()

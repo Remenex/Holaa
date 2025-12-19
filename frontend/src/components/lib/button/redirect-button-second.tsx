@@ -1,33 +1,29 @@
-"use client";
 
-import type { ButtonActions } from "@/context/actions/types";
-import type { ButtonProps } from "./types";
 import Link from "next/link";
-import type { HTMLAttributeAnchorTarget } from "react";
 import SecondButton from "./second-button";
 
-type Props<T extends keyof ButtonActions> = Omit<
-  ButtonProps<T>,
-  "actionId" | "actionParams"
-> & {
-  url: string;
-  target?: HTMLAttributeAnchorTarget;
-  rel?: string | undefined;
-};
+export type Props = {
+  text: string;
+  iconImage?: string;
+  iconSize?: number;
+  className?: string;
+  backgroundColor?:string;
+  url:string;
+  target:string;
+} & React.HTMLAttributes<HTMLButtonElement>;
 
-export default function RedirectButtonSecond<T extends keyof ButtonActions>({
+
+export default function RedirectButtonSecond({
   url,
   target,
   rel,
   backgroundColor,
   ...regularProps
-}: Props<T>) {
+}: Props) {
   return (
     <Link href={url} target={target} rel={rel}>
       <SecondButton
         {...regularProps}
-        actionId={"test"}
-        actionParams={[]}
         backgroundColor={backgroundColor}
       />
     </Link>

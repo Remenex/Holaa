@@ -37,9 +37,8 @@ export default function UserSettings() {
           />
           <Button
             text="PRIJAVA"
-            actionParams={[handleSubmit]}
+
             small={true}
-            actionId="handleSubmit"
             className="mt-10"
           />
         </form>
@@ -73,9 +72,7 @@ export default function UserSettings() {
           />
           <Button
             text="PRIJAVA"
-            actionParams={[handleChangePasswordForm]}
             small={true}
-            actionId="handleSubmit"
             className="mt-10"
           />
         </form>

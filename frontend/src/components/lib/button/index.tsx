@@ -1,44 +1,30 @@
-"use client";
-import { useButtonActions } from "@/context/actions";
-import type {
-  ButtonActionParams,
-  ButtonActions,
-} from "@/context/actions/types";
-import { useMemo } from "react";
-import type { ButtonProps } from "./types";
 
-export default function Button<K extends keyof ButtonActions>({
+export type Props = {
+  text: string;
+  iconImage?: string;
+  iconSize?: number;
+  className?: string;
+  iconMargin?: number;
+  small?:boolean
+} & React.HTMLAttributes<HTMLButtonElement>;
+
+export default function Button({
   text,
   iconImage,
   iconSize,
   className,
-  actionId,
-  actionParams,
   iconMargin,
   small,
-}: ButtonProps<K>) {
-  const buttonActions = useButtonActions();
+  ...props
+}:Props) {
 
-  const handleClick = useMemo(() => {
-    if (!buttonActions) return undefined;
-
-    const action = buttonActions[actionId] as (
-      ...args: ButtonActionParams<ButtonActions[K]>
-    ) => void;
-
-    return () => {
-      if (actionParams) {
-        action(...actionParams);
-      }
-    };
-  }, [buttonActions, actionId, actionParams]);
 
   return (
     <button
       className={`${
         small ? `px-4 py-2 rounded-lg` : `py-4 px-8 rounded-[30px]`
       } main-gradient text-white font-bold text-[18px] flex items-center duration-300 hover:hover-gradient ${className}`}
-      onClick={handleClick}
+      {...props}
     >
       {iconImage && (
         <span
