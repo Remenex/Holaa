@@ -9,6 +9,7 @@ import {
 import { CreateUser } from 'src/users/dtos/user';
 import { UsersService } from 'src/users/services/users.service';
 import { JwtAuthGuard } from '../guards/jwt-auth-guard';
+import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { AuthService } from '../services/auth.service';
 
 @Controller('auth')
@@ -18,12 +19,11 @@ export class AuthController {
     private readonly userService: UsersService,
   ) {}
 
-  // @UseGuards(LocalAuthGuard)
-  // @Post('login')
-  // async login(@Request() req) {
-  //   const token = await firstValueFrom(this.authService.login(req.user));
-  //   return { access_token: token };
-  // }
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
+  login(@Request() req) {
+    return this.authService.login(req.user);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
@@ -32,7 +32,7 @@ export class AuthController {
   }
 
   @Post('register')
-  public register(@Body() userData: CreateUser) {
+  register(@Body() userData: CreateUser) {
     return this.userService.create(userData);
   }
 }
