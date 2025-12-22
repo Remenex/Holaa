@@ -1,15 +1,54 @@
 "use client";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
+import { toast } from "sonner";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import Button from "./button";
 
 export function LoginForm() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted");
+
+    try {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error("Greška pri prijavi");
+        return;
+      }
+
+      toast.success("Uspešna prijava");
+    } catch (error: any) {
+      console.log(error);
+
+      toast.error("Greška pri prijavi");
+    }
   };
   return (
     <div className="max-w-[650px]  mx-auto bg-[#101010] border border-[#8e8e8e] rounded-2xl p-4 md:p-8 shadow-input">
@@ -27,22 +66,32 @@ export function LoginForm() {
           </Label>
           <Input
             id="email"
+            name="email"
             placeholder="petar.petrovic@gmail.com"
             type="email"
+            value={form.email}
+            onChange={(e) => handleChange(e)}
           />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="password">
             Lozinka<span className="text-red-600">*</span>
           </Label>
-          <Input id="password" placeholder="••••••••" type="password" />
+          <Input
+            id="password"
+            name="password"
+            placeholder="••••••••"
+            type="password"
+            value={form.password}
+            onChange={(e) => handleChange(e)}
+          />
         </LabelInputContainer>
         <div className="flex items-center justify-between mt-8">
-          <Button text="PRIJAVA" onClick={()=>handleSubmit} small={true} />
+          <Button text="PRIJAVA" type={"submit"} small={true} />
           <p className="font-display gray-text">
             Nemate nalog?{" "}
             <Link href="/register" className="font-bold font-display">
-              Kreiraj ga sada
+              Kreiraj nalog
             </Link>
           </p>
         </div>
