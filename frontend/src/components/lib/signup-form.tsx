@@ -1,6 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { Input } from "../ui/input";
@@ -8,6 +9,7 @@ import { Label } from "../ui/label";
 import Button from "./button";
 
 export function SignupForm() {
+  const router = useRouter();
   const [form, setForm] = useState({
     firstname: "",
     lastname: "",
@@ -84,6 +86,8 @@ export function SignupForm() {
       }
 
       toast.success("Uspešno ste se registrovali");
+
+      setTimeout(() => router.push("/login"));
     } catch (error: any) {
       console.log(error);
 
