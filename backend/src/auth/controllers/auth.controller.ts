@@ -4,8 +4,10 @@ import {
   Get,
   Post,
   Request,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { CreateUser } from 'src/users/dtos/user';
 import { UsersService } from 'src/users/services/users.service';
 import { JwtAuthGuard } from '../guards/jwt-auth-guard';
@@ -21,8 +23,17 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Request() req) {
-    return this.authService.login(req.user);
+  login(@Request() req, @Res({ passthrough: true }) res: Response) {
+    const access_token = this.authService.login(req.user);
+    console.log(access_token);
+
+    res.cookie('access_token', access_token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+    });
+
+    return { message: 'Logged in' };
   }
 
   @UseGuards(JwtAuthGuard)

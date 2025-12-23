@@ -21,12 +21,29 @@ export function LoginForm() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const verifyForm = () => {
+    if (!form.email) {
+      toast.error("Unesite validan email");
+      return false;
+    }
+    if (!form.password) {
+      toast.error("Unesite validnu lozinku");
+      return false;
+    }
+    if (form.password.length < 6) {
+      toast.error("Lozinka mora biti duza od 6 karkatera");
+      return false;
+    }
+    return true;
+  };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
+      e.preventDefault();
+      if (!verifyForm()) return;
       const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/auth/login", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -36,7 +53,7 @@ export function LoginForm() {
         }),
       });
 
-      const data = await res.json();
+      // const data = await res.json();
 
       if (!res.ok) {
         toast.error("Greška pri prijavi");

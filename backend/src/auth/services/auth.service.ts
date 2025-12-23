@@ -24,14 +24,13 @@ export class AuthService {
     return user;
   }
 
-  async login(user: any) {
+  login(user: any) {
     const payload = {
       username: user.email,
       sub: user._id.toString(),
       role: user.role,
     };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+
+    return this.jwtService.sign(payload);
   }
 }
