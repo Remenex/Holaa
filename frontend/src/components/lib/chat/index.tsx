@@ -1,11 +1,11 @@
 "use client";
-import { AnimatedTooltip } from "@/components/ui/tooltip";
-import { CurrentlyWatching } from "../../../../public/interfaces/CurrentlyWatching";
-import { useState } from "react";
-import Icon from "../icon";
 import { Search } from "@/components/ui/search";
-import { Message } from "../../../../public/interfaces/Message";
+import { AnimatedTooltip } from "@/components/ui/tooltip";
 import Image from "next/image";
+import { useState } from "react";
+import { CurrentlyWatching } from "../../../app/types/CurrentlyWatching";
+import { Message } from "../../../app/types/Message";
+import Icon from "../icon";
 
 type Props = {
   chatUsersBase: CurrentlyWatching[];

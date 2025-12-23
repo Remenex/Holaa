@@ -17,9 +17,6 @@ export class User {
   @Prop({ required: true })
   lastName: string;
 
-  @Prop()
-  image?: string;
-
   @Prop({ required: true })
   role: string;
 }

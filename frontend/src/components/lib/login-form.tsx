@@ -41,16 +41,19 @@ export function LoginForm() {
     try {
       e.preventDefault();
       if (!verifyForm()) return;
+
+      const loginUser: LoginUser = {
+        email: form.email,
+        password: form.password,
+      };
+
       const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/auth/login", {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email: form.email,
-          password: form.password,
-        }),
+        body: JSON.stringify(loginUser),
       });
 
       // const data = await res.json();

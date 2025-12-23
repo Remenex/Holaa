@@ -1,18 +1,18 @@
 "use client";
-import React, { useRef, useState, useEffect } from "react";
-import "./css/custom-slider.css";
-import { ModernIcon } from "../lib/modern-icon";
-import Link from "next/link";
-import Image from "next/image";
-import { AnimatedTooltip } from "../ui/tooltip";
-import Icon from "../lib/icon";
 import { motion } from "framer-motion";
-import WatchingUser from "../lib/player/currently-watching";
-import { CurrentlyWatching } from "../../../public/interfaces/CurrentlyWatching";
-import { Search } from "../ui/search";
-import { SearchUser } from "../../../public/interfaces/SearchUsers";
-import FindFriend from "../lib/player/find-friend";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useEffect, useRef, useState } from "react";
+import { CurrentlyWatching } from "../../app/types/CurrentlyWatching";
+import { SearchUser } from "../../app/types/SearchUsers";
 import Chat from "../lib/chat";
+import Icon from "../lib/icon";
+import { ModernIcon } from "../lib/modern-icon";
+import WatchingUser from "../lib/player/currently-watching";
+import FindFriend from "../lib/player/find-friend";
+import { Search } from "../ui/search";
+import { AnimatedTooltip } from "../ui/tooltip";
+import "./css/custom-slider.css";
 
 const currentlyWatchUsersBase = [
   {

@@ -1,11 +1,11 @@
 "use client";
-import React, { ReactNode, useCallback, useEffect, useState } from "react";
-import { EmblaOptionsType } from "embla-carousel";
-import { usePrevNextButtons } from "./fansy-buttons";
-import useEmblaCarousel from "embla-carousel-react";
-import { Movie } from "../../../../public/interfaces/Movie";
-import FansyMovie from "@/components/lib/movies/fansy-movies";
 import Arrow from "@/components/lib/arrow";
+import FansyMovie from "@/components/lib/movies/fansy-movies";
+import { EmblaOptionsType } from "embla-carousel";
+import useEmblaCarousel from "embla-carousel-react";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import { Movie } from "../../../app/types/Movie";
+import { usePrevNextButtons } from "./fansy-buttons";
 const movies = [
   {
     image: "/images/interstellar.png",
@@ -94,10 +94,7 @@ const FansySliderComponent: React.FC<PropType> = (props) => {
     updateSelectedIndex();
   }, [emblaApi, updateSelectedIndex]);
 
-  const {
-    onPrevButtonClick,
-    onNextButtonClick,
-  } = usePrevNextButtons(emblaApi);
+  const { onPrevButtonClick, onNextButtonClick } = usePrevNextButtons(emblaApi);
 
   return (
     <section className="w-full flex justify-center bg-dark-gray mt-[150px] pt-32 pb-16">
@@ -133,10 +130,10 @@ const FansySliderComponent: React.FC<PropType> = (props) => {
             })}
           </div>
         </div>
-          <div className="flex gap-4 w-full justify-center">
-            <Arrow size={80} onclick={onPrevButtonClick}/>
-            <Arrow size={80} isLeft={true}  onclick={onNextButtonClick}/>
-          </div>
+        <div className="flex gap-4 w-full justify-center">
+          <Arrow size={80} onclick={onPrevButtonClick} />
+          <Arrow size={80} isLeft={true} onclick={onNextButtonClick} />
+        </div>
       </div>
     </section>
   );

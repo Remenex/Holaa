@@ -1,5 +1,5 @@
 import BestMovieWidget from "@/components/lib/movies/best-movies";
-import { Movie } from "../../../../public/interfaces/Movie";
+import { Movie } from "../../../app/types/Movie";
 
 export default function BestChoose() {
   const movies = [

@@ -1,9 +1,8 @@
-import React from "react";
-import FansySliderComponent from "./fansy";
-import { EmblaOptionsType } from "embla-carousel";
-import "./css/embla.css";
-import { Movie } from "../../../../public/interfaces/Movie";
 import FansyMovie from "@/components/lib/movies/fansy-movies";
+import { EmblaOptionsType } from "embla-carousel";
+import { Movie } from "../../../app/types/Movie";
+import "./css/embla.css";
+import FansySliderComponent from "./fansy";
 
 const movies = [
   {
@@ -83,8 +82,6 @@ const SLIDES = movies.map((movie) => (
     iscenter={false}
   />
 ));
-
-
 
 const OPTIONS: EmblaOptionsType = { loop: false };
 

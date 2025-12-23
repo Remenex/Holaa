@@ -1,13 +1,13 @@
 import Image from "next/image";
+import { SearchUser } from "../../../app/types/SearchUsers";
 import Icon from "../icon";
-import { SearchUser } from "../../../../public/interfaces/SearchUsers";
 
 export default function FindFriend({
   image,
   fullName,
   email,
   add,
-  pending=false
+  pending = false,
 }: SearchUser) {
   return (
     <div className="w-full flex items-center justify-between">
@@ -24,12 +24,12 @@ export default function FindFriend({
           <p className="text-2xl gray-text">{email}</p>
         </div>
       </div>
-        <div
-          className="w-6 h-6 rounded-[50%] bg-red-transparent flex items-center justify-center cursor-pointer"
-          onClick={add}
-        >
-          <Icon icon={`${pending ? 'hourglass_empty' : 'add'}`} iconSize={20} />
-        </div>
+      <div
+        className="w-6 h-6 rounded-[50%] bg-red-transparent flex items-center justify-center cursor-pointer"
+        onClick={add}
+      >
+        <Icon icon={`${pending ? "hourglass_empty" : "add"}`} iconSize={20} />
+      </div>
     </div>
   );
 }
