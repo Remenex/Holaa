@@ -9,17 +9,21 @@ import {
 import Link from "next/link";
 import Icon from "../lib/icon";
 import { ModernIcon } from "../lib/modern-icon";
+import UserAvatar from "../lib/user-avatar";
 
 export default function UserDropdown() {
   const user = useAuthUser();
-  console.log(user);
 
   return (
     <div className="flex items-center gap-4">
       <Dropdown placement="bottom-end">
         <DropdownTrigger className="opacity-100">
           <button className="outline-none">
-            <ModernIcon icon="person" />
+            {user ? (
+              <UserAvatar firstname={user.firstName} lastname={user.lastName} />
+            ) : (
+              <ModernIcon icon="person" />
+            )}
           </button>
         </DropdownTrigger>
         <DropdownMenu

@@ -1,34 +1,34 @@
 "use client";
 
+import { cn } from "@/lib/utils/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
 
 interface DataModel {
   x: number;
   y: number;
-  color: number[]
+  color: number[];
 }
 
 interface NewDataModel {
   x: number;
   y: number;
   r: number;
-  color: string
+  color: string;
 }
 
 export function Search({
   placeholders,
   onChange,
   onSubmit,
-  light=false,
-  center=true,
+  light = false,
+  center = true,
 }: {
   placeholders: string[];
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   light?: boolean;
-  center?: boolean
+  center?: boolean;
 }) {
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
 
@@ -189,8 +189,7 @@ export function Search({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     vanishAndSubmit();
-    if(onSubmit)
-      onSubmit(e);
+    if (onSubmit) onSubmit(e);
   };
   return (
     <form
@@ -213,7 +212,7 @@ export function Search({
         onChange={(e) => {
           if (!animating) {
             setValue(e.target.value);
-            if(onChange) onChange(e);
+            if (onChange) onChange(e);
           }
         }}
         onKeyDown={handleKeyDown}
@@ -230,7 +229,9 @@ export function Search({
       <button
         disabled={!value}
         type="submit"
-        className={`absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full ${light ? `bg-black` : `bg-zinc-900`} disabled:bg-zinc-800 transition duration-200 flex items-center justify-center`}
+        className={`absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full ${
+          light ? `bg-black` : `bg-zinc-900`
+        } disabled:bg-zinc-800 transition duration-200 flex items-center justify-center`}
       >
         <motion.svg
           xmlns="http://www.w3.org/2000/svg"
