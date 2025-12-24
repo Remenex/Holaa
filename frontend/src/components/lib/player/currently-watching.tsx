@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { CurrentlyWatching } from "../../../../public/interfaces/CurrentlyWatching";
+import { CurrentlyWatching } from "../../../app/types/CurrentlyWatching";
 import Icon from "../icon";
 
 export default function WatchingUser({

@@ -6,9 +6,8 @@ export interface User {
   password: string;
   firstName: string;
   lastName: string;
-  image?: string;
-  creation_date?: Date;
   role: string;
+  createdAt: string;
 }
 
 export interface CreateUser {
@@ -16,9 +15,9 @@ export interface CreateUser {
   password: string;
   firstName: string;
   lastName: string;
-  image?: string;
   role: string;
 }
+
 export interface UpdateUser {
   firstName: string;
   lastName: string;

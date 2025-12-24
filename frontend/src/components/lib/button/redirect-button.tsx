@@ -9,22 +9,22 @@ export type Props = {
   iconImage?: string;
   iconSize?: number;
   className?: string;
-  backgroundColor?:string;
-  url:string;
+  backgroundColor?: string;
+  iconMargin: string;
+  url: string;
   target?: HTMLAttributeAnchorTarget;
 } & React.HTMLAttributes<HTMLButtonElement>;
-
 
 export default function RedirectButton({
   url,
   target,
   rel,
+  iconMargin,
   ...regularProps
 }: Props) {
   return (
     <Link href={url} target={target} rel={rel}>
-      <Button {...regularProps}  />
+      <Button className={`m-${iconMargin}`} {...regularProps} />
     </Link>
   );
 }
-  

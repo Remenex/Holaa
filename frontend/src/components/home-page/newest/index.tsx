@@ -1,10 +1,9 @@
-import React from "react";
-import NewestCarousel from "./carousel";
 import { EmblaOptionsType } from "embla-carousel";
+import NewestCarousel from "./carousel";
 
-import "./css/embla.css";
-import { Movie } from "../../../../public/interfaces/Movie";
 import LatestMovie from "@/components/lib/movies/latest-movies";
+import { Movie } from "../../../app/types/Movie";
+import "./css/embla.css";
 const movies = [
   {
     image: "/images/interstellar.png",

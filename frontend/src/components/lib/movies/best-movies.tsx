@@ -1,6 +1,6 @@
 import Image from "next/image";
+import { Movie } from "../../../app/types/Movie";
 import Icon from "../icon";
-import { Movie } from "../../../../public/interfaces/Movie";
 import { ModernIcon } from "../modern-icon";
 
 export default function BestMovieWidget({
@@ -24,7 +24,7 @@ export default function BestMovieWidget({
         />
         {/* Overlay */}
         <div className="absolute inset-0 bg-black bg-opacity-70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out rounded-[40px] flex justify-center items-center">
-          <ModernIcon icon="play_arrow" iconSize={40}/>
+          <ModernIcon icon="play_arrow" iconSize={40} />
         </div>
       </div>
 

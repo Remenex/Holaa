@@ -5,7 +5,8 @@ export type Props = {
   iconSize?: number;
   className?: string;
   iconMargin?: number;
-  small?:boolean
+  small?:boolean;
+  type?: "button" | "submit" | "reset" | undefined;
 } & React.HTMLAttributes<HTMLButtonElement>;
 
 export default function Button({
@@ -15,6 +16,7 @@ export default function Button({
   className,
   iconMargin,
   small,
+  type,
   ...props
 }:Props) {
 
@@ -24,6 +26,7 @@ export default function Button({
       className={`${
         small ? `px-4 py-2 rounded-lg` : `py-4 px-8 rounded-[30px]`
       } main-gradient text-white font-bold text-[18px] flex items-center duration-300 hover:hover-gradient ${className}`}
+      type={type ?? "button"}
       {...props}
     >
       {iconImage && (
