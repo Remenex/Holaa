@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CreateUser } from 'src/users/dtos/user';
+import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/services/users.service';
 import { JwtAuthGuard } from '../guards/jwt-auth-guard';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
@@ -33,7 +34,10 @@ export class AuthController {
       sameSite: 'lax',
     });
 
-    return { message: 'Logged in' };
+    const user: User = req.user;
+    delete user.password;
+
+    return user;
   }
 
   @UseGuards(JwtAuthGuard)
