@@ -1,15 +1,19 @@
 "use client";
+import { useAuthUser } from "@/hooks/auth-user";
 import {
   Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
   DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
 } from "@nextui-org/react";
-import { ModernIcon } from "../lib/modern-icon";
 import Link from "next/link";
 import Icon from "../lib/icon";
+import { ModernIcon } from "../lib/modern-icon";
 
 export default function UserDropdown() {
+  const user = useAuthUser();
+  console.log(user);
+
   return (
     <div className="flex items-center gap-4">
       <Dropdown placement="bottom-end">
@@ -25,7 +29,7 @@ export default function UserDropdown() {
         >
           <DropdownItem key="info" className="gap-2 mb-3">
             <p className="font-semibold text-xl">Prijavljeni ste kao</p>
-            <p className="font-semibold text-xl">djordje@gmail.com</p>
+            <p className="font-semibold text-xl">{user?.email}</p>
           </DropdownItem>
           <DropdownItem key="profile">
             <Link href="/profile" className="text-xl hover:underline">
@@ -44,7 +48,7 @@ export default function UserDropdown() {
           </DropdownItem>
           <DropdownItem key="signout">
             <Link href="" className="text-xl hover:underline flex text-red-500">
-              <Icon icon="Logout"/>
+              <Icon icon="Logout" />
               Odjavi se
             </Link>
           </DropdownItem>

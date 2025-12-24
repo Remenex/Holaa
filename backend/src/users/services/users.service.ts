@@ -12,6 +12,13 @@ export class UsersService {
     private userModel: Model<User>,
   ) {}
 
+  async findById(id: string) {
+    const user = await this.userModel.findOne({ id }).lean();
+
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  }
+
   async findByEmail(email: string) {
     return await this.userModel.findOne({ email }).lean();
   }
