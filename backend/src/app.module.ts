@@ -21,6 +21,6 @@ import { UsersModule } from './users/users.module';
     }),
   ],
   controllers: [AppController, MovieController, UsersController],
-  providers: [AppService, MovieService],
+  providers: [AppService],
 })
 export class AppModule {}

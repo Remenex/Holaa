@@ -5,6 +5,7 @@ import { MovieController } from './controllers/movie.controller';
 import { Movie, MovieSchema } from './entities/movie.entity';
 
 import { MovieService } from './services/movie.service';
+import { CategoryModule } from 'src/categories/category.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { MovieService } from './services/movie.service';
         schema: MovieSchema,
       },
     ]),
+    CategoryModule,
   ],
   controllers: [MovieController],
   providers: [MovieService],
