@@ -26,7 +26,6 @@ export class AuthController {
   @Post('login')
   login(@Request() req, @Res({ passthrough: true }) res: Response) {
     const access_token = this.authService.login(req.user);
-    console.log(access_token);
 
     res.cookie('access_token', access_token, {
       httpOnly: true,
@@ -51,11 +50,3 @@ export class AuthController {
     return this.userService.create(userData);
   }
 }
-
-// {
-//   "email": "idjordje63@gmail.com",
-//   "password": "djole2002",
-//   "first_name": "Djordje",
-//   "last_name": "Ivanovic",
-//   "is_admin": false
-// }

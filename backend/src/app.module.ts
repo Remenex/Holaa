@@ -9,6 +9,7 @@ import { MovieModule } from './movies/movie.module';
 import { MovieService } from './movies/services/movie.service';
 import { UsersController } from './users/controllers/users.controller';
 import { UsersModule } from './users/users.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UsersModule } from './users/users.module';
     MulterModule.register({
       dest: './uploads',
     }),
+    RedisModule,
   ],
   controllers: [AppController, MovieController, UsersController],
   providers: [AppService, MovieService],
