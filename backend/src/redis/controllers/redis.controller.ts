@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { RedisRepository } from './redis.repository';
+import { RedisRepository } from '../redis.repository';
 
 @Controller('redis')
 export class RedisController {

@@ -10,6 +10,7 @@ import { MovieService } from './movies/services/movie.service';
 import { UsersController } from './users/controllers/users.controller';
 import { UsersModule } from './users/users.module';
 import { RedisModule } from './redis/redis.module';
+import { RoomsModule } from './rooms/rooms.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { RedisModule } from './redis/redis.module';
       dest: './uploads',
     }),
     RedisModule,
+    RoomsModule,
   ],
   controllers: [AppController, MovieController, UsersController],
   providers: [AppService, MovieService],

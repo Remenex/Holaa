@@ -21,6 +21,20 @@ export class RedisRepository implements OnModuleDestroy {
     await this.redisClient.del(`${prefix}:${key}`);
   }
 
+  async publish(channel: string, message: any) {
+    await this.redisClient.publish(channel, JSON.stringify(message));
+  }
+
+  subscribe(
+    pattern: string,
+    callback: (channel: string, message: any) => void,
+  ) {
+    this.redisClient.psubscribe(pattern);
+    this.redisClient.on('pmessage', (pattern, channel, message) => {
+      callback(channel, JSON.parse(message));
+    });
+  }
+
   async setWithExpiry(
     prefix: string,
     key: string,
