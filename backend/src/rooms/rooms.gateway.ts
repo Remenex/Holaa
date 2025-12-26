@@ -1,16 +1,15 @@
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
-  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
 
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway(8001, { cors: '*' })
+@WebSocketGateway(8001, { namespace: '/rooms', cors: '*' })
 export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer() server;
+  @WebSocketServer() server: Server;
 
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
@@ -19,7 +18,4 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleDisconnect(client: any) {
     console.log(`Client disconnected: ${client.id}`);
   }
-
-  @SubscribeMessage('join_room')
-  async handleJoin(client: Socket, payload: { roomId: string }) {}
 }

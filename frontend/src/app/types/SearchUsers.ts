@@ -1,10 +1,8 @@
-export interface SearchUser{
-    id: number;
-    image: string;
-    fullName: string;
-    email: string;
-    add?: () => void;
-    pending?: boolean;
-  };
-  
-  
+export interface SearchUser {
+  id: string;
+  image: string;
+  fullName: string;
+  email: string;
+  add?: () => void;
+  pending?: boolean;
+}

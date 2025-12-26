@@ -4,13 +4,11 @@ import { MulterModule } from '@nestjs/platform-express';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { MovieController } from './movies/controllers/movie.controller';
+import { InvitesModule } from './invites/invites.module';
 import { MovieModule } from './movies/movie.module';
-import { MovieService } from './movies/services/movie.service';
-import { UsersController } from './users/controllers/users.controller';
-import { UsersModule } from './users/users.module';
 import { RedisModule } from './redis/redis.module';
 import { RoomsModule } from './rooms/rooms.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -23,8 +21,9 @@ import { RoomsModule } from './rooms/rooms.module';
     }),
     RedisModule,
     RoomsModule,
+    InvitesModule,
   ],
-  controllers: [AppController, MovieController, UsersController],
-  providers: [AppService, MovieService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

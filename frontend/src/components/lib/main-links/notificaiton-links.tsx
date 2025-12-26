@@ -1,6 +1,9 @@
+"use client";
+import { useSocket } from "@/hooks/socket";
 import Image from "next/image";
-import Icon from "../icon";
 import Link from "next/link";
+import { useEffect } from "react";
+import Icon from "../icon";
 
 type Props = {
   icon: string;
@@ -8,6 +11,23 @@ type Props = {
 };
 
 export default function NotificationLink({ icon, user }: Props) {
+  const invitesSocket = useSocket("invites");
+
+  const handleInvite = () => {
+    console.log("📩 Stigao invite");
+  };
+
+  useEffect(() => {
+    if (invitesSocket) {
+      invitesSocket.on("invite:received", handleInvite);
+      console.log(1);
+
+      return () => {
+        invitesSocket.off("invite:received", handleInvite);
+      };
+    }
+  }, [invitesSocket]);
+
   return (
     <div className="relative w-[70px] h-[70px] flex items-center justify-center group">
       <Image

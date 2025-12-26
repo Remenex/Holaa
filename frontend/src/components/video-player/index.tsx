@@ -1,4 +1,5 @@
 "use client";
+import { CreateInvite, InviteStatus } from "@/app/types/invite.type";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -45,25 +46,25 @@ const placeholders = [
 
 const findFriendsBase = [
   {
-    id: 1,
+    id: "694ebbfbed8d311eef1ad3b1",
+    image: "/images/djani.png",
+    fullName: "Aleksa Trajkovic",
+    email: "radista@gmail.com",
+  } as SearchUser,
+  {
+    id: "2",
     image: "/images/djani.png",
     fullName: "Radisa Trajkovic",
     email: "radista@gmail.com",
   } as SearchUser,
   {
-    id: 2,
+    id: "3",
     image: "/images/djani.png",
     fullName: "Radisa Trajkovic",
     email: "radista@gmail.com",
   } as SearchUser,
   {
-    id: 3,
-    image: "/images/djani.png",
-    fullName: "Radisa Trajkovic",
-    email: "radista@gmail.com",
-  } as SearchUser,
-  {
-    id: 4,
+    id: "4",
     image: "/images/djani.png",
     fullName: "Radisa Trajkovic",
     email: "radista@gmail.com",
@@ -99,13 +100,51 @@ export function VideoPlayer() {
   const [currentlyWatchUsers, setCurrentlyWatchUsers] = useState(
     currentlyWatchUsersBase
   );
+
   const [findFriends, setFindFriends] = useState(findFriendsBase);
-  const sendInvite = (id: number) => {
+
+  const sendInvite = async (id: string) => {
     setFindFriends((prevFindFriend) =>
       prevFindFriend.map((element) =>
         element.id === id ? { ...element, pending: true } : element
       )
     );
+
+    const inviteData: CreateInvite = {
+      toUserId: id,
+      roomId: "abcd",
+      status: InviteStatus.PENDING,
+    };
+
+    try {
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/invites",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(inviteData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to send invite");
+      }
+
+      const data = await response.json();
+      console.log("Invite sent:", data);
+    } catch (error) {
+      console.error(error);
+
+      // Ako je greška, vrati pending na false
+      setFindFriends((prevFindFriend) =>
+        prevFindFriend.map((element) =>
+          element.id === id ? { ...element, pending: false } : element
+        )
+      );
+    }
   };
 
   const removeCurrentlyWatchFriend = (id: number) => {
@@ -126,13 +165,13 @@ export function VideoPlayer() {
   };
 
   const handleMouseMove = () => {
-    setControlsVisible(true);
-    if (timeoutIdRef.current) {
-      clearTimeout(timeoutIdRef.current);
-    }
-    timeoutIdRef.current = setTimeout(() => {
-      setControlsVisible(false);
-    }, 3000);
+    // setControlsVisible(true);
+    // if (timeoutIdRef.current) {
+    //   clearTimeout(timeoutIdRef.current);
+    // }
+    // timeoutIdRef.current = setTimeout(() => {
+    //   setControlsVisible(false);
+    // }, 3000);
   };
 
   useEffect(() => {
@@ -365,8 +404,8 @@ export function VideoPlayer() {
                       {findFriends.map((element, index) => {
                         return (
                           <FindFriend
-                            id={index}
                             key={element.id}
+                            id={element.id}
                             image={element.image}
                             fullName={element.fullName}
                             email={element.email}
