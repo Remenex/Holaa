@@ -1,3 +1,11 @@
+export type Invite = {
+  _id: string;
+  roomId: string;
+  fromUserId: User;
+  toUserId: string;
+  status: InviteStatus;
+};
+
 export enum InviteStatus {
   PENDING = "pending",
   ACCEPTED = "accepted",
@@ -12,7 +20,7 @@ export type CreateInvite = {
 };
 
 export type InviteReceived = {
-  inviteId: string;
-  fromUserId: string;
+  invite: Invite;
+  fromUserId: User;
   roomId: string;
 };

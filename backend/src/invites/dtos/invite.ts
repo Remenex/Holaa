@@ -1,4 +1,5 @@
-import { ObjectId } from 'mongoose';
+import { User } from 'src/users/entities/user.entity';
+import { Invite } from '../entities/invite.entity';
 
 export enum InviteStatus {
   PENDING = 'pending',
@@ -14,7 +15,7 @@ export type CreateInvite = {
 };
 
 export type InviteReceived = {
-  inviteId: ObjectId;
-  fromUserId: string;
+  invite: Invite;
+  fromUserId: User;
   roomId: string;
 };

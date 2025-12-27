@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ObjectId } from 'mongoose';
+import { User } from 'src/users/entities/user.entity';
 import { InviteStatus } from '../dtos/invite';
 
 @Schema({ timestamps: true })
@@ -9,7 +10,7 @@ export class Invite {
   @Prop({ required: true })
   roomId: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, ref: User.name })
   fromUserId: string;
 
   @Prop({ required: true })

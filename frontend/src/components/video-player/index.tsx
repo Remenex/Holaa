@@ -4,8 +4,9 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { CurrentlyWatching } from "../../app/types/CurrentlyWatching";
-import { SearchUser } from "../../app/types/SearchUsers";
+
 import Chat from "../lib/chat";
 import Icon from "../lib/icon";
 import { ModernIcon } from "../lib/modern-icon";
@@ -44,33 +45,6 @@ const placeholders = [
   "Unesite ime i prezime vaseg korisnika",
 ];
 
-const findFriendsBase = [
-  {
-    id: "694ebbfbed8d311eef1ad3b1",
-    image: "/images/djani.png",
-    fullName: "Aleksa Trajkovic",
-    email: "radista@gmail.com",
-  } as SearchUser,
-  {
-    id: "2",
-    image: "/images/djani.png",
-    fullName: "Radisa Trajkovic",
-    email: "radista@gmail.com",
-  } as SearchUser,
-  {
-    id: "3",
-    image: "/images/djani.png",
-    fullName: "Radisa Trajkovic",
-    email: "radista@gmail.com",
-  } as SearchUser,
-  {
-    id: "4",
-    image: "/images/djani.png",
-    fullName: "Radisa Trajkovic",
-    email: "radista@gmail.com",
-  } as SearchUser,
-];
-
 export function VideoPlayer() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
@@ -101,12 +75,36 @@ export function VideoPlayer() {
     currentlyWatchUsersBase
   );
 
-  const [findFriends, setFindFriends] = useState(findFriendsBase);
+  const [findFriends, setFindFriends] = useState<SearchUser[]>([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+          credentials: "include",
+        });
+
+        if (!res.ok) {
+          toast.error("Greska pri dobijanju prijatelja");
+        }
+
+        const data: User[] = await res.json();
+        setFindFriends(data);
+      } catch (error) {
+        toast.error("Greska pri dobijanju prijatelja", {
+          description: error as string,
+        });
+      } finally {
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const sendInvite = async (id: string) => {
     setFindFriends((prevFindFriend) =>
       prevFindFriend.map((element) =>
-        element.id === id ? { ...element, pending: true } : element
+        element._id === id ? { ...element, pending: true } : element
       )
     );
 
@@ -138,10 +136,10 @@ export function VideoPlayer() {
     } catch (error) {
       console.error(error);
 
-      // Ako je greška, vrati pending na false
+      // ako je error vrati pending na false
       setFindFriends((prevFindFriend) =>
         prevFindFriend.map((element) =>
-          element.id === id ? { ...element, pending: false } : element
+          element._id === id ? { ...element, pending: false } : element
         )
       );
     }
@@ -401,19 +399,17 @@ export function VideoPlayer() {
                       onSubmit={onSubmit}
                     />
                     <div className="w-full mt-6 flex flex-col gap-3">
-                      {findFriends.map((element, index) => {
-                        return (
-                          <FindFriend
-                            key={element.id}
-                            id={element.id}
-                            image={element.image}
-                            fullName={element.fullName}
-                            email={element.email}
-                            pending={element.pending ?? false}
-                            add={() => sendInvite(element.id)}
-                          />
-                        );
-                      })}
+                      {findFriends &&
+                        findFriends.length > 0 &&
+                        findFriends.map((element, index) => {
+                          return (
+                            <FindFriend
+                              key={element._id}
+                              user={element}
+                              add={() => sendInvite(element._id)}
+                            />
+                          );
+                        })}
                     </div>
                   </div>
                 </motion.div>

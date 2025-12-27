@@ -18,9 +18,13 @@ export default function UserDropdown() {
     <div className="flex items-center gap-4">
       <Dropdown placement="bottom-end">
         <DropdownTrigger className="opacity-100">
-          <button className="outline-none">
+          <button className="outline-none ">
             {user ? (
-              <UserAvatar firstname={user.firstName} lastname={user.lastName} />
+              <UserAvatar
+                firstname={user.firstName}
+                lastname={user.lastName}
+                sizeRem={4}
+              />
             ) : (
               <ModernIcon icon="person" />
             )}

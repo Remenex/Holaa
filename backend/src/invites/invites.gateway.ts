@@ -20,6 +20,5 @@ export class InvitesGateway implements OnGatewayConnection {
 
   sendInvite(toUserId: string, payload: InviteReceived) {
     this.server.to(`user:${toUserId}`).emit(`invite:received`, payload);
-    console.log('emit');
   }
 }
