@@ -34,7 +34,7 @@ export default function MainHeader() {
         }
 
         const data: Invite[] = await res.json();
-        console.log(data);
+        //console.log(data);
 
         setInvites(data);
       } catch (error) {

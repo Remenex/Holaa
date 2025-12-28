@@ -1,20 +1,16 @@
 "use client";
-import { CreateInvite, InviteStatus } from "@/app/types/invite.type";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
 import { CurrentlyWatching } from "../../app/types/CurrentlyWatching";
 
 import Chat from "../lib/chat";
 import Icon from "../lib/icon";
 import { ModernIcon } from "../lib/modern-icon";
-import WatchingUser from "../lib/player/currently-watching";
-import FindFriend from "../lib/player/find-friend";
-import { Search } from "../ui/search";
 import { AnimatedTooltip } from "../ui/tooltip";
 import "./css/custom-slider.css";
+import { CurrentlyWatchingComponent } from "./currently-watching";
 
 const currentlyWatchUsersBase = [
   {
@@ -40,11 +36,6 @@ const currentlyWatchUsersBase = [
   } as CurrentlyWatching,
 ];
 
-const placeholders = [
-  "Unesite email adresu vaseg prijatelja",
-  "Unesite ime i prezime vaseg korisnika",
-];
-
 export function VideoPlayer() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
@@ -55,108 +46,21 @@ export function VideoPlayer() {
   const [duration, setDuration] = useState(0);
   const [controlsVisible, setControlsVisible] = useState(true);
 
-  const [isFriendsOpen, setIsFriendsOpen] = useState(false);
-  const [isAddFriendsOpen, setIsAddFriendsOpen] = useState(false);
   const [isMessageBoxOpen, setIsMessageBoxOpen] = useState<
     "open" | "closed" | "transparent"
   >("closed");
 
   const [isFullScreen, setIsFullScreen] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
-  };
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("submitted");
-  };
-
+  const [isFriendsOpen, setIsFriendsOpen] = useState(false);
   const [currentlyWatchUsers, setCurrentlyWatchUsers] = useState(
     currentlyWatchUsersBase
   );
 
-  const [findFriends, setFindFriends] = useState<SearchUser[]>([]);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
-          credentials: "include",
-        });
-
-        if (!res.ok) {
-          toast.error("Greska pri dobijanju prijatelja");
-        }
-
-        const data: User[] = await res.json();
-        setFindFriends(data);
-      } catch (error) {
-        toast.error("Greska pri dobijanju prijatelja", {
-          description: error as string,
-        });
-      } finally {
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
-  const sendInvite = async (id: string) => {
-    setFindFriends((prevFindFriend) =>
-      prevFindFriend.map((element) =>
-        element._id === id ? { ...element, pending: true } : element
-      )
-    );
-
-    const inviteData: CreateInvite = {
-      toUserId: id,
-      roomId: "abcd",
-      status: InviteStatus.PENDING,
-    };
-
-    try {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_API_URL + "/invites",
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(inviteData),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to send invite");
-      }
-
-      const data = await response.json();
-      console.log("Invite sent:", data);
-    } catch (error) {
-      console.error(error);
-
-      // ako je error vrati pending na false
-      setFindFriends((prevFindFriend) =>
-        prevFindFriend.map((element) =>
-          element._id === id ? { ...element, pending: false } : element
-        )
-      );
-    }
-  };
-
-  const removeCurrentlyWatchFriend = (id: number) => {
-    setCurrentlyWatchUsers(
-      currentlyWatchUsers.filter((element) => element.id !== id)
-    );
-  };
-
   const handleFriendsOpen = () => {
     setIsFriendsOpen(!isFriendsOpen);
   };
-  const handleAddFriendsOpen = () => {
-    setIsAddFriendsOpen(!isAddFriendsOpen);
-  };
+
   const handleIsMessageBoxOpen = (value: "open" | "closed" | "transparent") => {
     console.log(value);
     setIsMessageBoxOpen(value);
@@ -345,75 +249,10 @@ export function VideoPlayer() {
                 smallPadding={true}
                 onclick={handleFriendsOpen}
               />
-              <motion.div
-                className="absolute top-14 right-0 bg-dark-gray p-10 rounded-[30px] w-[400px]"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{
-                  opacity: isFriendsOpen ? 1 : 0,
-                  y: isFriendsOpen ? 0 : -20,
-                }}
-                transition={{ duration: 0.3 }}
-                style={{ pointerEvents: isFriendsOpen ? "auto" : "none" }}
-              >
-                <div className="w-full relative">
-                  <div className="w-full flex items-center justify-between">
-                    <h3>TRENUTNO GLEDAJU</h3>
-                    <div className="cursor-pointer">
-                      <Icon
-                        icon="person_add"
-                        iconSize={30}
-                        onClick={handleAddFriendsOpen}
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full mt-6 flex flex-col gap-3">
-                    {currentlyWatchUsers.map((element) => (
-                      <WatchingUser
-                        id={element.id}
-                        key={element.fullName}
-                        image={element.image}
-                        fullName={element.fullName}
-                        designation=""
-                        isAdmin={element.isAdmin}
-                        remove={() => {
-                          removeCurrentlyWatchFriend(element.id);
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <motion.div
-                  className="absolute top-0 right-[410px] bg-dark-gray p-10 rounded-[30px] w-[400px]"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{
-                    opacity: isAddFriendsOpen ? 1 : 0,
-                    x: isAddFriendsOpen ? 0 : 20,
-                  }}
-                  transition={{ duration: 0.3 }}
-                  style={{ pointerEvents: isAddFriendsOpen ? "auto" : "none" }}
-                >
-                  <div className=" flex flex-col justify-center  items-center">
-                    <Search
-                      placeholders={placeholders}
-                      onChange={handleChange}
-                      onSubmit={onSubmit}
-                    />
-                    <div className="w-full mt-6 flex flex-col gap-3">
-                      {findFriends &&
-                        findFriends.length > 0 &&
-                        findFriends.map((element, index) => {
-                          return (
-                            <FindFriend
-                              key={element._id}
-                              user={element}
-                              add={() => sendInvite(element._id)}
-                            />
-                          );
-                        })}
-                    </div>
-                  </div>
-                </motion.div>
-              </motion.div>
+              <CurrentlyWatchingComponent
+                isFriendsOpen={isFriendsOpen}
+                currentlyWatchUsersData={currentlyWatchUsers}
+              />
             </div>
           </div>
         </div>

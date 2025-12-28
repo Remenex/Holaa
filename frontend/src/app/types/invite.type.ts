@@ -13,7 +13,7 @@ export enum InviteStatus {
 }
 
 export type CreateInvite = {
-  roomId: string;
+  roomId?: string;
   fromUserId?: string;
   toUserId: string;
   status: InviteStatus;
