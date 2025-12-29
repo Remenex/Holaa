@@ -8,9 +8,9 @@ import { CurrentlyWatching } from "../../app/types/CurrentlyWatching";
 import Chat from "../lib/chat";
 import Icon from "../lib/icon";
 import { ModernIcon } from "../lib/modern-icon";
+import { CurrentlyWatchingComponent } from "../lib/player/currently-watching-component";
 import { AnimatedTooltip } from "../ui/tooltip";
 import "./css/custom-slider.css";
-import { CurrentlyWatchingComponent } from "./currently-watching";
 
 const currentlyWatchUsersBase = [
   {
@@ -62,7 +62,6 @@ export function VideoPlayer() {
   };
 
   const handleIsMessageBoxOpen = (value: "open" | "closed" | "transparent") => {
-    console.log(value);
     setIsMessageBoxOpen(value);
   };
 

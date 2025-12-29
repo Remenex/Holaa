@@ -1,4 +1,4 @@
-import { getColorForLetter } from "@/lib/utils/letter-color";
+import { getColorForLetter } from "@/lib/helpers/letter-color";
 
 type Props = {
   firstname: string;

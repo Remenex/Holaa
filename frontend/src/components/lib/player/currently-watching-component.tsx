@@ -1,13 +1,16 @@
 import type { CurrentlyWatching } from "@/app/types/CurrentlyWatching";
 import { CreateInvite, InviteStatus } from "@/app/types/invite.type";
 import { Room } from "@/app/types/room.type";
+import { getErrorMsg } from "@/lib/helpers/get-error-msg";
+import { createRoom, getCreatorRoom } from "@/services/rooms.service";
+import { getUsers } from "@/services/users.service";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import Icon from "../lib/icon";
-import WatchingUser from "../lib/player/currently-watching";
-import FindFriend from "../lib/player/find-friend";
-import { Search } from "../ui/search";
+import { Search } from "../../ui/search";
+import Icon from "../icon";
+import WatchingUser from "./currently-watching";
+import FindFriend from "./find-friend";
 
 type Props = {
   isFriendsOpen: boolean;
@@ -26,10 +29,11 @@ export function CurrentlyWatchingComponent({
 }: Props) {
   const [isAddFriendsOpen, setIsAddFriendsOpen] = useState(false);
   const [findFriends, setFindFriends] = useState<SearchUser[]>([]);
-  const [room, setRoom] = useState<Room>();
   const [currentlyWatchUsers, setCurrentlyWatchUsers] = useState(
     currentlyWatchUsersData
   );
+
+  const [room, setRoom] = useState<Room>();
 
   const handleAddFriendsOpen = () => {
     setIsAddFriendsOpen(!isAddFriendsOpen);
@@ -38,46 +42,38 @@ export function CurrentlyWatchingComponent({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log(e.target.value);
   };
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("submitted");
   };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
-          credentials: "include",
+    getCreatorRoom().then(setRoom);
+    getUsers()
+      .then(setFindFriends)
+      .catch((error) => {
+        toast.error("Greška pri dobijanju korisnika", {
+          description: getErrorMsg(error),
         });
-
-        if (!res.ok) {
-          toast.error("Greska pri dobijanju prijatelja");
-        }
-
-        const data: User[] = await res.json();
-        setFindFriends(data);
-      } catch (error) {
-        toast.error("Greska pri dobijanju prijatelja", {
-          description: error as string,
-        });
-      } finally {
-      }
-    };
-
-    fetchUsers();
+      });
   }, []);
 
   const sendInvite = async (id: string) => {
-    setFindFriends((prevFindFriend) =>
-      prevFindFriend.map((element) =>
-        element._id === id ? { ...element, pending: true } : element
-      )
+    setFindFriends((prev) =>
+      prev.map((u) => (u._id === id ? { ...u, pending: true } : u))
     );
 
-    // if(!room)
+    let activeRoom = room;
+
+    if (!activeRoom) {
+      activeRoom = await createRoom({ movieId: "abcd" });
+      setRoom(activeRoom);
+    }
 
     const inviteData: CreateInvite = {
       toUserId: id,
+      roomId: activeRoom._id,
       status: InviteStatus.PENDING,
     };
 
@@ -87,25 +83,16 @@ export function CurrentlyWatchingComponent({
         {
           method: "POST",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(inviteData),
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to send invite");
-      }
-
-      const data = await response.json();
+      if (!response.ok) throw new Error("Failed to send invite");
     } catch (error) {
       console.error(error);
-
-      setFindFriends((prevFindFriend) =>
-        prevFindFriend.map((element) =>
-          element._id === id ? { ...element, pending: false } : element
-        )
+      setFindFriends((prev) =>
+        prev.map((u) => (u._id === id ? { ...u, pending: false } : u))
       );
     }
   };

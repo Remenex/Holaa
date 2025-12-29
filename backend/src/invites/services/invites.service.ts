@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UsersService } from 'src/users/services/users.service';
@@ -5,6 +6,7 @@ import { CreateInvite } from '../dtos/invite';
 import { Invite } from '../entities/invite.entity';
 import { InvitesGateway } from '../invites.gateway';
 
+@Injectable()
 export class InvitesService {
   constructor(
     @InjectModel(Invite.name)

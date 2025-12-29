@@ -9,7 +9,7 @@ export class Room {
   movieId: string;
 
   @Prop({ required: true })
-  hostId: string;
+  creatorId: string;
 }
 
 export const RoomSchema = SchemaFactory.createForClass(Room);

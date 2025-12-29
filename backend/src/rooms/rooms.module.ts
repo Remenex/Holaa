@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { RoomsController } from './controllers/rooms/rooms.controller';
 import { Room, RoomSchema } from './enitites/room.entity';
 import { RoomsGateway } from './rooms.gateway';
+import { RoomsService } from './services/room.service';
 
 @Module({
   imports: [
@@ -12,6 +14,7 @@ import { RoomsGateway } from './rooms.gateway';
       },
     ]),
   ],
-  providers: [RoomsGateway],
+  providers: [RoomsService, RoomsGateway],
+  controllers: [RoomsController],
 })
 export class RoomsModule {}
