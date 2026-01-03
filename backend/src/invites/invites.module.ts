@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from 'src/users/users.module';
 import { InvitesController } from './controllers/invite.controller';
@@ -16,10 +15,6 @@ import { InvitesService } from './services/invites.service';
         schema: InviteSchema,
       },
     ]),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '3600s' },
-    }),
   ],
   providers: [InvitesService, InvitesGateway],
 

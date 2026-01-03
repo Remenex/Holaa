@@ -3,38 +3,15 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
-import { CurrentlyWatching } from "../../app/types/CurrentlyWatching";
 
+import { Room } from "@/app/types/room.type";
+import { getCreatorRoom, getRoomMemebers } from "@/services/rooms.service";
 import Chat from "../lib/chat";
 import Icon from "../lib/icon";
 import { ModernIcon } from "../lib/modern-icon";
 import { CurrentlyWatchingComponent } from "../lib/player/currently-watching-component";
 import { AnimatedTooltip } from "../ui/tooltip";
 import "./css/custom-slider.css";
-
-const currentlyWatchUsersBase = [
-  {
-    id: 1,
-    image: "/images/djordje.png",
-    fullName: "Djordje Ivanovic",
-    designation: "Admin",
-    isAdmin: true,
-  } as CurrentlyWatching,
-  {
-    id: 2,
-    image: "/images/aleksa.png",
-    fullName: "Aleksa Jovanovic",
-    designation: "",
-    isAdmin: false,
-  } as CurrentlyWatching,
-  {
-    id: 3,
-    image: "/images/djani.png",
-    fullName: "Radisa Trajkovic",
-    designation: "",
-    isAdmin: false,
-  } as CurrentlyWatching,
-];
 
 export function VideoPlayer() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -53,9 +30,9 @@ export function VideoPlayer() {
   const [isFullScreen, setIsFullScreen] = useState(false);
 
   const [isFriendsOpen, setIsFriendsOpen] = useState(false);
-  const [currentlyWatchUsers, setCurrentlyWatchUsers] = useState(
-    currentlyWatchUsersBase
-  );
+  const [currentlyWatchUsers, setCurrentlyWatchUsers] = useState<User[]>([]);
+
+  const [room, setRoom] = useState<Room>();
 
   const handleFriendsOpen = () => {
     setIsFriendsOpen(!isFriendsOpen);
@@ -74,6 +51,17 @@ export function VideoPlayer() {
     //   setControlsVisible(false);
     // }, 3000);
   };
+
+  useEffect(() => {
+    if (isFriendsOpen === true && room) {
+      getRoomMemebers(room._id).then(setCurrentlyWatchUsers);
+      console.log(1);
+    }
+  }, [isFriendsOpen, room]);
+
+  useEffect(() => {
+    getCreatorRoom().then(setRoom);
+  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -239,7 +227,9 @@ export function VideoPlayer() {
           </Link>
           <div className="flex gap-6">
             <div className="flex items-center">
-              <AnimatedTooltip items={currentlyWatchUsers} />
+              {currentlyWatchUsers && (
+                <AnimatedTooltip users={currentlyWatchUsers} />
+              )}
             </div>
             <div className="relative top-0">
               <ModernIcon
@@ -248,9 +238,12 @@ export function VideoPlayer() {
                 smallPadding={true}
                 onclick={handleFriendsOpen}
               />
+
               <CurrentlyWatchingComponent
                 isFriendsOpen={isFriendsOpen}
                 currentlyWatchUsersData={currentlyWatchUsers}
+                room={room}
+                onSetRoom={setRoom}
               />
             </div>
           </div>

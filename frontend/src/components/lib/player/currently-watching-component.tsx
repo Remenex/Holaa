@@ -1,8 +1,7 @@
-import type { CurrentlyWatching } from "@/app/types/CurrentlyWatching";
 import { CreateInvite, InviteStatus } from "@/app/types/invite.type";
 import { Room } from "@/app/types/room.type";
 import { getErrorMsg } from "@/lib/helpers/get-error-msg";
-import { createRoom, getCreatorRoom } from "@/services/rooms.service";
+import { createRoom } from "@/services/rooms.service";
 import { getUsers } from "@/services/users.service";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -14,7 +13,9 @@ import FindFriend from "./find-friend";
 
 type Props = {
   isFriendsOpen: boolean;
-  currentlyWatchUsersData: CurrentlyWatching[];
+  currentlyWatchUsersData: User[];
+  room?: Room;
+  onSetRoom: (room: Room) => void;
   removeCurrentlyWatchFriend?: (id: number) => void;
 };
 
@@ -26,14 +27,14 @@ const placeholders = [
 export function CurrentlyWatchingComponent({
   isFriendsOpen,
   currentlyWatchUsersData,
+  room,
+  onSetRoom,
 }: Props) {
   const [isAddFriendsOpen, setIsAddFriendsOpen] = useState(false);
   const [findFriends, setFindFriends] = useState<SearchUser[]>([]);
   const [currentlyWatchUsers, setCurrentlyWatchUsers] = useState(
     currentlyWatchUsersData
   );
-
-  const [room, setRoom] = useState<Room>();
 
   const handleAddFriendsOpen = () => {
     setIsAddFriendsOpen(!isAddFriendsOpen);
@@ -49,7 +50,6 @@ export function CurrentlyWatchingComponent({
   };
 
   useEffect(() => {
-    getCreatorRoom().then(setRoom);
     getUsers()
       .then(setFindFriends)
       .catch((error) => {
@@ -68,7 +68,7 @@ export function CurrentlyWatchingComponent({
 
     if (!activeRoom) {
       activeRoom = await createRoom({ movieId: "abcd" });
-      setRoom(activeRoom);
+      onSetRoom(activeRoom);
     }
 
     const inviteData: CreateInvite = {
@@ -97,9 +97,9 @@ export function CurrentlyWatchingComponent({
     }
   };
 
-  const removeCurrentlyWatchFriend = (id: number) => {
+  const removeCurrentlyWatchFriend = (id: string) => {
     setCurrentlyWatchUsers(
-      currentlyWatchUsers.filter((element) => element.id !== id)
+      currentlyWatchUsers.filter((element) => element._id !== id)
     );
   };
 
@@ -128,14 +128,9 @@ export function CurrentlyWatchingComponent({
         <div className="w-full mt-6 flex flex-col gap-3">
           {currentlyWatchUsers.map((element) => (
             <WatchingUser
-              id={element.id}
-              key={element.fullName}
-              image={element.image}
-              fullName={element.fullName}
-              designation=""
-              isAdmin={element.isAdmin}
+              user={element}
               remove={() => {
-                removeCurrentlyWatchFriend(element.id);
+                removeCurrentlyWatchFriend(element._id);
               }}
             />
           ))}

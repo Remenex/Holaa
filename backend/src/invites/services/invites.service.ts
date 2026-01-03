@@ -28,9 +28,25 @@ export class InvitesService {
   }
 
   async create(inviteData: CreateInvite) {
-    const invite = (await this.inviteModel.create(inviteData)).toObject();
-
     const user = await this.userService.findById(inviteData.fromUserId);
+
+    const invite = await this.inviteModel.findOneAndUpdate(
+      {
+        fromUserId: inviteData.fromUserId,
+        toUserId: inviteData.toUserId,
+        roomId: inviteData.roomId,
+      },
+      {
+        $set: {
+          status: inviteData.status,
+          createdAt: new Date(),
+        },
+      },
+      {
+        new: true, // vrati updated dokument
+        upsert: true, // ako ne postoji → napravi
+      },
+    );
 
     this.invitesGateway.sendInvite(inviteData.toUserId, {
       invite: invite,

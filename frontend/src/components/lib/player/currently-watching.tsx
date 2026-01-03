@@ -1,29 +1,26 @@
-import Image from "next/image";
-import { CurrentlyWatching } from "../../../app/types/CurrentlyWatching";
 import Icon from "../icon";
+import UserAvatar from "../user-avatar";
 
-export default function WatchingUser({
-  image,
-  fullName,
-  isAdmin = false,
-  remove,
-}: CurrentlyWatching) {
+type Props = {
+  user: User;
+  remove?: () => void;
+};
+
+export default function WatchingUser({ user, remove }: Props) {
   return (
     <div className="w-full flex items-center justify-between">
       <div className="flex items-center gap-3">
-        <Image
-          src={image}
-          width={60}
-          height={60}
-          alt={fullName}
-          className="rounded-[50%]"
+        <UserAvatar
+          firstname={user.firstName}
+          lastname={user.lastName}
+          sizeRem={4}
         />
         <div>
-          <p className="text-2xl">{fullName}</p>
-          {isAdmin && <p className="text-2xl gray-text">Admin</p>}
+          <p className="text-2xl">{user.firstName + " " + user.lastName}</p>
+          {user.role && <p className="text-2xl gray-text">Admin</p>}
         </div>
       </div>
-      {!isAdmin && (
+      {!user.role && (
         <div
           className="w-6 h-6 rounded-[50%] bg-red-700 flex items-center justify-center cursor-pointer"
           onClick={remove}

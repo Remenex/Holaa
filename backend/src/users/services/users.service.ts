@@ -1,6 +1,12 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
+import Redis from 'ioredis';
 import { Model } from 'mongoose';
 import { CreateUser } from '../dtos/user';
 import { User } from '../entities/user.entity';
@@ -10,6 +16,7 @@ export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<User>,
+    @Inject('RedisClient') private readonly redis: Redis,
   ) {}
 
   async findAll() {
@@ -18,7 +25,7 @@ export class UsersService {
 
   async findById(id: string) {
     const user = await this.userModel.findById(id).lean();
-
+    if (!user) throw new NotFoundException('User not found');
     if (user.password) delete user.password;
     return user;
   }
@@ -41,127 +48,33 @@ export class UsersService {
     return await bcrypt.hash(password, 6);
   }
 
-  // getUsers(): Observable<User[]> {
-  //   return from(this.userRepository.getUsers());
-  // }
+  getKey(id: string) {
+    return `user:${id}`;
+  }
 
-  // getUserData(email: string): Observable<User> {
-  //   return from(this.userRepository.findUser(email)).pipe(
-  //     map((result) => {
-  //       const res = result;
-  //       res.password = null;
-  //       return res;
-  //     }),
-  //   );
-  // }
+  async getCachedUser(id: string) {
+    const key = this.getKey(id);
+    const cached = await this.redis.hgetall(key);
+    if (Object.keys(cached).length) {
+      return cached;
+    }
 
-  // updateUser(
-  //   uuid: UUID,
-  //   userData: UpdateUser,
-  // ): Observable<{ success: boolean; message: string }> {
-  //   return from(this.userRepository.updateUser(uuid, userData)).pipe(
-  //     map((result) => {
-  //       if (result)
-  //         return { success: true, message: 'Korisnik je uspesno azuriran' };
-  //       else
-  //         throw new HttpException(
-  //           'Ažuriranje korisnika nije uspelo.',
-  //           HttpStatus.BAD_REQUEST,
-  //         );
-  //     }),
-  //     catchError((error) => {
-  //       throw new HttpException(
-  //         `Greška prilikom ažuriranja korisnika: ${error.message}`,
-  //         HttpStatus.INTERNAL_SERVER_ERROR,
-  //       );
-  //     }),
-  //   );
-  // }
+    return await this.cacheUser(id);
+  }
 
-  // updatePassword(
-  //   uuid: UUID,
-  //   passwords: UpdatePassword,
-  // ): Observable<{ success: boolean; message: string }> {
-  //   return from(this.userRepository.getUserPasswordById(uuid)).pipe(
-  //     switchMap((existingPassword) => {
-  //       if (!existingPassword) {
-  //         throw new HttpException(
-  //           'Korisnik nije pronađen.',
-  //           HttpStatus.NOT_FOUND,
-  //         );
-  //       }
+  async cacheUser(id: string) {
+    const key = this.getKey(id);
+    const user = this.findById(id);
 
-  //       return from(
-  //         bcrypt.compare(passwords.old_password, existingPassword),
-  //       ).pipe(
-  //         switchMap((isPasswordValid) => {
-  //           if (!isPasswordValid) {
-  //             throw new HttpException(
-  //               'Stara lozinka nije tačna.',
-  //               HttpStatus.BAD_REQUEST,
-  //             );
-  //           }
+    if (!user) return;
 
-  //           return from(bcrypt.hash(passwords.new_password, 10)).pipe(
-  //             switchMap((hashedPassword) =>
-  //               this.userRepository.updatePassword(uuid, hashedPassword),
-  //             ),
-  //           );
-  //         }),
-  //       );
-  //     }),
-  //     map(() => {
-  //       return {
-  //         success: true,
-  //         message: 'Lozinka je uspesno azurirana',
-  //       };
-  //     }),
-  //     catchError((error) => {
-  //       throw new HttpException(
-  //         `Greška prilikom promene lozinke: ${error.message}`,
-  //         HttpStatus.INTERNAL_SERVER_ERROR,
-  //       );
-  //     }),
-  //   );
-  // }
+    await this.redis.hset(key, user);
+    await this.redis.expire(key, 3600);
 
-  // updateProfileImage(
-  //   uuid: UUID,
-  //   imagePath: string,
-  // ): Observable<{ success: boolean; message: string }> {
-  //   return from(this.userRepository.updateProfileImage(uuid, imagePath)).pipe(
-  //     map((result) => {
-  //       if (result)
-  //         return { success: true, message: 'Uspesno azurirana slika' };
-  //       return {
-  //         success: false,
-  //         message: 'Doslo je do greske prilikom azuriranja profilne slike',
-  //       };
-  //     }),
-  //     catchError((error) => {
-  //       throw new HttpException(
-  //         `Greška prilikom ažuriranja korisnika: ${error.message}`,
-  //         HttpStatus.INTERNAL_SERVER_ERROR,
-  //       );
-  //     }),
-  //   );
-  // }
+    return user;
+  }
 
-  // deleteProfile(uuid: UUID): Observable<{ success: boolean; message: string }> {
-  //   return from(this.userRepository.deleteProfile(uuid)).pipe(
-  //     map((result) => {
-  //       if (result) return { success: true, message: 'Uspesno obrisan profil' };
-  //       return {
-  //         success: false,
-  //         message: 'Doslo je do greske prilikom brisanja profila',
-  //       };
-  //     }),
-  //     catchError((error) => {
-  //       throw new HttpException(
-  //         `Greska prilikom brisanja profila: ${error.message}`,
-  //         HttpStatus.INTERNAL_SERVER_ERROR,
-  //       );
-  //     }),
-  //   );
-  // }
+  async invalidate(userId: string) {
+    await this.redis.del(this.getKey(userId));
+  }
 }

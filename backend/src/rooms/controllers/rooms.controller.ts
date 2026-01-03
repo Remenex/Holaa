@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Request,
   UseGuards,
@@ -18,6 +19,12 @@ export class RoomsController {
   @Get('/creator')
   getRoomByCreator(@Request() req) {
     return this.roomsService.findByCreator(req.user.sub);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/members/:id')
+  getRoomMembers(@Param('id') id: string) {
+    return this.roomsService.findRoomMembers(id);
   }
 
   @UseGuards(JwtAuthGuard)
