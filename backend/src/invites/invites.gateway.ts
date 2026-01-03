@@ -15,7 +15,7 @@ export class InvitesGateway implements OnGatewayConnection {
   handleConnection(client: Socket) {
     const userId = client.handshake.auth.userId;
     client.join(`user:${userId}`);
-    console.log('User connected:', userId);
+    // console.log('User connected to receive invites:', userId);
   }
 
   sendInvite(toUserId: string, payload: InviteReceived) {

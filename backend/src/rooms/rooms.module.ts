@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { RedisModule } from 'src/redis/redis.module';
 import { RoomsController } from './controllers/rooms/rooms.controller';
 import { Room, RoomSchema } from './enitites/room.entity';
 import { RoomsGateway } from './rooms.gateway';
@@ -13,6 +14,7 @@ import { RoomsService } from './services/room.service';
         schema: RoomSchema,
       },
     ]),
+    RedisModule,
   ],
   providers: [RoomsService, RoomsGateway],
   controllers: [RoomsController],
