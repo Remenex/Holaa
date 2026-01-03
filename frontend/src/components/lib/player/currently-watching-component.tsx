@@ -1,5 +1,6 @@
 import { CreateInvite, InviteStatus } from "@/app/types/invite.type";
 import { Room } from "@/app/types/room.type";
+import { useAuthUser } from "@/hooks/auth-user";
 import { getErrorMsg } from "@/lib/helpers/get-error-msg";
 import { createRoom } from "@/services/rooms.service";
 import { getUsers } from "@/services/users.service";
@@ -35,6 +36,8 @@ export function CurrentlyWatchingComponent({
   const [currentlyWatchUsers, setCurrentlyWatchUsers] = useState(
     currentlyWatchUsersData
   );
+
+  const user = useAuthUser();
 
   const handleAddFriendsOpen = () => {
     setIsAddFriendsOpen(!isAddFriendsOpen);
@@ -155,15 +158,15 @@ export function CurrentlyWatchingComponent({
           <div className="w-full mt-6 flex flex-col gap-3">
             {findFriends &&
               findFriends.length > 0 &&
-              findFriends.map((element, index) => {
-                return (
+              findFriends.map((element, index) =>
+                element._id !== user?._id ? (
                   <FindFriend
                     key={element._id}
                     user={element}
                     add={() => sendInvite(element._id)}
                   />
-                );
-              })}
+                ) : null
+              )}
           </div>
         </div>
       </motion.div>
