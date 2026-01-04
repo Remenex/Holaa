@@ -1,4 +1,3 @@
-import { CreateRoom, Room } from "@/app/types/room.type";
 import { http } from "./http";
 
 export async function getCreatorRoom() {

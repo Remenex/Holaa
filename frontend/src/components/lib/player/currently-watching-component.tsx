@@ -1,7 +1,6 @@
-import { CreateInvite, InviteStatus } from "@/app/types/invite.type";
-import { Room } from "@/app/types/room.type";
 import { useAuthUser } from "@/hooks/auth-user";
 import { getErrorMsg } from "@/lib/helpers/get-error-msg";
+import { createInvite } from "@/services/invite.service";
 import { createRoom } from "@/services/rooms.service";
 import { getUsers } from "@/services/users.service";
 import { motion } from "framer-motion";
@@ -80,24 +79,12 @@ export function CurrentlyWatchingComponent({
       status: InviteStatus.PENDING,
     };
 
-    try {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_API_URL + "/invites",
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(inviteData),
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to send invite");
-    } catch (error) {
+    createInvite(inviteData).catch((error) => {
       console.error(error);
       setFindFriends((prev) =>
         prev.map((u) => (u._id === id ? { ...u, pending: false } : u))
       );
-    }
+    });
   };
 
   const removeCurrentlyWatchFriend = (id: string) => {

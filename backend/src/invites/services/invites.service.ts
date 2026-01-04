@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UsersService } from 'src/users/services/users.service';
-import { CreateInvite } from '../dtos/invite';
+import { CreateInvite, InviteStatus } from '../dtos/invite';
 import { Invite } from '../entities/invite.entity';
 import { InvitesGateway } from '../invites.gateway';
 
@@ -53,6 +53,23 @@ export class InvitesService {
       fromUserId: user,
       roomId: inviteData.roomId,
     });
+
+    return invite;
+  }
+
+  async respondToInvite(inviteId: string, status: InviteStatus) {
+    const invite = await this.inviteModel.findByIdAndUpdate(
+      {
+        _id: inviteId,
+        status: InviteStatus.PENDING,
+      },
+      { status },
+      { new: true },
+    );
+
+    if (!invite) {
+      throw new Error('Invite not found or already handled');
+    }
 
     return invite;
   }

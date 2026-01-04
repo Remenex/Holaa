@@ -1,6 +1,7 @@
 "use client";
 import UserContext from "@/context/user-context";
 import { cn } from "@/lib/utils/utils";
+import { login } from "@/services/auth.service";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useContext, useState } from "react";
@@ -52,23 +53,7 @@ export function LoginForm() {
         password: form.password,
       };
 
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/auth/login", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginUser),
-      });
-
-      const data = await res.json();
-
-      setUser(data);
-
-      if (!res.ok) {
-        toast.error("Greška pri prijavi");
-        return;
-      }
+      login(loginUser);
 
       router.push("/");
       toast.success("Uspešna prijava");

@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 
-import { Room } from "@/app/types/room.type";
 import { getCreatorRoom, getRoomMemebers } from "@/services/rooms.service";
 import Chat from "../lib/chat";
 import Icon from "../lib/icon";
@@ -55,7 +54,6 @@ export function VideoPlayer() {
   useEffect(() => {
     if (isFriendsOpen === true && room) {
       getRoomMemebers(room._id).then(setCurrentlyWatchUsers);
-      console.log(1);
     }
   }, [isFriendsOpen, room]);
 

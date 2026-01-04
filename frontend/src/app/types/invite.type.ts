@@ -1,4 +1,4 @@
-export type Invite = {
+type Invite = {
   _id: string;
   roomId: string;
   fromUserId: User;
@@ -6,20 +6,19 @@ export type Invite = {
   status: InviteStatus;
 };
 
-export enum InviteStatus {
+enum InviteStatus {
   PENDING = "pending",
   ACCEPTED = "accepted",
   DECLINED = "declined",
 }
-
-export type CreateInvite = {
+type CreateInvite = {
   roomId?: string;
   fromUserId?: string;
   toUserId: string;
   status: InviteStatus;
 };
 
-export type InviteReceived = {
+type InviteReceived = {
   invite: Invite;
   fromUserId: User;
   roomId: string;

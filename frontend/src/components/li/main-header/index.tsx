@@ -4,8 +4,8 @@ import NotificationLink from "@/components/lib/main-links/notificaiton-links";
 import SimpleLink from "@/components/lib/main-links/simple-link";
 import { useAuthUser } from "@/hooks/auth-user";
 import { useSocket } from "@/hooks/socket";
+import { getUserInvites } from "@/services/invite.service";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 export default function MainHeader() {
   const user = useAuthUser();
@@ -20,32 +20,7 @@ export default function MainHeader() {
 
   useEffect(() => {
     if (!user) return;
-    const fetchInvites = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/invites/${user?._id}`,
-          {
-            credentials: "include",
-          }
-        );
-
-        if (!res.ok) {
-          toast.error("Greska pri dobijanju notifikacija");
-        }
-
-        const data: Invite[] = await res.json();
-        //console.log(data);
-
-        setInvites(data);
-      } catch (error) {
-        toast.error("Greska pri dobijanju notifikacija", {
-          description: error as string,
-        });
-      } finally {
-      }
-    };
-
-    fetchInvites();
+    getUserInvites(user._id).then(setInvites);
   }, [user]);
 
   useEffect(() => {
