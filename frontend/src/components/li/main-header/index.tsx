@@ -15,7 +15,13 @@ export default function MainHeader() {
 
   const handleInvite = (payload: InviteReceived) => {
     payload.invite.fromUserId = payload.fromUserId;
-    setInvites((prev) => [...prev, payload.invite]);
+    setInvites((prev) => {
+      const filtered = prev.filter(
+        (invite) => invite._id !== payload.invite._id
+      );
+
+      return [...filtered, payload.invite];
+    });
   };
 
   useEffect(() => {

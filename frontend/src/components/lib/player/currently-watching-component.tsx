@@ -130,15 +130,17 @@ export function CurrentlyWatchingComponent({
           </div>
         </div>
         <div className="w-full mt-6 flex flex-col gap-3">
-          {currentlyWatchUsers.map((element) => (
-            <WatchingUser
-              key={element._id}
-              user={element}
-              remove={() => {
-                removeCurrentlyWatchFriend(element._id);
-              }}
-            />
-          ))}
+          {room &&
+            currentlyWatchUsers.map((element) => (
+              <WatchingUser
+                key={element._id}
+                user={element}
+                room={room}
+                remove={() => {
+                  removeCurrentlyWatchFriend(element._id);
+                }}
+              />
+            ))}
         </div>
       </div>
       <motion.div

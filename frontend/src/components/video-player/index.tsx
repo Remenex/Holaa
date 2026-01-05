@@ -64,11 +64,8 @@ export function VideoPlayer() {
   useEffect(() => {
     if (!roomId) return;
     getRoom(roomId).then(setRoom);
-
-    if (isFriendsOpen === true) {
-      getRoomMemebers(roomId).then(setCurrentlyWatchUsers);
-    }
-  }, [roomId, isFriendsOpen]);
+    getRoomMemebers(roomId).then(setCurrentlyWatchUsers);
+  }, [roomId]);
 
   const handleUsers = (users: User[]) => {
     setCurrentlyWatchUsers(users);

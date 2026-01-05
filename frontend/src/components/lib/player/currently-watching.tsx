@@ -3,10 +3,11 @@ import UserAvatar from "../user-avatar";
 
 type Props = {
   user: User;
+  room: Room;
   remove?: () => void;
 };
 
-export default function WatchingUser({ user, remove }: Props) {
+export default function WatchingUser({ user, room, remove }: Props) {
   return (
     <div className="w-full flex items-center justify-between">
       <div className="flex items-center gap-3">
@@ -17,7 +18,11 @@ export default function WatchingUser({ user, remove }: Props) {
         />
         <div>
           <p className="text-2xl">{user.firstName + " " + user.lastName}</p>
-          {user.role && <p className="text-2xl gray-text">Admin</p>}
+          {user.role && (
+            <p className="text-2xl gray-text">
+              {room.creatorId === user._id ? "Vlasnik" : "Clan"}
+            </p>
+          )}
         </div>
       </div>
       {!user.role && (
