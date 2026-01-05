@@ -57,8 +57,17 @@ export function CurrentlyWatchingComponent({
     console.log("submitted");
   };
 
+  const onRoomExit = () => {
+    roomsSocket.emit("room:exit");
+  };
+
   useEffect(() => {
     setCurrentlyWatchUsers(currentlyWatchUsersData);
+    setFindFriends((prev) =>
+      prev.filter(
+        (u) => !currentlyWatchUsersData.some((cw) => cw._id === u._id)
+      )
+    );
   }, [currentlyWatchUsersData]);
 
   useEffect(() => {
@@ -121,12 +130,17 @@ export function CurrentlyWatchingComponent({
       <div className="w-full relative">
         <div className="w-full flex items-center justify-between">
           <h3>TRENUTNO GLEDAJU</h3>
-          <div className="cursor-pointer">
-            <Icon
-              icon="person_add"
-              iconSize={30}
-              onClick={handleAddFriendsOpen}
-            />
+          <div className="flex gap-2">
+            <div className="cursor-pointer ">
+              <Icon icon="exit_to_app" iconSize={30} onClick={onRoomExit} />
+            </div>
+            <div className="cursor-pointer ">
+              <Icon
+                icon="person_add"
+                iconSize={30}
+                onClick={handleAddFriendsOpen}
+              />
+            </div>
           </div>
         </div>
         <div className="w-full mt-6 flex flex-col gap-3">
