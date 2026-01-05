@@ -53,7 +53,7 @@ export function LoginForm() {
         password: form.password,
       };
 
-      login(loginUser);
+      login(loginUser).then(setUser);
 
       router.push("/");
       toast.success("Uspešna prijava");

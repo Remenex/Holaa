@@ -36,7 +36,8 @@ export class RoomsService {
   }
 
   async findRoomMembers(id: string) {
-    const ids = await this.redis.smembers(`room:${id}":users`);
+    const ids = await this.redis.smembers(`room:${id}:users`);
+
     const members = await Promise.all(
       ids.map((id) => this.userService.getCachedUser(id)),
     );

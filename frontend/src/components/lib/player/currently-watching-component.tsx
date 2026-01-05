@@ -1,20 +1,23 @@
+import { CreateInvite, InviteStatus } from "@/app/types/invite.type";
 import { useAuthUser } from "@/hooks/auth-user";
 import { getErrorMsg } from "@/lib/helpers/get-error-msg";
 import { createInvite } from "@/services/invite.service";
 import { createRoom } from "@/services/rooms.service";
 import { getUsers } from "@/services/users.service";
 import { motion } from "framer-motion";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Socket } from "socket.io-client";
 import { toast } from "sonner";
 import { Search } from "../../ui/search";
 import Icon from "../icon";
 import WatchingUser from "./currently-watching";
 import FindFriend from "./find-friend";
-
 type Props = {
   isFriendsOpen: boolean;
   currentlyWatchUsersData: User[];
   room?: Room;
+  roomsSocket: Socket;
   onSetRoom: (room: Room) => void;
   removeCurrentlyWatchFriend?: (id: number) => void;
 };
@@ -29,6 +32,7 @@ export function CurrentlyWatchingComponent({
   currentlyWatchUsersData,
   room,
   onSetRoom,
+  roomsSocket,
 }: Props) {
   const [isAddFriendsOpen, setIsAddFriendsOpen] = useState(false);
   const [findFriends, setFindFriends] = useState<SearchUser[]>([]);
@@ -37,6 +41,8 @@ export function CurrentlyWatchingComponent({
   );
 
   const user = useAuthUser();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleAddFriendsOpen = () => {
     setIsAddFriendsOpen(!isAddFriendsOpen);
@@ -50,6 +56,10 @@ export function CurrentlyWatchingComponent({
     e.preventDefault();
     console.log("submitted");
   };
+
+  useEffect(() => {
+    setCurrentlyWatchUsers(currentlyWatchUsersData);
+  }, [currentlyWatchUsersData]);
 
   useEffect(() => {
     getUsers()
@@ -71,6 +81,10 @@ export function CurrentlyWatchingComponent({
     if (!activeRoom) {
       activeRoom = await createRoom({ movieId: "abcd" });
       onSetRoom(activeRoom);
+      roomsSocket.emit("room:join", {
+        roomId: activeRoom._id,
+      });
+      router.replace(`${pathname}?room=${activeRoom._id}`);
     }
 
     const inviteData: CreateInvite = {
@@ -118,6 +132,7 @@ export function CurrentlyWatchingComponent({
         <div className="w-full mt-6 flex flex-col gap-3">
           {currentlyWatchUsers.map((element) => (
             <WatchingUser
+              key={element._id}
               user={element}
               remove={() => {
                 removeCurrentlyWatchFriend(element._id);

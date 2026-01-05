@@ -4,6 +4,10 @@ export async function getCreatorRoom() {
   return await http<Room>("/rooms/creator");
 }
 
+export async function getRoom(id: string) {
+  return await http<Room>(`/rooms/${id}`);
+}
+
 export async function getRoomMemebers(id: string) {
   return await http<User[]>(`/rooms/members/${id}`);
 }

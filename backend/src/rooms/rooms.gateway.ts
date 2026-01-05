@@ -2,6 +2,7 @@ import { Inject } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
+  OnGatewayConnection,
   OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
@@ -10,39 +11,54 @@ import {
 import Redis from 'ioredis';
 
 import { Server, Socket } from 'socket.io';
+import { RoomsService } from './services/room.service';
 
 @WebSocketGateway(8001, { namespace: '/rooms', cors: '*' })
-export class RoomsGateway implements OnGatewayDisconnect {
+export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
   @Inject('RedisClient') private readonly redis: Redis;
+  constructor(private readonly roomsService: RoomsService) {}
+
+  handleConnection(client: Socket) {
+    const userId = client.handshake.auth.userId;
+    console.log('Watcher is connected:', userId);
+  }
 
   @SubscribeMessage('room:join')
   async handleJoin(
-    @ConnectedSocket() socket: Socket,
-    @MessageBody() { roomId, userId }: { roomId: string; userId: string },
+    @ConnectedSocket() client: Socket,
+    @MessageBody() { roomId }: { roomId: string },
   ) {
+    const userId = client.handshake.auth.userId;
+
     await this.redis.sadd(`room:${roomId}:users`, userId);
-    await this.redis.set(`socket:${socket.id}`, userId);
-    await this.redis.set(`socket:${socket.id}:room`, roomId);
+    await this.redis.set(`socket:${client.id}`, userId);
+    await this.redis.set(`socket:${client.id}:room`, roomId);
+    const users = await this.roomsService.findRoomMembers(roomId);
 
-    const users = await this.redis.smembers(`room:${roomId}:users`);
-
+    client.join(roomId);
     this.server.to(roomId).emit('room:users', users);
-    socket.join(roomId);
   }
 
-  async handleDisconnect(socket: Socket) {
-    const userId = await this.redis.get(`socket:${socket.id}`);
-    const roomId = await this.redis.get(`socket:${socket.id}:room`);
+  handleDisconnect(client: Socket) {
+    // const disconnectHandler = async () => {
+    //   const userId = await this.redis.get(`socket:${client.id}`);
+    //   const roomId = await this.redis.get(`socket:${client.id}:room`);
 
-    if (!userId || !roomId) return;
+    //   if (!userId || !roomId) return;
 
-    await this.redis.srem(`room:${roomId}:users`, userId);
-    await this.redis.del(`socket:${socket.id}`);
-    await this.redis.del(`socket:${socket.id}:room`);
+    //   await this.redis.srem(`room:${roomId}:users`, userId);
+    //   await this.redis.del(`socket:${client.id}`);
+    //   await this.redis.del(`socket:${client.id}:room`);
 
-    const users = await this.redis.smembers(`room:${roomId}:users`);
+    //   const users = await this.roomsService.findRoomMembers(roomId);
 
-    this.server.to(roomId).emit('room:users', users);
+    //   this.server.to(roomId).emit('room:users', users);
+    //   console.log('otiso sam');
+    // };
+
+    // disconnectHandler().catch(console.error);
+
+    console.log('ode');
   }
 }

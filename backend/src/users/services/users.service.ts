@@ -64,7 +64,7 @@ export class UsersService {
 
   async cacheUser(id: string) {
     const key = this.getKey(id);
-    const user = this.findById(id);
+    const user = await this.findById(id);
 
     if (!user) return;
 

@@ -79,7 +79,7 @@ export const AnimatedTooltip = ({ users }: Props) => {
             <UserAvatar
               firstname={item.firstName}
               lastname={item.lastName}
-              sizeRem={6.25}
+              sizeRem={2.75}
             />
           </div>
         ))}

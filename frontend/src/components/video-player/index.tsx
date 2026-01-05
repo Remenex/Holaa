@@ -1,10 +1,11 @@
 "use client";
+import { useSocket } from "@/hooks/socket";
+import { getRoom, getRoomMemebers } from "@/services/rooms.service";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
-
-import { getCreatorRoom, getRoomMemebers } from "@/services/rooms.service";
 import Chat from "../lib/chat";
 import Icon from "../lib/icon";
 import { ModernIcon } from "../lib/modern-icon";
@@ -13,6 +14,15 @@ import { AnimatedTooltip } from "../ui/tooltip";
 import "./css/custom-slider.css";
 
 export function VideoPlayer() {
+  const { movie_id } = useParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const roomId = searchParams.get("room");
+  const notify = searchParams.get("notify");
+
+  const roomsSocket = useSocket("rooms");
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -52,14 +62,42 @@ export function VideoPlayer() {
   };
 
   useEffect(() => {
-    if (isFriendsOpen === true && room) {
-      getRoomMemebers(room._id).then(setCurrentlyWatchUsers);
+    if (!roomId) return;
+    getRoom(roomId).then(setRoom);
+
+    if (isFriendsOpen === true) {
+      getRoomMemebers(roomId).then(setCurrentlyWatchUsers);
     }
-  }, [isFriendsOpen, room]);
+  }, [roomId, isFriendsOpen]);
+
+  const handleUsers = (users: User[]) => {
+    setCurrentlyWatchUsers(users);
+  };
 
   useEffect(() => {
-    getCreatorRoom().then(setRoom);
-  }, []);
+    if (!roomsSocket) return;
+
+    roomsSocket.on("room:users", handleUsers);
+
+    return () => {
+      roomsSocket.off("room:users", handleUsers);
+    };
+  }, [roomsSocket]);
+
+  useEffect(() => {
+    if (!roomsSocket) return;
+
+    if (notify === "true") {
+      roomsSocket.emit("room:join", {
+        roomId,
+      });
+
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("notify");
+
+      router.replace(`?${params.toString()}`, { scroll: false });
+    }
+  }, [notify, roomsSocket]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -242,6 +280,7 @@ export function VideoPlayer() {
                 currentlyWatchUsersData={currentlyWatchUsers}
                 room={room}
                 onSetRoom={setRoom}
+                roomsSocket={roomsSocket!!}
               />
             </div>
           </div>

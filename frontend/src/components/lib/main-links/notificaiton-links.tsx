@@ -1,6 +1,8 @@
+import { Invite, InviteStatus } from "@/app/types/invite.type";
 import { respondInvite } from "@/services/invite.service";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+
 import Icon from "../icon";
 import UserAvatar from "../user-avatar";
 
@@ -11,9 +13,12 @@ type Props = {
 
 export default function NotificationLink({ icon, invites }: Props) {
   const router = useRouter();
-  const handleInviteClick = async (invite: Invite, status: string) => {
-    respondInvite(invite._id, status).then(() => {
-      if (status === "accepted") router.push(`/player`);
+
+  const handleInviteClick = async (invite: Invite, status: InviteStatus) => {
+    respondInvite(invite._id, status).then((res) => {
+      if (status === InviteStatus.ACCEPTED) {
+        router.push(`/player/${1}?room=${invite.roomId}&notify=true`);
+      }
     });
   };
 
@@ -34,7 +39,7 @@ export default function NotificationLink({ icon, invites }: Props) {
           overflow-hidden transition-all duration-300 ease-in-out group-hover:overflow-y-scroll group-hover:p-4 group-hover:w-[550px] group-hover:border-[#ff581c] group-hover:border-4 group-hover:h-[300px] group-hover:notification-gradient"
         >
           {invites.map((invite) => {
-            if (invite.status === "pending") {
+            if (invite.status === InviteStatus.PENDING) {
               return (
                 <div
                   key={invite._id}
@@ -61,7 +66,9 @@ export default function NotificationLink({ icon, invites }: Props) {
                       <div className="mt-4 flex gap-3">
                         <div
                           className="px-4 py-1 bg-[#52b561] flex items-center rounded-[20px] cursor-pointer"
-                          onClick={() => handleInviteClick(invite, "accepted")}
+                          onClick={() =>
+                            handleInviteClick(invite, InviteStatus.ACCEPTED)
+                          }
                         >
                           <Icon icon="check" />
                           <p>Prihvati</p>
@@ -69,7 +76,9 @@ export default function NotificationLink({ icon, invites }: Props) {
 
                         <div
                           className="px-4 py-1 bg-[#c01e1e] flex items-center rounded-[20px] cursor-pointer"
-                          onClick={() => handleInviteClick(invite, "declined")}
+                          onClick={() =>
+                            handleInviteClick(invite, InviteStatus.DECLINED)
+                          }
                         >
                           <Icon icon="close" />
                           <p>Odbij</p>
