@@ -35,8 +35,6 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     await this.redis.sadd(`room:${roomId}:users`, userId);
     await this.redis.set(`user:${userId}:room`, roomId);
-    // await this.redis.set(`socket:${client.id}`, userId);
-    // await this.redis.set(`socket:${client.id}:room`, roomId);
     const users = await this.roomsService.findRoomMembers(roomId);
 
     client.join(roomId);
@@ -45,20 +43,19 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('room:exit')
   async handleExit(@ConnectedSocket() client: Socket) {
-    // const userId = await this.redis.get(`socket:${client.id}`);
-    // const roomId = await this.redis.get(`socket:${client.id}:room`);
     const userId = client.handshake.auth.userId;
     const roomId = await this.redis.get(`user:${userId}:room`);
 
     if (!userId || !roomId) return;
 
     await this.redis.srem(`room:${roomId}:users`, userId);
-    // await this.redis.del(`socket:${client.id}`);
-    // await this.redis.del(`socket:${client.id}:room`);
 
     const users = await this.roomsService.findRoomMembers(roomId);
 
     this.server.to(roomId).emit('room:users', users);
+    if (users.length === 0) {
+      this.roomsService.delete(roomId);
+    }
   }
 
   @SubscribeMessage('room:play')

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { DeleteResult, Model } from 'mongoose';
 import { UsersService } from 'src/users/services/users.service';
 import { CreateInvite, InviteStatus } from '../dtos/invite';
 import { Invite } from '../entities/invite.entity';
@@ -72,5 +72,9 @@ export class InvitesService {
     }
 
     return invite;
+  }
+
+  async deleteInvites(roomId: string): Promise<DeleteResult> {
+    return await this.inviteModel.deleteMany({ roomId });
   }
 }

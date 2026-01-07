@@ -59,6 +59,7 @@ export function CurrentlyWatchingComponent({
 
   const onRoomExit = () => {
     roomsSocket.emit("room:exit");
+    router.replace("/");
   };
 
   useEffect(() => {
