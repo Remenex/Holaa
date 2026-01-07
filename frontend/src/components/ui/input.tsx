@@ -1,6 +1,6 @@
 // Input component extends from shadcnui - https://ui.shadcn.com/docs/components/input
 "use client";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import * as React from "react";
 
@@ -20,7 +20,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
 
-    function handleMouseMove({ currentTarget, clientX, clientY }: MouseMoveEvent) {
+    function handleMouseMove({
+      currentTarget,
+      clientX,
+      clientY,
+    }: MouseMoveEvent) {
       const { left, top } = currentTarget.getBoundingClientRect();
 
       mouseX.set(clientX - left);
@@ -66,4 +70,3 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = "Input";
 
 export { Input };
-

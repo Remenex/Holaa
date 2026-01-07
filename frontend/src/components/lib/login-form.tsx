@@ -1,17 +1,23 @@
 "use client";
-import { cn } from "@/lib/utils";
+import UserContext from "@/context/user-context";
+import { cn } from "@/lib/utils/utils";
+import { login } from "@/services/auth.service";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useContext, useState } from "react";
 import { toast } from "sonner";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import Button from "./button";
 
 export function LoginForm() {
+  const router = useRouter();
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+
+  const { setUser } = useContext(UserContext);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -47,22 +53,9 @@ export function LoginForm() {
         password: form.password,
       };
 
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/auth/login", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginUser),
-      });
+      login(loginUser).then(setUser);
 
-      // const data = await res.json();
-
-      if (!res.ok) {
-        toast.error("Greška pri prijavi");
-        return;
-      }
-
+      router.push("/");
       toast.success("Uspešna prijava");
     } catch (error: any) {
       console.log(error);

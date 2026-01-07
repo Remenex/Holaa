@@ -1,34 +1,33 @@
-import Image from "next/image";
-import { SearchUser } from "../../../app/types/SearchUsers";
 import Icon from "../icon";
+import UserAvatar from "../user-avatar";
 
-export default function FindFriend({
-  image,
-  fullName,
-  email,
-  add,
-  pending = false,
-}: SearchUser) {
+type Props = {
+  user: SearchUser;
+  add?: () => void;
+};
+
+export default function FindFriend({ user, add }: Props) {
   return (
     <div className="w-full flex items-center justify-between">
       <div className="flex items-center gap-3">
-        <Image
-          src={image}
-          width={60}
-          height={60}
-          alt={fullName}
-          className="rounded-[50%]"
+        <UserAvatar
+          firstname={user.firstName}
+          lastname={user.lastName}
+          sizeRem={3.5}
         />
         <div>
-          <p className="text-2xl">{fullName}</p>
-          <p className="text-2xl gray-text">{email}</p>
+          <p className="text-2xl">{user.firstName + " " + user.lastName}</p>
+          <p className="text-2xl gray-text">{user.email}</p>
         </div>
       </div>
       <div
         className="w-6 h-6 rounded-[50%] bg-red-transparent flex items-center justify-center cursor-pointer"
         onClick={add}
       >
-        <Icon icon={`${pending ? "hourglass_empty" : "add"}`} iconSize={20} />
+        <Icon
+          icon={`${user.pending ? "hourglass_empty" : "add"}`}
+          iconSize={20}
+        />
       </div>
     </div>
   );

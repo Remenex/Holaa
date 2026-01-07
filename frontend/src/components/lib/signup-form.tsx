@@ -1,5 +1,6 @@
 "use client";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
+import { register } from "@/services/auth.service";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -67,23 +68,7 @@ export function SignupForm() {
         role: "user",
       };
 
-      const res = await fetch(
-        process.env.NEXT_PUBLIC_API_URL + "/auth/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(registerUser),
-        }
-      );
-
-      // const data = await res.json();
-
-      if (!res.ok) {
-        toast.error("Greška pri registraciji");
-        return;
-      }
+      register(registerUser);
 
       toast.success("Uspešno ste se registrovali");
 
