@@ -19,9 +19,11 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @Inject('RedisClient') private readonly redis: Redis;
   constructor(private readonly roomsService: RoomsService) {}
 
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket) {
     const userId = client.handshake.auth.userId;
-    console.log('Watcher is connected:', userId);
+    const roomId = await this.redis.get(`user:${userId}:room`);
+    client.join(roomId);
+    console.log('Connected to room', userId);
   }
 
   @SubscribeMessage('room:join')
@@ -32,8 +34,9 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const userId = client.handshake.auth.userId;
 
     await this.redis.sadd(`room:${roomId}:users`, userId);
-    await this.redis.set(`socket:${client.id}`, userId);
-    await this.redis.set(`socket:${client.id}:room`, roomId);
+    await this.redis.set(`user:${userId}:room`, roomId);
+    // await this.redis.set(`socket:${client.id}`, userId);
+    // await this.redis.set(`socket:${client.id}:room`, roomId);
     const users = await this.roomsService.findRoomMembers(roomId);
 
     client.join(roomId);
@@ -42,18 +45,35 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('room:exit')
   async handleExit(@ConnectedSocket() client: Socket) {
-    const userId = await this.redis.get(`socket:${client.id}`);
-    const roomId = await this.redis.get(`socket:${client.id}:room`);
+    // const userId = await this.redis.get(`socket:${client.id}`);
+    // const roomId = await this.redis.get(`socket:${client.id}:room`);
+    const userId = client.handshake.auth.userId;
+    const roomId = await this.redis.get(`user:${userId}:room`);
 
     if (!userId || !roomId) return;
 
     await this.redis.srem(`room:${roomId}:users`, userId);
-    await this.redis.del(`socket:${client.id}`);
-    await this.redis.del(`socket:${client.id}:room`);
+    // await this.redis.del(`socket:${client.id}`);
+    // await this.redis.del(`socket:${client.id}:room`);
 
     const users = await this.roomsService.findRoomMembers(roomId);
 
     this.server.to(roomId).emit('room:users', users);
+  }
+
+  @SubscribeMessage('room:play')
+  async handlePlay(@ConnectedSocket() client: Socket) {
+    const userId = client.handshake.auth.userId;
+    const roomId = await this.redis.get(`user:${userId}:room`);
+    client.broadcast.to(roomId).emit('room:play');
+  }
+
+  @SubscribeMessage('room:pause')
+  async handleStop(@ConnectedSocket() client: Socket) {
+    const userId = client.handshake.auth.userId;
+    const roomId = await this.redis.get(`user:${userId}:room`);
+
+    client.broadcast.to(roomId).emit('room:pause');
   }
 
   handleDisconnect(client: Socket) {

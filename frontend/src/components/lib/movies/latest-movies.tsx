@@ -36,7 +36,7 @@ export default function LatestMovie({
 
           <div className="w-full absolute h-full top-0 px-4 py-8 flex flex-col justify-between">
             <div className="flex justify-center items-center w-full h-full">
-              <ModernIcon icon="play_arrow" iconSize={40} link="/player" />
+              <ModernIcon icon="play_arrow" iconSize={40} link="/player/1" />
             </div>
 
             <div className="select-none">

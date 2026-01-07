@@ -71,10 +71,46 @@ export function VideoPlayer() {
     setCurrentlyWatchUsers(users);
   };
 
+  const hasUserInteractedRef = useRef(false);
+
+  const registerUserInteraction = () => {
+    if (!hasUserInteractedRef.current) {
+      hasUserInteractedRef.current = true;
+
+      const video = videoRef.current;
+      if (video) {
+        video.muted = false;
+        setVolume(video.volume || 1);
+      }
+    }
+  };
+
+  const handlePlaying = (action: "play" | "pause") => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (!hasUserInteractedRef.current) {
+      video.muted = true;
+      setVolume(0);
+    }
+
+    if (action === "play") {
+      video.play();
+      setIsPlaying(true);
+    } else if (action === "pause") {
+      video.pause();
+      setIsPlaying(false);
+    }
+  };
+
   useEffect(() => {
     if (!roomsSocket) return;
 
     roomsSocket.on("room:users", handleUsers);
+
+    roomsSocket.on("room:play", () => handlePlaying("play"));
+
+    roomsSocket.on("room:pause", () => handlePlaying("pause"));
 
     return () => {
       roomsSocket.off("room:users", handleUsers);
@@ -152,12 +188,18 @@ export function VideoPlayer() {
 
   const togglePlay = () => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !roomsSocket) return;
+
+    registerUserInteraction();
+
     if (isPlaying) {
       video.pause();
     } else {
       video.play();
     }
+
+    roomsSocket.emit(`room:${isPlaying ? "pause" : "play"}`);
+
     setIsPlaying(!isPlaying);
   };
 
@@ -220,10 +262,6 @@ export function VideoPlayer() {
     }`;
   };
 
-  const handleVideoClick = () => {
-    togglePlay();
-  };
-
   return (
     <div
       className="w-full h-[100vh] relative bg-black"
@@ -237,14 +275,14 @@ export function VideoPlayer() {
         preload="auto"
         className="w-full h-full"
         onTimeUpdate={handleTimeUpdate}
-        onClick={handleVideoClick}
+        onClick={togglePlay}
       />
 
       <div
         className={`absolute top-0 left-0 w-full h-full bg-black transition-opacity duration-300 ${
           controlsVisible ? "opacity-50" : "opacity-0"
         }`}
-        onClick={handleVideoClick}
+        onClick={togglePlay}
       />
       {controlsVisible && (
         <div className="absolute top-12 w-full px-24 flex items-center justify-between">
@@ -319,6 +357,11 @@ export function VideoPlayer() {
               value={currentTime}
               onChange={handleSeek}
               className="custom-slider"
+              style={
+                {
+                  "--progress": `${(currentTime / duration) * 100}%`,
+                } as React.CSSProperties
+              }
             />
             <p className="font-display text-2xl font-bold">
               {duration && currentTime

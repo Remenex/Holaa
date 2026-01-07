@@ -128,11 +128,16 @@ export function CurrentlyWatchingComponent({
       style={{ pointerEvents: isFriendsOpen ? "auto" : "none" }}
     >
       <div className="w-full relative">
-        <div className="w-full flex items-center justify-between">
+        <div className="w-full flex items-center justify-between ">
           <h3>TRENUTNO GLEDAJU</h3>
           <div className="flex gap-2">
             <div className="cursor-pointer ">
-              <Icon icon="exit_to_app" iconSize={30} onClick={onRoomExit} />
+              <Icon
+                icon="exit_to_app"
+                variation="text-red-600"
+                iconSize={30}
+                onClick={onRoomExit}
+              />
             </div>
             <div className="cursor-pointer ">
               <Icon
