@@ -9,6 +9,7 @@ import { MovieModule } from './movies/movie.module';
 import { RedisModule } from './redis/redis.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { UsersModule } from './users/users.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UsersModule } from './users/users.module';
     RedisModule,
     RoomsModule,
     InvitesModule,
+    MessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

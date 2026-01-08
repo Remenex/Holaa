@@ -1,4 +1,5 @@
 "use client";
+import { useAuthUser } from "@/hooks/auth-user";
 import { useSocket } from "@/hooks/socket";
 import { getRoom, getRoomMemebers } from "@/services/rooms.service";
 import { motion } from "framer-motion";
@@ -17,6 +18,8 @@ export function VideoPlayer() {
   const { movie_id } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const user = useAuthUser();
 
   const roomId = searchParams.get("room");
   const notify = searchParams.get("notify");
@@ -314,6 +317,7 @@ export function VideoPlayer() {
                 isFriendsOpen={isFriendsOpen}
                 currentlyWatchUsersData={currentlyWatchUsers}
                 room={room}
+                user={user!!}
                 onSetRoom={setRoom}
                 roomsSocket={roomsSocket!!}
               />
@@ -328,7 +332,7 @@ export function VideoPlayer() {
               icon="forum"
               iconSize={30}
               variation="text-black font-bold cursor-pointer"
-              onClick={() => handleIsMessageBoxOpen("open")}
+              onClick={() => (room ? handleIsMessageBoxOpen("open") : null)}
             />
             <motion.div
               className="absolute bottom-[70px] left-0 bg-white rounded-[30px] w-[340px] h-[550px]"
@@ -342,10 +346,15 @@ export function VideoPlayer() {
                 pointerEvents: isMessageBoxOpen === "open" ? "auto" : "none",
               }}
             >
-              <Chat
-                chatUsersBase={currentlyWatchUsers}
-                onClose={() => handleIsMessageBoxOpen("closed")}
-              />
+              {room && roomsSocket && (
+                <Chat
+                  chatUsersBase={currentlyWatchUsers}
+                  room={room}
+                  user={user!!}
+                  roomSocket={roomsSocket}
+                  onClose={() => handleIsMessageBoxOpen("closed")}
+                />
+              )}
             </motion.div>
           </div>
           <div className="w-full flex items-center gap-4">

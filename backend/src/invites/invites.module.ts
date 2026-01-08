@@ -17,7 +17,6 @@ import { InvitesService } from './services/invites.service';
     ]),
   ],
   providers: [InvitesService, InvitesGateway],
-
   exports: [InvitesService],
   controllers: [InvitesController],
 })
