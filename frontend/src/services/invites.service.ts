@@ -1,3 +1,4 @@
+import { CreateInvite, Invite } from "@/app/types/invite.type";
 import { http } from "./http";
 
 export async function getUserInvites(id: string) {
