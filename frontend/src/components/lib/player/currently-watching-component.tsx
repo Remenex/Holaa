@@ -1,7 +1,6 @@
 import { CreateInvite, InviteStatus } from "@/app/types/invite.type";
-import { useAuthUser } from "@/hooks/auth-user";
 import { getErrorMsg } from "@/lib/helpers/get-error-msg";
-import { createInvite } from "@/services/invite.service";
+import { createInvite } from "@/services/invites.service";
 import { createRoom } from "@/services/rooms.service";
 import { getUsers } from "@/services/users.service";
 import { motion } from "framer-motion";
@@ -18,6 +17,7 @@ type Props = {
   currentlyWatchUsersData: User[];
   room?: Room;
   roomsSocket: Socket;
+  user: User;
   onSetRoom: (room: Room) => void;
   removeCurrentlyWatchFriend?: (id: number) => void;
 };
@@ -31,6 +31,7 @@ export function CurrentlyWatchingComponent({
   isFriendsOpen,
   currentlyWatchUsersData,
   room,
+  user,
   onSetRoom,
   roomsSocket,
 }: Props) {
@@ -40,7 +41,6 @@ export function CurrentlyWatchingComponent({
     currentlyWatchUsersData
   );
 
-  const user = useAuthUser();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -59,6 +59,7 @@ export function CurrentlyWatchingComponent({
 
   const onRoomExit = () => {
     roomsSocket.emit("room:exit");
+    router.replace("/");
   };
 
   useEffect(() => {
@@ -128,11 +129,16 @@ export function CurrentlyWatchingComponent({
       style={{ pointerEvents: isFriendsOpen ? "auto" : "none" }}
     >
       <div className="w-full relative">
-        <div className="w-full flex items-center justify-between">
+        <div className="w-full flex items-center justify-between ">
           <h3>TRENUTNO GLEDAJU</h3>
           <div className="flex gap-2">
             <div className="cursor-pointer ">
-              <Icon icon="exit_to_app" iconSize={30} onClick={onRoomExit} />
+              <Icon
+                icon="exit_to_app"
+                variation="text-red-600"
+                iconSize={30}
+                onClick={onRoomExit}
+              />
             </div>
             <div className="cursor-pointer ">
               <Icon

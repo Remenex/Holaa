@@ -4,7 +4,7 @@ import NotificationLink from "@/components/lib/main-links/notificaiton-links";
 import SimpleLink from "@/components/lib/main-links/simple-link";
 import { useAuthUser } from "@/hooks/auth-user";
 import { useSocket } from "@/hooks/socket";
-import { getUserInvites } from "@/services/invite.service";
+import { getUserInvites } from "@/services/invites.service";
 import { useEffect, useState } from "react";
 
 export default function MainHeader() {

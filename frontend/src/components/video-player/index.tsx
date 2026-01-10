@@ -1,4 +1,5 @@
 "use client";
+import { useAuthUser } from "@/hooks/auth-user";
 import { useSocket } from "@/hooks/socket";
 import { getRoom, getRoomMemebers } from "@/services/rooms.service";
 import { motion } from "framer-motion";
@@ -17,6 +18,8 @@ export function VideoPlayer() {
   const { movie_id } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const user = useAuthUser();
 
   const roomId = searchParams.get("room");
   const notify = searchParams.get("notify");
@@ -71,10 +74,46 @@ export function VideoPlayer() {
     setCurrentlyWatchUsers(users);
   };
 
+  const hasUserInteractedRef = useRef(false);
+
+  const registerUserInteraction = () => {
+    if (!hasUserInteractedRef.current) {
+      hasUserInteractedRef.current = true;
+
+      const video = videoRef.current;
+      if (video) {
+        video.muted = false;
+        setVolume(video.volume || 1);
+      }
+    }
+  };
+
+  const handlePlaying = (action: "play" | "pause") => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (!hasUserInteractedRef.current) {
+      video.muted = true;
+      setVolume(0);
+    }
+
+    if (action === "play") {
+      video.play();
+      setIsPlaying(true);
+    } else if (action === "pause") {
+      video.pause();
+      setIsPlaying(false);
+    }
+  };
+
   useEffect(() => {
     if (!roomsSocket) return;
 
     roomsSocket.on("room:users", handleUsers);
+
+    roomsSocket.on("room:play", () => handlePlaying("play"));
+
+    roomsSocket.on("room:pause", () => handlePlaying("pause"));
 
     return () => {
       roomsSocket.off("room:users", handleUsers);
@@ -152,12 +191,18 @@ export function VideoPlayer() {
 
   const togglePlay = () => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !roomsSocket) return;
+
+    registerUserInteraction();
+
     if (isPlaying) {
       video.pause();
     } else {
       video.play();
     }
+
+    roomsSocket.emit(`room:${isPlaying ? "pause" : "play"}`);
+
     setIsPlaying(!isPlaying);
   };
 
@@ -220,10 +265,6 @@ export function VideoPlayer() {
     }`;
   };
 
-  const handleVideoClick = () => {
-    togglePlay();
-  };
-
   return (
     <div
       className="w-full h-[100vh] relative bg-black"
@@ -237,14 +278,14 @@ export function VideoPlayer() {
         preload="auto"
         className="w-full h-full"
         onTimeUpdate={handleTimeUpdate}
-        onClick={handleVideoClick}
+        onClick={togglePlay}
       />
 
       <div
         className={`absolute top-0 left-0 w-full h-full bg-black transition-opacity duration-300 ${
           controlsVisible ? "opacity-50" : "opacity-0"
         }`}
-        onClick={handleVideoClick}
+        onClick={togglePlay}
       />
       {controlsVisible && (
         <div className="absolute top-12 w-full px-24 flex items-center justify-between">
@@ -276,6 +317,7 @@ export function VideoPlayer() {
                 isFriendsOpen={isFriendsOpen}
                 currentlyWatchUsersData={currentlyWatchUsers}
                 room={room}
+                user={user!!}
                 onSetRoom={setRoom}
                 roomsSocket={roomsSocket!!}
               />
@@ -290,7 +332,7 @@ export function VideoPlayer() {
               icon="forum"
               iconSize={30}
               variation="text-black font-bold cursor-pointer"
-              onClick={() => handleIsMessageBoxOpen("open")}
+              onClick={() => (room ? handleIsMessageBoxOpen("open") : null)}
             />
             <motion.div
               className="absolute bottom-[70px] left-0 bg-white rounded-[30px] w-[340px] h-[550px]"
@@ -304,10 +346,15 @@ export function VideoPlayer() {
                 pointerEvents: isMessageBoxOpen === "open" ? "auto" : "none",
               }}
             >
-              <Chat
-                chatUsersBase={currentlyWatchUsers}
-                onClose={() => handleIsMessageBoxOpen("closed")}
-              />
+              {room && roomsSocket && (
+                <Chat
+                  chatUsersBase={currentlyWatchUsers}
+                  room={room}
+                  user={user!!}
+                  roomSocket={roomsSocket}
+                  onClose={() => handleIsMessageBoxOpen("closed")}
+                />
+              )}
             </motion.div>
           </div>
           <div className="w-full flex items-center gap-4">
@@ -319,6 +366,11 @@ export function VideoPlayer() {
               value={currentTime}
               onChange={handleSeek}
               className="custom-slider"
+              style={
+                {
+                  "--progress": `${(currentTime / duration) * 100}%`,
+                } as React.CSSProperties
+              }
             />
             <p className="font-display text-2xl font-bold">
               {duration && currentTime

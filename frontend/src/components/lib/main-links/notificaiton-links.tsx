@@ -1,5 +1,5 @@
 import { Invite, InviteStatus } from "@/app/types/invite.type";
-import { respondInvite } from "@/services/invite.service";
+import { respondInvite } from "@/services/invites.service";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 

@@ -2,6 +2,8 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import Redis from 'ioredis';
 import { Model } from 'mongoose';
+import { InvitesService } from 'src/invites/services/invites.service';
+import { MessagesService } from 'src/messages/services/messages.service';
 import { UsersService } from 'src/users/services/users.service';
 import { CreateRoom } from '../dtos/room';
 import { Room } from '../enitites/room.entity';
@@ -15,6 +17,9 @@ export class RoomsService {
     @Inject('RedisClient') private readonly redis: Redis,
 
     private readonly userService: UsersService,
+
+    private readonly inviteService: InvitesService,
+    private readonly messageService: MessagesService,
   ) {}
 
   async findById(id: string) {
@@ -43,5 +48,17 @@ export class RoomsService {
     );
 
     return members.filter(Boolean);
+  }
+
+  async delete(id: string) {
+    const room = await this.roomModel.findByIdAndDelete(id);
+    if (!room) {
+      throw new NotFoundException('Room not found');
+    }
+
+    await this.inviteService.deleteInvites(id);
+    await this.messageService.deleteRoomMessages(id);
+
+    return room;
   }
 }

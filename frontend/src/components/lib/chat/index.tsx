@@ -1,14 +1,17 @@
 "use client";
 import { Search } from "@/components/ui/search";
 import { AnimatedTooltip } from "@/components/ui/tooltip";
-import Image from "next/image";
-import { useState } from "react";
-import { CurrentlyWatching } from "../../../app/types/CurrentlyWatching";
-import { Message } from "../../../app/types/Message";
+import { createMessage, getRoomMessages } from "@/services/messages.service";
+import { useEffect, useRef, useState } from "react";
+import { Socket } from "socket.io-client";
 import Icon from "../icon";
+import UserAvatar from "../user-avatar";
 
 type Props = {
-  chatUsersBase: CurrentlyWatching[];
+  chatUsersBase: User[];
+  room: Room;
+  user: User;
+  roomSocket: Socket;
   onClose: () => void;
 };
 
@@ -18,41 +21,69 @@ const placeholders = [
   "Kako vam se cini ovaj film?",
 ];
 
-const messagesBase = [
-  {
-    id: 1,
-    image: "/images/aleksa.png",
-    from: "Aleksa Jovanovic",
-    message: "Ovo je poruka koju sam je poslao aleksa",
-  } as Message,
-  {
-    id: 2,
-    message: "Ovo je poruka koju sam je poslao ja",
-  } as Message,
-  {
-    id: 3,
-    image: "/images/aleksa.png",
-    from: "Aleksa Jovanovic",
-    message: "Ovo je poruka koju sam je poslao aleksa 2",
-  } as Message,
-];
-
-export default function Chat({ chatUsersBase, onClose }: Props) {
+export default function Chat({
+  chatUsersBase,
+  room,
+  user,
+  roomSocket,
+  onClose,
+}: Props) {
   const [chatUsers] = useState(chatUsersBase);
-  const [messages] = useState(messagesBase);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [msgText, setMsgText] = useState<string>("");
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!room) return;
+    getRoomMessages(room._id).then((res) => {
+      setMessages(res);
+    });
+  }, [room]);
+
+  useEffect(() => {
+    const handler = (message: Message) => handleNewMessage(message);
+    roomSocket.on("room:new-message", handler);
+    return () => {
+      roomSocket.off("room:new-message", handler);
+    };
+  }, [roomSocket]);
+
+  const handleNewMessage = (message: Message) => {
+    setMessages((prev) => {
+      if (prev.find((m) => m._id === message._id)) return prev;
+      return [...prev, message];
+    });
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
+    setMsgText(e.target.value);
   };
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("submitted");
+
+    const data: CreateMessage = {
+      fromUserId: "",
+      roomId: room._id,
+      text: msgText,
+    };
+
+    createMessage(data).then((m) => handleNewMessage(m));
   };
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollTo({
+      top: messagesEndRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [messages]);
+
   return (
     <div className="w-full h-full flex flex-col">
       <div className="w-full bg-dark-gray px-5 py-3 flex items-center justify-between rounded-t-[27px]">
         <div className="flex">
-          <AnimatedTooltip items={chatUsers} />
+          <AnimatedTooltip users={chatUsers} />
         </div>
         <Icon
           icon="remove"
@@ -68,28 +99,34 @@ export default function Chat({ chatUsersBase, onClose }: Props) {
           onSubmit={onSubmit}
           light={true}
         />
-        <div className="w-full mb-8 flex flex-col gap-4">
-          {messages.map((mess) => {
-            return mess.from ? (
-              <div className="flex items-start justify-start" key={mess.id}>
-                <Image
-                  src={mess.image!}
-                  width={38}
-                  height={38}
-                  alt={mess.from}
-                />
-                <div className="w-full ml-2 max-w-[170px] rounded-xl p-3 shadow-xl text-black border">
-                  {mess.message}
+        <div
+          ref={messagesEndRef}
+          className="w-full max-h-[340px] mb-8 flex flex-col gap-4 overflow-y-auto"
+        >
+          {messages && messages.length > 0 ? (
+            messages.map((m) => {
+              return m.fromUserId._id !== user._id ? (
+                <div className="flex items-start justify-start" key={m._id}>
+                  <UserAvatar
+                    firstname={m.fromUserId.firstName}
+                    lastname={m.fromUserId.lastName}
+                    sizeRem={2.375}
+                  />
+                  <div className="w-full ml-2 max-w-[170px] rounded-xl p-3 shadow-xl text-black border">
+                    {m.text}
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="flex items-start justify-end" key={mess.id}>
-                <div className="w-full ml-2 max-w-[170px] rounded-xl p-3 shadow-xl text-white bg-[#c01e1e]">
-                  {mess.message}
+              ) : (
+                <div className="flex items-start justify-end" key={m._id}>
+                  <div className="w-full ml-2 max-w-[170px] rounded-xl p-3 shadow-xl text-white bg-[#c01e1e]">
+                    {m.text}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          ) : (
+            <p>Trenutno nema poruka</p>
+          )}
         </div>
       </div>
     </div>
