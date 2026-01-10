@@ -1,12 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ObjectId } from 'mongoose';
+import { ObjectId, Types } from 'mongoose';
+import { Category } from 'src/categories/entities/category.entity';
 
 @Schema({ timestamps: true })
 export class Movie {
   _id: ObjectId;
 
-  @Prop()
-  category: string;
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Category' }], default: [] })
+  categories: Types.ObjectId[];
 
   @Prop()
   description: string;
@@ -28,6 +29,12 @@ export class Movie {
 
   @Prop()
   video: string;
+
+  @Prop()
+  imdb: number;
+
+  @Prop()
+  duration: string;
 }
 
 export const MovieSchema = SchemaFactory.createForClass(Movie);

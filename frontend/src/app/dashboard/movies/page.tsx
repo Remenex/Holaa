@@ -3,14 +3,35 @@ import MoviesTable from "@/components/dashboard/movies-table";
 import Icon from "@/components/lib/icon";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddNewMovie from "./add-new-movie";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+interface Categories {
+  _id: string;
+  name: string;
+}
 
 export default function Movies() {
   const [addMovie, setAddMovie] = useState(false);
+  const [categories, setCategories] = useState<Categories[]>([]);
+  const [refetch, setRefetch] = useState(false);
+
+  useEffect(() => {
+    fetch(`${API_URL}/categories`)
+      .then((res) => res.json())
+      .then((data) => setCategories(data));
+  }, []);
+
   const handleAddMovie = () => {
     setAddMovie(!addMovie);
   };
+
+  const handleRefetch = () => {
+    setRefetch(!refetch);
+  };
+
   return (
     <div className="w-full">
       <div className="w-full flex items-center justify-between pb-8">
@@ -41,13 +62,17 @@ export default function Movies() {
           initial={{ opacity: 0, height: 0 }}
           animate={{
             opacity: addMovie ? 1 : 0,
-            height: addMovie ? 750 : 0,
+            height: addMovie ? 1050 : 0,
           }}
           transition={{ duration: 0.3 }}
         >
-          <AddNewMovie close={handleAddMovie} />
+          <AddNewMovie
+            close={handleAddMovie}
+            categories={categories}
+            changeRefetch={handleRefetch}
+          />
         </motion.div>
-        <MoviesTable />
+        <MoviesTable refetch={refetch} changeRefetch={handleRefetch} />
       </div>
     </div>
   );

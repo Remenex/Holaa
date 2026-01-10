@@ -2,7 +2,7 @@ import { ObjectId } from 'mongoose';
 
 export interface Movie {
   _id: ObjectId;
-  category: string;
+  categoryIds: string[];
   creationDate: string;
   description: string;
   mainCharacterImage: string;
@@ -14,14 +14,17 @@ export interface Movie {
 }
 
 export interface CreateMovie {
-  _id: ObjectId;
-  category: string;
-  creation_date?: Date;
+  category: string[];
   description: string;
-  main_character_image?: string;
-  owner_id: string;
-  thumbnail?: string;
   title: string;
-  trailer?: string;
-  video?: string;
+  imdb: number;
+  duration: string;
+}
+
+export interface UpdateMovie {
+  title?: string;
+  category?: string[];
+  description?: string;
+  imdb?: number;
+  duration?: string;
 }
