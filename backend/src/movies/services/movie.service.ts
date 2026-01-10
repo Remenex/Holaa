@@ -36,6 +36,10 @@ export class MovieService {
     return movie.save();
   }
 
+  async getAllMovies() {
+    return this.movieModel.find().sort({ createdAt: -1 });
+  }
+
   async deleteMovie(id: string) {
     const movie = await this.movieModel.findById(id);
     if (!movie) throw new NotFoundException('Movie not found');

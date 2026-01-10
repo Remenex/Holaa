@@ -19,6 +19,11 @@ import { MovieService } from '../services/movie.service';
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
 
+  @Get('')
+  async getAllMovies() {
+    return this.movieService.getAllMovies();
+  }
+
   @Post()
   @UseInterceptors(
     FileFieldsInterceptor(

@@ -1,24 +1,30 @@
+"use client";
 import MovieItem from "@/components/lib/movie-item";
+import { useEffect, useState } from "react";
 
 interface Movie {
-  image: string;
-  name: string;
+  _id: string;
+  title: string;
+  thumbnail: string;
 }
 
-const movies: Movie[] = [
-  { image: "/images/movie.png", name: "The Shawshank Redemption" },
-  { image: "/images/movie-1.png", name: "Inception" },
-  { image: "/images/movie-2.png", name: "The Dark Knight" },
-  { image: "/images/movie-3.png", name: "Forrest Gump" },
-  { image: "/images/movie-4.png", name: "The Godfather" },
-  { image: "/images/movie-5.png", name: "Titanic" },
-];
-
 export default function MovieItems() {
+  const [movies, setMovies] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("http://localhost:8000/movies")
+      .then((res) => res.json())
+      .then(setMovies);
+  }, []);
+
   return (
-    <div className="flex flex-wrap justify-between items-center max-w-[1600px]">
+    <div className="flex flex-wrap justify-between items-center max-w-[1600px] gap-4">
       {movies.map((movie) => (
-        <MovieItem key={movie.image} image={movie.image} name={movie.name} />
+        <MovieItem
+          key={movie._id}
+          image={`http://localhost:8000${movie.thumbnail}`}
+          name={movie.title}
+        />
       ))}
     </div>
   );
