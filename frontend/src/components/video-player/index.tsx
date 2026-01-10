@@ -1,76 +1,28 @@
 "use client";
+import { useSocket } from "@/hooks/socket";
+import { getRoom, getRoomMemebers } from "@/services/rooms.service";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
-import { CurrentlyWatching } from "../../app/types/CurrentlyWatching";
-import { SearchUser } from "../../app/types/SearchUsers";
 import Chat from "../lib/chat";
 import Icon from "../lib/icon";
 import { ModernIcon } from "../lib/modern-icon";
-import WatchingUser from "../lib/player/currently-watching";
-import FindFriend from "../lib/player/find-friend";
-import { Search } from "../ui/search";
+import { CurrentlyWatchingComponent } from "../lib/player/currently-watching-component";
 import { AnimatedTooltip } from "../ui/tooltip";
 import "./css/custom-slider.css";
 
-const currentlyWatchUsersBase = [
-  {
-    id: 1,
-    image: "/images/djordje.png",
-    fullName: "Djordje Ivanovic",
-    designation: "Admin",
-    isAdmin: true,
-  } as CurrentlyWatching,
-  {
-    id: 2,
-    image: "/images/aleksa.png",
-    fullName: "Aleksa Jovanovic",
-    designation: "",
-    isAdmin: false,
-  } as CurrentlyWatching,
-  {
-    id: 3,
-    image: "/images/djani.png",
-    fullName: "Radisa Trajkovic",
-    designation: "",
-    isAdmin: false,
-  } as CurrentlyWatching,
-];
-
-const placeholders = [
-  "Unesite email adresu vaseg prijatelja",
-  "Unesite ime i prezime vaseg korisnika",
-];
-
-const findFriendsBase = [
-  {
-    id: 1,
-    image: "/images/djani.png",
-    fullName: "Radisa Trajkovic",
-    email: "radista@gmail.com",
-  } as SearchUser,
-  {
-    id: 2,
-    image: "/images/djani.png",
-    fullName: "Radisa Trajkovic",
-    email: "radista@gmail.com",
-  } as SearchUser,
-  {
-    id: 3,
-    image: "/images/djani.png",
-    fullName: "Radisa Trajkovic",
-    email: "radista@gmail.com",
-  } as SearchUser,
-  {
-    id: 4,
-    image: "/images/djani.png",
-    fullName: "Radisa Trajkovic",
-    email: "radista@gmail.com",
-  } as SearchUser,
-];
-
 export function VideoPlayer() {
+  const { movie_id } = useParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const roomId = searchParams.get("room");
+  const notify = searchParams.get("notify");
+
+  const roomsSocket = useSocket("rooms");
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -80,60 +32,69 @@ export function VideoPlayer() {
   const [duration, setDuration] = useState(0);
   const [controlsVisible, setControlsVisible] = useState(true);
 
-  const [isFriendsOpen, setIsFriendsOpen] = useState(false);
-  const [isAddFriendsOpen, setIsAddFriendsOpen] = useState(false);
   const [isMessageBoxOpen, setIsMessageBoxOpen] = useState<
     "open" | "closed" | "transparent"
   >("closed");
 
   const [isFullScreen, setIsFullScreen] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
-  };
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("submitted");
-  };
+  const [isFriendsOpen, setIsFriendsOpen] = useState(false);
+  const [currentlyWatchUsers, setCurrentlyWatchUsers] = useState<User[]>([]);
 
-  const [currentlyWatchUsers, setCurrentlyWatchUsers] = useState(
-    currentlyWatchUsersBase
-  );
-  const [findFriends, setFindFriends] = useState(findFriendsBase);
-  const sendInvite = (id: number) => {
-    setFindFriends((prevFindFriend) =>
-      prevFindFriend.map((element) =>
-        element.id === id ? { ...element, pending: true } : element
-      )
-    );
-  };
-
-  const removeCurrentlyWatchFriend = (id: number) => {
-    setCurrentlyWatchUsers(
-      currentlyWatchUsers.filter((element) => element.id !== id)
-    );
-  };
+  const [room, setRoom] = useState<Room>();
 
   const handleFriendsOpen = () => {
     setIsFriendsOpen(!isFriendsOpen);
   };
-  const handleAddFriendsOpen = () => {
-    setIsAddFriendsOpen(!isAddFriendsOpen);
-  };
+
   const handleIsMessageBoxOpen = (value: "open" | "closed" | "transparent") => {
-    console.log(value);
     setIsMessageBoxOpen(value);
   };
 
   const handleMouseMove = () => {
-    setControlsVisible(true);
-    if (timeoutIdRef.current) {
-      clearTimeout(timeoutIdRef.current);
-    }
-    timeoutIdRef.current = setTimeout(() => {
-      setControlsVisible(false);
-    }, 3000);
+    // setControlsVisible(true);
+    // if (timeoutIdRef.current) {
+    //   clearTimeout(timeoutIdRef.current);
+    // }
+    // timeoutIdRef.current = setTimeout(() => {
+    //   setControlsVisible(false);
+    // }, 3000);
   };
+
+  useEffect(() => {
+    if (!roomId) return;
+    getRoom(roomId).then(setRoom);
+    getRoomMemebers(roomId).then(setCurrentlyWatchUsers);
+  }, [roomId]);
+
+  const handleUsers = (users: User[]) => {
+    setCurrentlyWatchUsers(users);
+  };
+
+  useEffect(() => {
+    if (!roomsSocket) return;
+
+    roomsSocket.on("room:users", handleUsers);
+
+    return () => {
+      roomsSocket.off("room:users", handleUsers);
+    };
+  }, [roomsSocket]);
+
+  useEffect(() => {
+    if (!roomsSocket) return;
+
+    if (notify === "true") {
+      roomsSocket.emit("room:join", {
+        roomId,
+      });
+
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("notify");
+
+      router.replace(`?${params.toString()}`, { scroll: false });
+    }
+  }, [notify, roomsSocket]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -299,7 +260,9 @@ export function VideoPlayer() {
           </Link>
           <div className="flex gap-6">
             <div className="flex items-center">
-              <AnimatedTooltip items={currentlyWatchUsers} />
+              {currentlyWatchUsers && (
+                <AnimatedTooltip users={currentlyWatchUsers} />
+              )}
             </div>
             <div className="relative top-0">
               <ModernIcon
@@ -308,77 +271,14 @@ export function VideoPlayer() {
                 smallPadding={true}
                 onclick={handleFriendsOpen}
               />
-              <motion.div
-                className="absolute top-14 right-0 bg-dark-gray p-10 rounded-[30px] w-[400px]"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{
-                  opacity: isFriendsOpen ? 1 : 0,
-                  y: isFriendsOpen ? 0 : -20,
-                }}
-                transition={{ duration: 0.3 }}
-                style={{ pointerEvents: isFriendsOpen ? "auto" : "none" }}
-              >
-                <div className="w-full relative">
-                  <div className="w-full flex items-center justify-between">
-                    <h3>TRENUTNO GLEDAJU</h3>
-                    <div className="cursor-pointer">
-                      <Icon
-                        icon="person_add"
-                        iconSize={30}
-                        onClick={handleAddFriendsOpen}
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full mt-6 flex flex-col gap-3">
-                    {currentlyWatchUsers.map((element) => (
-                      <WatchingUser
-                        id={element.id}
-                        key={element.fullName}
-                        image={element.image}
-                        fullName={element.fullName}
-                        designation=""
-                        isAdmin={element.isAdmin}
-                        remove={() => {
-                          removeCurrentlyWatchFriend(element.id);
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <motion.div
-                  className="absolute top-0 right-[410px] bg-dark-gray p-10 rounded-[30px] w-[400px]"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{
-                    opacity: isAddFriendsOpen ? 1 : 0,
-                    x: isAddFriendsOpen ? 0 : 20,
-                  }}
-                  transition={{ duration: 0.3 }}
-                  style={{ pointerEvents: isAddFriendsOpen ? "auto" : "none" }}
-                >
-                  <div className=" flex flex-col justify-center  items-center">
-                    <Search
-                      placeholders={placeholders}
-                      onChange={handleChange}
-                      onSubmit={onSubmit}
-                    />
-                    <div className="w-full mt-6 flex flex-col gap-3">
-                      {findFriends.map((element, index) => {
-                        return (
-                          <FindFriend
-                            id={index}
-                            key={element.id}
-                            image={element.image}
-                            fullName={element.fullName}
-                            email={element.email}
-                            pending={element.pending ?? false}
-                            add={() => sendInvite(element.id)}
-                          />
-                        );
-                      })}
-                    </div>
-                  </div>
-                </motion.div>
-              </motion.div>
+
+              <CurrentlyWatchingComponent
+                isFriendsOpen={isFriendsOpen}
+                currentlyWatchUsersData={currentlyWatchUsers}
+                room={room}
+                onSetRoom={setRoom}
+                roomsSocket={roomsSocket!!}
+              />
             </div>
           </div>
         </div>

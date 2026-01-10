@@ -2,7 +2,7 @@ import { jwtVerify } from "jose";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const token = req.cookies.get("access_token");
 
   if (!token) {
@@ -10,7 +10,10 @@ export function middleware(req: NextRequest) {
   }
 
   try {
-    jwtVerify(token.value, new TextEncoder().encode(process.env.JWT_SECRET));
+    await jwtVerify(
+      token.value,
+      new TextEncoder().encode(process.env.JWT_SECRET)
+    );
 
     return NextResponse.next();
   } catch (error) {
@@ -20,5 +23,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/profile"],
+  matcher: ["/profile", "/player"],
 };
