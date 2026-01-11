@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Movie } from '../entities/movie.entity';
-import { Model, Types } from 'mongoose';
-import { CreateMovie, UpdateMovie } from '../dtos/movie';
-import * as path from 'path';
 import * as fs from 'fs';
+import { Model, Types } from 'mongoose';
+import * as path from 'path';
+import { CreateMovie, UpdateMovie } from '../dtos/movie';
+import { Movie } from '../entities/movie.entity';
 
 @Injectable()
 export class MovieService {
@@ -34,6 +34,13 @@ export class MovieService {
     });
 
     return movie.save();
+  }
+
+  async getMovieById(id: string) {
+    const movie = await this.movieModel.findById(id).lean();
+
+    if (!movie) throw new NotFoundException('Movie not found');
+    return movie;
   }
 
   async getAllMovies() {

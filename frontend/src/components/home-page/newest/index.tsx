@@ -2,7 +2,7 @@ import { EmblaOptionsType } from "embla-carousel";
 import NewestCarousel from "./carousel";
 
 import LatestMovie from "@/components/lib/movies/latest-movies";
-import { Movie } from "../../../app/types/Movie";
+import { Movie } from "../../../app/types/movie.type";
 import "./css/embla.css";
 const movies = [
   {

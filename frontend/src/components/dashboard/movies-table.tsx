@@ -2,26 +2,17 @@
 
 import {
   Table,
-  TableHeader,
   TableBody,
-  TableRow,
   TableCell,
   TableColumn,
+  TableHeader,
+  TableRow,
 } from "@nextui-org/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Icon from "../lib/icon";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-interface Movie {
-  _id: string;
-  title: string;
-  thumbnail: string;
-  video: string;
-  createdAt: string;
-  creator: string;
-}
 
 export const columns = [
   { name: "NASLOV FILMA", uid: "title" },

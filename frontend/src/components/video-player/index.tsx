@@ -1,6 +1,8 @@
 "use client";
+
 import { useAuthUser } from "@/hooks/auth-user";
 import { useSocket } from "@/hooks/socket";
+import { getMovie } from "@/services/movies.service";
 import { getRoom, getRoomMemebers } from "@/services/rooms.service";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -32,7 +34,7 @@ export function VideoPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [volume, setVolume] = useState(1);
-  const [duration, setDuration] = useState(0);
+  const [duration, setDuration] = useState<number>();
   const [controlsVisible, setControlsVisible] = useState(true);
 
   const [isMessageBoxOpen, setIsMessageBoxOpen] = useState<
@@ -64,9 +66,27 @@ export function VideoPlayer() {
     // }, 3000);
   };
 
+  const [movie, setMovie] = useState<Movie>();
+
+  useEffect(() => {
+    if (!movie_id) return;
+    getMovie(movie_id as string)
+      .then((movie) => {
+        setMovie(movie);
+        // setDuration(parseInt(movie.duration));
+      })
+      .catch(() => {
+        router.replace("/");
+      });
+  }, [movie_id]);
+
   useEffect(() => {
     if (!roomId) return;
-    getRoom(roomId).then(setRoom);
+    getRoom(roomId)
+      .then(setRoom)
+      .catch(() => {
+        router.replace("/");
+      });
     getRoomMemebers(roomId).then(setCurrentlyWatchUsers);
   }, [roomId]);
 
@@ -139,7 +159,7 @@ export function VideoPlayer() {
     const video = videoRef.current;
 
     if (video) {
-      if (!isNaN(video.duration)) setDuration(video.duration);
+      // if (!isNaN(video.duration)) setDuration(video.duration);
       const handleKeyDown = (e: KeyboardEvent) => {
         if (!video) return;
         const isInputFocused = ["INPUT", "TEXTAREA"].includes(
@@ -274,11 +294,17 @@ export function VideoPlayer() {
         ref={videoRef}
         width="640"
         height="360"
-        src="/videos/squid_game.mp4"
+        src={`${process.env.NEXT_PUBLIC_API_URL}${movie?.video}`}
         preload="auto"
         className="w-full h-full"
         onTimeUpdate={handleTimeUpdate}
         onClick={togglePlay}
+        onLoadedMetadata={() => {
+          const video = videoRef.current;
+          if (video) {
+            setDuration(video.duration);
+          }
+        }}
       />
 
       <div
@@ -368,14 +394,14 @@ export function VideoPlayer() {
               className="custom-slider"
               style={
                 {
-                  "--progress": `${(currentTime / duration) * 100}%`,
+                  "--progress": duration
+                    ? `${(currentTime / duration) * 100}%`
+                    : "0%",
                 } as React.CSSProperties
               }
             />
             <p className="font-display text-2xl font-bold">
-              {duration && currentTime
-                ? formatTime(duration - currentTime)
-                : "0:00"}
+              {duration ? formatTime(duration - currentTime) : "0:00"}
             </p>
           </div>
           <div className="w-full flex mt-3 justify-between items-center">
