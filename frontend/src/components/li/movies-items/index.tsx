@@ -1,28 +1,25 @@
 "use client";
 import MovieItem from "@/components/lib/movie-item";
-import { useEffect, useState } from "react";
+import { Movie } from "@/app/movies/page";
 
-interface Movie {
-  _id: string;
-  title: string;
-  thumbnail: string;
-}
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export default function MovieItems() {
-  const [movies, setMovies] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetch("http://localhost:8000/movies")
-      .then((res) => res.json())
-      .then(setMovies);
-  }, []);
+export default function MovieItems({ movies }: { movies: Movie[] }) {
+  if (!movies.length) {
+    return (
+      <p className="text-gray-400 text-xl mt-12">
+        Nema rezultata za uneti pojam 😕
+      </p>
+    );
+  }
 
   return (
-    <div className="flex flex-wrap justify-between items-center max-w-[1600px] gap-4">
+    <div className="grid grid-cols-3 gap-6 max-w-[1600px] w-full">
       {movies.map((movie) => (
         <MovieItem
           key={movie._id}
-          image={`http://localhost:8000${movie.thumbnail}`}
+          _id={movie._id}
+          image={`${API_URL}${movie.thumbnail}`}
           name={movie.title}
         />
       ))}
