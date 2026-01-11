@@ -1,13 +1,13 @@
 import {
-  Controller,
-  Post,
-  UseInterceptors,
-  UploadedFiles,
   Body,
+  Controller,
   Delete,
+  Get,
   Param,
   Patch,
-  Get,
+  Post,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -19,7 +19,12 @@ import { MovieService } from '../services/movie.service';
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
 
-  @Get('')
+  @Get(':id')
+  getMovie(@Param('id') id: string) {
+    return this.movieService.getMovieById(id);
+  }
+
+  @Get()
   async getAllMovies() {
     return this.movieService.getAllMovies();
   }

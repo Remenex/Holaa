@@ -159,7 +159,13 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t border-gray-600 w-full max-w-[1600px] py-12 text-center">
-          <p className="text-2xl">© Remenex {new Date().getFullYear()}</p>
+          <Link
+            href="https://www.remenex.com"
+            target="_blank"
+            className="text-2xl"
+          >
+            © Remenex {new Date().getFullYear()}
+          </Link>
         </div>
       </div>
     </footer>

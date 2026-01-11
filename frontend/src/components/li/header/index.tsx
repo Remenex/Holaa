@@ -32,7 +32,7 @@ export default function Header() {
               </Link>
             </li>
             <li>
-              <Link href="/home" className="flex items-center text-xl gap-1">
+              <Link href="/profile" className="flex items-center text-xl gap-1">
                 <Icon icon="person" iconSize={22} />
                 PROFIL
               </Link>

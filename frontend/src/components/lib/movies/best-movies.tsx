@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Movie } from "../../../app/types/Movie";
+import { Movie } from "../../../app/types/movie.type";
 import Icon from "../icon";
 import { ModernIcon } from "../modern-icon";
 

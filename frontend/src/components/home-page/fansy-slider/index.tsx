@@ -1,6 +1,6 @@
 import FansyMovie from "@/components/lib/movies/fansy-movies";
 import { EmblaOptionsType } from "embla-carousel";
-import { Movie } from "../../../app/types/Movie";
+import { Movie } from "../../../app/types/movie.type";
 import "./css/embla.css";
 import FansySliderComponent from "./fansy";
 

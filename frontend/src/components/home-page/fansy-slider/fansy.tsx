@@ -4,7 +4,7 @@ import FansyMovie from "@/components/lib/movies/fansy-movies";
 import { EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
-import { Movie } from "../../../app/types/Movie";
+import { Movie } from "../../../app/types/movie.type";
 import { usePrevNextButtons } from "./fansy-buttons";
 const movies = [
   {
