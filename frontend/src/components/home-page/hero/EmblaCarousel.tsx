@@ -4,6 +4,7 @@ import { EmblaOptionsType } from "embla-carousel";
 import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
 import "./css/embla.css";
+import MainHeader from "@/components/li/main-header";
 
 type PropType = {
   slides: ReactNode[];
@@ -23,6 +24,11 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
               {SlideComponent}
             </div>
           ))}
+        </div>
+        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+          <div className="ml-16">
+            <MainHeader />
+          </div>
         </div>
       </div>
     </section>

@@ -2,6 +2,8 @@
 import MovieItem from "@/components/lib/movie-item";
 import { useEffect, useState } from "react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 interface Movie {
   _id: string;
   title: string;
@@ -9,10 +11,10 @@ interface Movie {
 }
 
 export default function MovieItems() {
-  const [movies, setMovies] = useState<any[]>([]);
+  const [movies, setMovies] = useState<Movie[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:8000/movies")
+    fetch(`${API_URL}/movies`)
       .then((res) => res.json())
       .then(setMovies);
   }, []);
@@ -22,7 +24,7 @@ export default function MovieItems() {
       {movies.map((movie) => (
         <MovieItem
           key={movie._id}
-          image={`http://localhost:8000${movie.thumbnail}`}
+          image={`${API_URL}${movie.thumbnail}`}
           name={movie.title}
         />
       ))}

@@ -99,7 +99,6 @@ export default function MoviesTable({ refetch, changeRefetch }: Props) {
             key={movie._id}
             className="border-b border-gray-600 hover:bg-gray-600"
           >
-            {/* NASLOV */}
             <TableCell>
               <div className="flex items-center gap-3">
                 <div className="relative w-16 h-16 rounded-lg overflow-hidden">

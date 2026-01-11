@@ -2,7 +2,6 @@ import Image from "next/image";
 import HeroInfo from "../../lib/hero-info";
 import RedirectButton from "../../lib/button/redirect-button";
 import RedirectButtonSecond from "../../lib/button/redirect-button-second";
-import MainHeader from "../../li/main-header";
 
 export default function HeroSlide() {
   return (
@@ -39,7 +38,7 @@ export default function HeroSlide() {
               />
             </div>
           </div>
-          <div className="flex items-center h-full">
+          <div className="flex items-center h-full pr-64">
             <div className="h-full flex flex-col justify-center max-w-[600px] ">
               <h1 className="text-[150px] font-extrabold select-none">
                 GUARDIANS OF GALAXY
@@ -73,9 +72,6 @@ export default function HeroSlide() {
                   backgroundColor="hero-dark"
                 />
               </div>
-            </div>
-            <div className="ml-16">
-              <MainHeader />
             </div>
           </div>
         </div>

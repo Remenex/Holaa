@@ -77,4 +77,9 @@ export class UsersService {
   async invalidate(userId: string) {
     await this.redis.del(this.getKey(userId));
   }
+
+  async deleteUser(userId: string) {
+    await this.invalidate(userId);
+    await this.userModel.findByIdAndDelete(userId);
+  }
 }

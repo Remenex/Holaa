@@ -7,85 +7,65 @@ import {
   TableCell,
   TableColumn,
 } from "@nextui-org/react";
-import Image from "next/image";
 import Icon from "../lib/icon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import UserAvatar from "../lib/user-avatar";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const columns = [
-  { name: "IME I PREZIME", uid: "name" },
+  { name: "IME I PREZIME", uid: "firstName" },
   { name: "EMAIL", uid: "email" },
-  { name: "DATUM KREIRANJA NALOGA", uid: "date" },
+  { name: "DATUM KREIRANJA NALOGA", uid: "createdAt" },
   { name: "AKCIJE", uid: "actions" },
 ];
 
-export const moviesBase = [
-  {
-    id: 1,
-    name: "Djordje Ivanovic",
-    image: "/images/djordje.png",
-    date: "20. Decembar, 2024",
-    email: "idjordje63@gmail.com",
-  },
-  {
-    id: 2,
-    name: "Aleksa Jovanovic",
-    image: "/images/aleksa.png",
-    date: "18. Decembar, 2024",
-    email: "jaleksa388@gmail.com",
-  },
-  {
-    id: 3,
-    name: "Radisa Trajkovic",
-    image: "/images/djani.png",
-    date: "20. Decembar, 2024",
-    email: "djani@gmail.com",
-  },
-  {
-    id: 4,
-    name: "Djordje Ivanovic",
-    image: "/images/djordje.png",
-    date: "18. Decembar, 2024",
-    email: "idjordje63@gmail.com",
-  },
-  {
-    id: 5,
-    name: "Aleksa Jovanovic",
-    image: "/images/aleksa.png",
-    date: "20. Decembar, 2024",
-    email: "jaleksa388@gmail.com",
-  },
-  {
-    id: 6,
-    name: "Radisa Trajkovic",
-    image: "/images/djani.png",
-    date: "18. Decembar, 2024",
-    email: "djani@gmail.com",
-  },
-];
-
 export default function PeopleTable() {
-  const [movies, setMovies] = useState(moviesBase);
-  const [sortState, setStortState] = useState({ key: "", order: "" });
+  const [users, setUsers] = useState<User[]>([]);
+  const [sortState, setSortState] = useState<{
+    key: keyof User | "";
+    order: "ASC" | "DESC" | "";
+  }>({
+    key: "",
+    order: "",
+  });
 
-  const handleMovies = (key: string, order: string) => {
-    setStortState({ key, order });
-    const sortedMovies = [...movies].sort((a, b) => {
-      let valA = a[key as keyof typeof a];
-      let valB = b[key as keyof typeof b];
+  useEffect(() => {
+    fetch(`${API_URL}/users`)
+      .then((res) => res.json())
+      .then(setUsers);
+  }, []);
 
-      if (key === "date") {
-        valA = new Date(valA as string).getTime();
-        valB = new Date(valB as string).getTime();
-      }
+  const handleUsers = (key: keyof User, order: "ASC" | "DESC") => {
+    setSortState({ key, order });
 
-      if (order === "ASC") {
-        return valA > valB ? 1 : valA < valB ? -1 : 0;
-      } else {
-        return valA < valB ? 1 : valA > valB ? -1 : 0;
-      }
-    });
-    setMovies(sortedMovies);
+    setUsers((prev) =>
+      [...prev].sort((a, b) => {
+        let compareA: string | number = a[key];
+        let compareB: string | number = b[key];
+
+        if (key === "createdAt") {
+          compareA = new Date(a.createdAt).getTime();
+          compareB = new Date(b.createdAt).getTime();
+        }
+
+        if (order === "ASC") {
+          return compareA > compareB ? 1 : compareA < compareB ? -1 : 0;
+        }
+
+        return compareA < compareB ? 1 : compareA > compareB ? -1 : 0;
+      })
+    );
   };
+
+  const handleDelete = async (userId: string) => {
+    await fetch(`${API_URL}/users/${userId}`, {
+      method: "DELETE",
+    });
+
+    setUsers((prev) => prev.filter((user) => user._id !== userId));
+  };
+
   return (
     <Table aria-label="Tabela korisnika">
       <TableHeader>
@@ -105,7 +85,9 @@ export default function PeopleTable() {
                             : `text-white`
                         }
                         `}
-                    onClick={() => handleMovies(column.uid, "DESC")}
+                    onClick={() =>
+                      handleUsers(column.uid as keyof User, "DESC")
+                    }
                   />
                   <Icon
                     icon="arrow_drop_up"
@@ -117,7 +99,7 @@ export default function PeopleTable() {
                             : `text-white`
                         }
                         `}
-                    onClick={() => handleMovies(column.uid, "ASC")}
+                    onClick={() => handleUsers(column.uid as keyof User, "ASC")}
                   />
                 </div>
               )}
@@ -127,27 +109,33 @@ export default function PeopleTable() {
       </TableHeader>
 
       <TableBody>
-        {movies.map((movie) => (
+        {users.map((user) => (
           <TableRow
-            key={movie.id}
+            key={user._id}
             className="border-b border-gray-600 hover:bg-gray-600"
           >
             <TableCell>
               <div className="flex items-center gap-3">
                 <div className="w-16 h-16">
-                  <Image
-                    src={movie.image}
-                    width={60}
-                    height={60}
-                    alt={movie.name}
-                    className="w-full h-full object-cover"
+                  <UserAvatar
+                    firstname={user.firstName}
+                    lastname={user.lastName}
+                    sizeRem={60 / 16}
                   />
                 </div>
-                <p className="text-xl font-bold">{movie.name}</p>
+                <p className="text-xl font-bold">
+                  {user.firstName} {user.lastName}
+                </p>
               </div>
             </TableCell>
-            <TableCell>{movie.email}</TableCell>
-            <TableCell>{movie.date}</TableCell>
+            <TableCell>{user.email}</TableCell>
+            <TableCell>
+              {new Date(user.createdAt).toLocaleDateString("sr-Latn", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              })}
+            </TableCell>
             <TableCell className="max-w-24">
               <div className="flex gap-4">
                 <div
@@ -156,7 +144,11 @@ export default function PeopleTable() {
                 >
                   <Icon icon="visibility" />
                 </div>
-                <div title="Obrisi korisnika" className="cursor-pointer">
+                <div
+                  title="Obrisi korisnika"
+                  className="cursor-pointer"
+                  onClick={() => handleDelete(user._id)}
+                >
                   <Icon icon="delete" />
                 </div>
               </div>

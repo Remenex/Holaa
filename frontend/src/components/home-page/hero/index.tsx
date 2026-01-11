@@ -4,13 +4,15 @@ import { ReactNode } from "react";
 import HeroSlide from "./slide";
 
 const OPTIONS: EmblaOptionsType = { loop: false };
-const SLIDES: Array<ReactNode> = [<HeroSlide key={1}/>, <HeroSlide key={2}/>, <HeroSlide key={3}/>];
+const SLIDES: Array<ReactNode> = [
+  <HeroSlide key={1} />,
+  <HeroSlide key={2} />,
+  <HeroSlide key={3} />,
+];
 
 export default function HeroSlider() {
-  // SLIDES.push(<Header />);
-
   return (
-    <div>
+    <div className="relative">
       <EmblaCarousel slides={SLIDES} options={OPTIONS} />
     </div>
   );
