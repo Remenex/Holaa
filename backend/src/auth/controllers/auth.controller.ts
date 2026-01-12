@@ -49,4 +49,14 @@ export class AuthController {
   register(@Body() userData: CreateUser) {
     return this.userService.create(userData);
   }
+
+  @Post('logout')
+  logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+    return { message: 'Logout successful' };
+  }
 }
