@@ -3,7 +3,11 @@
 import { useAuthUser } from "@/hooks/auth-user";
 import { useSocket } from "@/hooks/socket";
 import { getMovie } from "@/services/movies.service";
-import { getRoom, getRoomMemebers } from "@/services/rooms.service";
+import {
+  getIsRoomMember,
+  getRoom,
+  getRoomMemebers,
+} from "@/services/rooms.service";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -81,20 +85,62 @@ export function VideoPlayer() {
   }, [movie_id]);
 
   useEffect(() => {
-    if (!roomId) return;
+    if (!roomId || !user) return;
     getRoom(roomId)
-      .then(setRoom)
+      .then((room) => {
+        setRoom(room);
+        if (room.creatorId !== user._id) {
+          getIsRoomMember(roomId, user._id)
+            .then((isMember) => {
+              if (!isMember) {
+                router.replace("/");
+              }
+            })
+            .catch(() => {
+              router.replace("/");
+            });
+        }
+      })
       .catch(() => {
         router.replace("/");
       });
     getRoomMemebers(roomId).then(setCurrentlyWatchUsers);
-  }, [roomId]);
+  }, [roomId, user]);
 
   const handleUsers = (users: User[]) => {
     setCurrentlyWatchUsers(users);
   };
 
   const hasUserInteractedRef = useRef(false);
+
+  useEffect(() => {
+    if (!roomsSocket) return;
+
+    roomsSocket.on("room:users", handleUsers);
+
+    roomsSocket.on("room:play", () => handlePlaying("play"));
+
+    roomsSocket.on("room:pause", () => handlePlaying("pause"));
+
+    return () => {
+      roomsSocket.off("room:users", handleUsers);
+    };
+  }, [roomsSocket]);
+
+  useEffect(() => {
+    if (!roomsSocket) return;
+
+    if (notify === "true") {
+      roomsSocket.emit("room:join", {
+        roomId,
+      });
+
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("notify");
+
+      router.replace(`?${params.toString()}`, { scroll: false });
+    }
+  }, [notify, roomsSocket]);
 
   const registerUserInteraction = () => {
     if (!hasUserInteractedRef.current) {
@@ -125,35 +171,6 @@ export function VideoPlayer() {
       setIsPlaying(false);
     }
   };
-
-  useEffect(() => {
-    if (!roomsSocket) return;
-
-    roomsSocket.on("room:users", handleUsers);
-
-    roomsSocket.on("room:play", () => handlePlaying("play"));
-
-    roomsSocket.on("room:pause", () => handlePlaying("pause"));
-
-    return () => {
-      roomsSocket.off("room:users", handleUsers);
-    };
-  }, [roomsSocket]);
-
-  useEffect(() => {
-    if (!roomsSocket) return;
-
-    if (notify === "true") {
-      roomsSocket.emit("room:join", {
-        roomId,
-      });
-
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete("notify");
-
-      router.replace(`?${params.toString()}`, { scroll: false });
-    }
-  }, [notify, roomsSocket]);
 
   useEffect(() => {
     const video = videoRef.current;

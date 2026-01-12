@@ -8,6 +8,10 @@ export async function getRoom(id: string) {
   return await http<Room>(`/rooms/${id}`);
 }
 
+export async function getIsRoomMember(roomId: string, userId: string) {
+  return await http<Room>(`/rooms/member/${roomId}/${userId}`);
+}
+
 export async function getRoomMemebers(id: string) {
   return await http<User[]>(`/rooms/members/${id}`);
 }

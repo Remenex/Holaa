@@ -1,6 +1,22 @@
+import Icon from "@/components/lib/icon";
+import {
+  deleteFriendship,
+  getUserFriends,
+} from "@/services/friendships.service";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export default function Profile() {
+  const [friends, setFriends] = useState<User[]>([]);
+  useEffect(() => {
+    getUserFriends().then(setFriends);
+  }, []);
+
+  const handleDeleteFriend = (id: string) => {
+    deleteFriendship(id).then(() => {
+      setFriends((prev) => prev.filter((friend) => friend._id !== id));
+    });
+  };
   return (
     <div>
       <div className="py-8 flex gap-5">
@@ -145,18 +161,22 @@ export default function Profile() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="py-2 text-left">Djordje Ivanovic</td>
-                  <td className="py-2 text-left">idjordje63@gmail.com</td>
-                </tr>
-                <tr>
-                  <td className="py-2 text-left">Djordje Ivanovic</td>
-                  <td className="py-2 text-left">idjordje63@gmail.com</td>
-                </tr>
-                <tr>
-                  <td className="py-2 text-left">Djordje Ivanovic</td>
-                  <td className="py-2 text-left">idjordje63@gmail.com</td>
-                </tr>
+                {friends &&
+                  friends.map((u) => (
+                    <tr key={u._id}>
+                      <td className="py-2 text-left">
+                        {u.firstName} {u.lastName}
+                      </td>
+                      <td className="py-2 text-left">{u.email}</td>
+                      <td className="py-2 text-left">
+                        <Icon
+                          icon="person_cancel"
+                          variation="text-red-500 cursor-pointer"
+                          onClick={() => handleDeleteFriend(u._id)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>

@@ -8,9 +8,10 @@ import BgImageOverlay from "@/components/lib/bg-image";
 import UserAvatar from "@/components/lib/user-avatar";
 import UserContext from "@/context/user-context";
 import { useAuthUser } from "@/hooks/auth-user";
+import { logout } from "@/services/auth.service";
 import Image from "next/image";
-import { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useContext, useState } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -21,20 +22,11 @@ export default function ProfilePage() {
   const user = useAuthUser();
 
   const handleLogout = async () => {
-    try {
-      const res = await fetch(`${API_URL}/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (!res.ok) throw new Error("Logout failed");
-
+    logout().then(() => {
       setUser(null);
 
       router.replace("/login");
-    } catch (err) {
-      console.error(err);
-    }
+    });
   };
 
   return (

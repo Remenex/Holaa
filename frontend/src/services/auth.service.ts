@@ -13,3 +13,9 @@ export async function register(registerUser: CreateUser) {
     body: JSON.stringify(registerUser),
   });
 }
+
+export async function logout() {
+  return await http<Response>("/auth/logout", {
+    method: "POST",
+  });
+}
