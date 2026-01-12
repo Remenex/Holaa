@@ -1,6 +1,7 @@
 import { jwtVerify } from "jose";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { useAuthUser } from "./hooks/auth-user";
 
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get("access_token");
@@ -10,10 +11,18 @@ export async function middleware(req: NextRequest) {
   }
 
   try {
-    await jwtVerify(
+    const { payload } = await jwtVerify(
       token.value,
       new TextEncoder().encode(process.env.JWT_SECRET)
     );
+
+    const userRole = (payload as any).role;
+
+    if (req.nextUrl.pathname.startsWith("/dashboard")) {
+      if (userRole !== "admin") {
+        return NextResponse.redirect(new URL("/403", req.url));
+      }
+    }
 
     return NextResponse.next();
   } catch (error) {
@@ -23,5 +32,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/profile", "/player/:path*"],
+  matcher: ["/profile", "/player/:path*", "/dashboard/:path*"],
 };

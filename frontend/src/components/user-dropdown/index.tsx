@@ -59,35 +59,57 @@ export default function UserDropdown() {
           variant="flat"
           className="w-full min-w-[250px] bg-dark-gray rounded-xl px-3 py-5"
         >
-          <DropdownItem key="info" className="gap-2 mb-3">
-            <p className="font-semibold text-xl">Prijavljeni ste kao</p>
-            <p className="font-semibold text-xl">{user?.email}</p>
-          </DropdownItem>
-          <DropdownItem key="profile">
-            <Link href="/profile" className="text-xl hover:underline">
-              Profil
-            </Link>
-          </DropdownItem>
-          <DropdownItem key="dashboard">
-            <Link href="/dashboard" className="text-xl hover:underline">
-              Kontrolna tabla
-            </Link>
-          </DropdownItem>
-          <DropdownItem key="settings">
-            <Link href="/settings" className="text-xl hover:underline">
-              Podesavanja
-            </Link>
-          </DropdownItem>
-          <DropdownItem key="signout">
-            <Link
-              href=""
-              className="text-xl hover:underline flex text-red-500"
-              onClick={handleLogout}
-            >
-              <Icon icon="Logout" />
-              Odjavi se
-            </Link>
-          </DropdownItem>
+          {user ? (
+            <DropdownItem key="info" className="gap-2 mb-3">
+              <p className="font-semibold text-xl">Prijavljeni ste kao</p>
+              <p className="font-semibold text-xl">{user?.email}</p>
+            </DropdownItem>
+          ) : (
+            <DropdownItem key="profile">
+              <Link href="/login" className="text-xl hover:underline">
+                Prijavi se
+              </Link>
+            </DropdownItem>
+          )}
+
+          {user && user.role === "user" ? (
+            <DropdownItem key="profile">
+              <Link href="/profile" className="text-xl hover:underline">
+                Profil
+              </Link>
+            </DropdownItem>
+          ) : null}
+          {user && user.role === "admin" ? (
+            <DropdownItem key="dashboard">
+              <Link href="/dashboard" className="text-xl hover:underline">
+                Kontrolna tabla
+              </Link>
+            </DropdownItem>
+          ) : null}
+          {user ? (
+            <DropdownItem key="settings">
+              <Link
+                href={
+                  user.role === "admin" ? "/dashboard/settings" : "/profile"
+                }
+                className="text-xl hover:underline"
+              >
+                Podesavanja
+              </Link>
+            </DropdownItem>
+          ) : null}
+          {user ? (
+            <DropdownItem key="signout">
+              <Link
+                href=""
+                className="text-xl hover:underline flex text-red-500"
+                onClick={handleLogout}
+              >
+                <Icon icon="Logout" />
+                Odjavi se
+              </Link>
+            </DropdownItem>
+          ) : null}
         </DropdownMenu>
       </Dropdown>
     </div>
