@@ -53,10 +53,16 @@ export function LoginForm() {
         password: form.password,
       };
 
-      login(loginUser).then(setUser);
-
-      router.push("/");
-      toast.success("Uspešna prijava");
+      login(loginUser)
+        .then(() => {
+          setUser;
+          router.push("/");
+          toast.success("Uspešna prijava");
+        })
+        .catch(() => {
+          toast.error("Greška pri prijavi");
+          return;
+        });
     } catch (error: any) {
       console.log(error);
 
