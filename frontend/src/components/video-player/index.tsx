@@ -346,6 +346,7 @@ export function VideoPlayer() {
                 user={user!!}
                 onSetRoom={setRoom}
                 roomsSocket={roomsSocket!!}
+                movieId={movie_id as string}
               />
             </div>
           </div>

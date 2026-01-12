@@ -17,7 +17,9 @@ export default function NotificationLink({ icon, invites }: Props) {
   const handleInviteClick = async (invite: Invite, status: InviteStatus) => {
     respondInvite(invite._id, status).then((res) => {
       if (status === InviteStatus.ACCEPTED) {
-        router.push(`/player/${1}?room=${invite.roomId}&notify=true`);
+        router.push(
+          `/player/${res.movie._id}?room=${res.invite.roomId}&notify=true`
+        );
       }
     });
   };

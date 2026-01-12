@@ -17,6 +17,7 @@ type Props = {
   currentlyWatchUsersData: User[];
   room?: Room;
   roomsSocket: Socket;
+  movieId: string;
   user: User;
   onSetRoom: (room: Room) => void;
   removeCurrentlyWatchFriend?: (id: number) => void;
@@ -34,6 +35,7 @@ export function CurrentlyWatchingComponent({
   user,
   onSetRoom,
   roomsSocket,
+  movieId,
 }: Props) {
   const [isAddFriendsOpen, setIsAddFriendsOpen] = useState(false);
   const [findFriends, setFindFriends] = useState<SearchUser[]>([]);
@@ -89,7 +91,7 @@ export function CurrentlyWatchingComponent({
     let activeRoom = room;
 
     if (!activeRoom) {
-      activeRoom = await createRoom({ movieId: "abcd" });
+      activeRoom = await createRoom({ movieId });
       onSetRoom(activeRoom);
       roomsSocket.emit("room:join", {
         roomId: activeRoom._id,

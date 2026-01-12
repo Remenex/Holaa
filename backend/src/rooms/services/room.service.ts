@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import Redis from 'ioredis';
 import { Model } from 'mongoose';
@@ -18,6 +23,7 @@ export class RoomsService {
 
     private readonly userService: UsersService,
 
+    @Inject(forwardRef(() => InvitesService))
     private readonly inviteService: InvitesService,
     private readonly messageService: MessagesService,
   ) {}
