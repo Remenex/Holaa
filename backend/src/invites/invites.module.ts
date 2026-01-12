@@ -1,5 +1,8 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { FriendshipsModule } from 'src/friendships/friendships.module';
+import { MovieModule } from 'src/movies/movie.module';
+import { RoomsModule } from 'src/rooms/rooms.module';
 import { UsersModule } from 'src/users/users.module';
 import { InvitesController } from './controllers/invite.controller';
 import { Invite, InviteSchema } from './entities/invite.entity';
@@ -15,6 +18,9 @@ import { InvitesService } from './services/invites.service';
         schema: InviteSchema,
       },
     ]),
+    forwardRef(() => RoomsModule),
+    MovieModule,
+    FriendshipsModule,
   ],
   providers: [InvitesService, InvitesGateway],
   exports: [InvitesService],

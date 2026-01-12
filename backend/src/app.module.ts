@@ -6,6 +6,7 @@ import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { FriendshipsModule } from './friendships/friendships.module';
 import { InvitesModule } from './invites/invites.module';
 import { MessagesModule } from './messages/messages.module';
 import { MovieModule } from './movies/movie.module';
@@ -32,6 +33,7 @@ import { UsersModule } from './users/users.module';
     InvitesModule,
     MessagesModule,
     Neo4jModule,
+    FriendshipsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

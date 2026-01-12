@@ -1,6 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DeleteResult, Model } from 'mongoose';
+import { FriendshipsService } from 'src/friendships/services/friendships.service';
+import { MovieService } from 'src/movies/services/movie.service';
+import { RoomsService } from 'src/rooms/services/room.service';
 import { UsersService } from 'src/users/services/users.service';
 import { CreateInvite, InviteStatus } from '../dtos/invite';
 import { Invite } from '../entities/invite.entity';
@@ -15,6 +23,13 @@ export class InvitesService {
     private readonly invitesGateway: InvitesGateway,
 
     private readonly userService: UsersService,
+
+    @Inject(forwardRef(() => RoomsService))
+    private readonly roomService: RoomsService,
+
+    private readonly movieService: MovieService,
+
+    private readonly friendshipsService: FriendshipsService,
   ) {}
 
   async findUserInvites(id: string) {
@@ -67,11 +82,21 @@ export class InvitesService {
       { new: true },
     );
 
+    const room = await this.roomService.findById(invite.roomId);
+    const movie = await this.movieService.getMovieById(room.movieId.toString());
+
     if (!invite) {
       throw new Error('Invite not found or already handled');
     }
 
-    return invite;
+    if (
+      await this.friendshipsService.addFriend(
+        invite.fromUserId,
+        invite.toUserId,
+      )
+    )
+      return { invite, movie };
+    else throw new BadRequestException('Error');
   }
 
   async deleteInvites(roomId: string): Promise<DeleteResult> {

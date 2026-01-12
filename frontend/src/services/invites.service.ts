@@ -1,4 +1,4 @@
-import { CreateInvite, Invite } from "@/app/types/invite.type";
+import { CreateInvite, Invite, InviteRespond } from "@/app/types/invite.type";
 import { http } from "./http";
 
 export async function getUserInvites(id: string) {
@@ -13,7 +13,7 @@ export async function createInvite(inviteData: CreateInvite) {
 }
 
 export async function respondInvite(inviteId: string, status: string) {
-  return await http<Invite>(`/invites/${inviteId}/status`, {
+  return await http<InviteRespond>(`/invites/${inviteId}/status`, {
     method: "PATCH",
     body: JSON.stringify({ status }),
   });

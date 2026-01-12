@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { InvitesModule } from 'src/invites/invites.module';
 import { MessagesModule } from 'src/messages/messages.module';
@@ -19,11 +19,11 @@ import { RoomsService } from './services/room.service';
     ]),
     RedisModule,
     UsersModule,
-    InvitesModule,
+    forwardRef(() => InvitesModule),
     MessagesModule,
-    RedisModule,
   ],
   providers: [RoomsService, RoomsGateway],
   controllers: [RoomsController],
+  exports: [RoomsService],
 })
 export class RoomsModule {}

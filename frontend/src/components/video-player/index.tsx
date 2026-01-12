@@ -315,7 +315,13 @@ export function VideoPlayer() {
       />
       {controlsVisible && (
         <div className="absolute top-12 w-full px-24 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-4">
+          <Link
+            href="/"
+            onClick={() => {
+              if (roomsSocket) roomsSocket.emit("room:exit");
+            }}
+            className="flex items-center gap-4"
+          >
             <Image
               src="/icons/just-arrow.svg"
               width={35}
@@ -346,6 +352,7 @@ export function VideoPlayer() {
                 user={user!!}
                 onSetRoom={setRoom}
                 roomsSocket={roomsSocket!!}
+                movieId={movie_id as string}
               />
             </div>
           </div>
