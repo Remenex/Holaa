@@ -1,6 +1,12 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DeleteResult, Model } from 'mongoose';
+import { FriendshipsService } from 'src/friendships/services/friendships.service';
 import { MovieService } from 'src/movies/services/movie.service';
 import { RoomsService } from 'src/rooms/services/room.service';
 import { UsersService } from 'src/users/services/users.service';
@@ -22,6 +28,8 @@ export class InvitesService {
     private readonly roomService: RoomsService,
 
     private readonly movieService: MovieService,
+
+    private readonly friendshipsService: FriendshipsService,
   ) {}
 
   async findUserInvites(id: string) {
@@ -81,7 +89,14 @@ export class InvitesService {
       throw new Error('Invite not found or already handled');
     }
 
-    return { invite, movie };
+    if (
+      await this.friendshipsService.addFriend(
+        invite.fromUserId,
+        invite.toUserId,
+      )
+    )
+      return { invite, movie };
+    else throw new BadRequestException('Error');
   }
 
   async deleteInvites(roomId: string): Promise<DeleteResult> {

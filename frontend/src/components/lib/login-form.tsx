@@ -54,8 +54,8 @@ export function LoginForm() {
       };
 
       login(loginUser)
-        .then(() => {
-          setUser;
+        .then((user) => {
+          setUser(user);
           router.push("/");
           toast.success("Uspešna prijava");
         })

@@ -28,13 +28,12 @@ export class FriendshipsService {
     const query = `
       MERGE (u:User {id: $userId})
       MERGE (f:User {id: $friendId})
-      MERGE (u)-[:FRIEND_WITH]->(f)
-      MERGE (f)-[:FRIEND_WITH]->(u)
+      MERGE (u)-[:FRIEND_WITH]-(f)
     `;
 
     await this.neo4j.run(query, { userId, friendId });
 
-    return { message: 'Prijatelj dodat' };
+    return true;
   }
 
   async getFriends(userId: string) {
@@ -44,5 +43,27 @@ export class FriendshipsService {
     `;
 
     return this.neo4j.run(query, { userId });
+  }
+
+  async deleteFriend(userId: string, friendId: string) {
+    if (userId === friendId) {
+      throw new BadRequestException('Ne možeš obrisati sebe');
+    }
+
+    const user = await this.usersService.findById(userId);
+    const friend = await this.usersService.findById(friendId);
+
+    if (!user || !friend) {
+      throw new NotFoundException('User ne postoji');
+    }
+
+    const query = `
+      MATCH (u:User {id: $userId})-[r:FRIEND_WITH]-(f:User {id: $friendId})
+      DELETE r
+    `;
+
+    const result = await this.neo4j.run(query, { userId, friendId });
+
+    return result;
   }
 }

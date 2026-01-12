@@ -14,7 +14,9 @@ export default function RootLayout({
       lang="en"
       className={`${bigShouldersDisplay.variable} ${baloo2.variable}`}
     >
-      <head></head>
+      <head>
+        <title>Holaa</title>
+      </head>
       <body>
         <SessionProvider>
           <Toaster

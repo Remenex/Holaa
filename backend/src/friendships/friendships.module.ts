@@ -9,5 +9,6 @@ import { FriendshipsService } from './services/friendships.service';
   imports: [Neo4jModule, UsersModule],
   providers: [FriendshipsService],
   controllers: [FriendshipsController],
+  exports: [FriendshipsService],
 })
 export class FriendshipsModule {}
