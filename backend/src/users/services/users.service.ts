@@ -82,4 +82,40 @@ export class UsersService {
     await this.invalidate(userId);
     await this.userModel.findByIdAndDelete(userId);
   }
+
+  async updateUser(userId: string, updateData: Partial<CreateUser>) {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (
+      updateData.email &&
+      updateData.email !== user.email &&
+      (await this.userModel.findOne({ email: updateData.email }))
+    ) {
+      throw new ConflictException('Email already exists');
+    }
+
+    if (updateData.password) {
+      updateData.password = await this.hashPassword(updateData.password);
+    }
+
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(userId, updateData, { new: true })
+      .lean();
+
+    if (!updatedUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (updatedUser.password) delete updatedUser.password;
+
+    const key = this.getKey(userId);
+    await this.redis.del(key);
+    await this.redis.hset(key, updatedUser);
+    await this.redis.expire(key, 3600);
+
+    return updatedUser;
+  }
 }

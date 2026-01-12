@@ -1,5 +1,6 @@
-import { Controller, Delete, Get, Param } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
+import { CreateUser } from '../dtos/user';
 
 @Controller('users')
 export class UsersController {
@@ -13,5 +14,10 @@ export class UsersController {
   @Delete(':id')
   deleteUser(@Param('id') id: string) {
     return this.userService.deleteUser(id);
+  }
+
+  @Patch(':id')
+  async updateUser(@Param('id') id: string, @Body() body: Partial<CreateUser>) {
+    return this.userService.updateUser(id, body);
   }
 }
