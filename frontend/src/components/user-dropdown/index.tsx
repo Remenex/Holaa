@@ -10,9 +10,33 @@ import Link from "next/link";
 import Icon from "../lib/icon";
 import { ModernIcon } from "../lib/modern-icon";
 import UserAvatar from "../lib/user-avatar";
+import { useContext } from "react";
+import UserContext from "@/context/user-context";
+import { useRouter } from "next/navigation";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function UserDropdown() {
   const user = useAuthUser();
+  const { setUser } = useContext(UserContext);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch(`${API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!res.ok) throw new Error("Logout failed");
+
+      setUser(null);
+
+      router.replace("/login");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="flex items-center gap-4">
@@ -55,7 +79,11 @@ export default function UserDropdown() {
             </Link>
           </DropdownItem>
           <DropdownItem key="signout">
-            <Link href="" className="text-xl hover:underline flex text-red-500">
+            <Link
+              href=""
+              className="text-xl hover:underline flex text-red-500"
+              onClick={handleLogout}
+            >
               <Icon icon="Logout" />
               Odjavi se
             </Link>

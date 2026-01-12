@@ -6,81 +6,103 @@ import Reactions from "@/components/li/reactions";
 import UserSettings from "@/components/li/settings";
 import BgImageOverlay from "@/components/lib/bg-image";
 import UserAvatar from "@/components/lib/user-avatar";
+import UserContext from "@/context/user-context";
 import { useAuthUser } from "@/hooks/auth-user";
 import Image from "next/image";
-import { useState } from "react";
-import { Toaster } from "sonner";
+import { useContext, useState } from "react";
+import { useRouter } from "next/navigation";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("Profil");
+  const { setUser } = useContext(UserContext);
+  const router = useRouter();
   const user = useAuthUser();
 
+  const handleLogout = async () => {
+    try {
+      const res = await fetch(`${API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!res.ok) throw new Error("Logout failed");
+
+      setUser(null);
+
+      router.replace("/login");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
-    <>
-      {/* <Toaster position="bottom-right" richColors /> */}
-      <div className="w-full">
-        <Header />
-        <BgImageOverlay bigTitle="MOJ NALOG" linkTitle="PROFIL" />
-        <div className="w-full flex justify-center">
-          <div className="p-12 w-full max-w-[1600px]">
-            <div className="w-full bg-dark-gray flex justify-between py-3 px-10 rounded-2xl">
-              <div className="flex gap-2 items-center">
-                <UserAvatar
-                  firstname={user?.firstName ?? ""}
-                  lastname={user?.lastName ?? ""}
-                  sizeRem={60 / 16}
-                />
-                <div className="mr-10">
-                  <p className="text-2xl">
-                    {user?.firstName} {user?.lastName}
-                  </p>
-                  <p className="text-base gray-text">{user?.email}</p>
-                </div>
-                <div className="flex gap-8">
-                  {["Profil", "Reakcije", "Podesavanja"].map((tab) => (
-                    <p
-                      key={tab}
-                      onClick={() => setActiveTab(tab)}
-                      className={`pb-4 cursor-pointer ${
-                        activeTab === tab
-                          ? "bg-clip-text text-white bg-custom-gradient"
-                          : "text-gray-400"
-                      }`}
-                      style={
-                        activeTab === tab
-                          ? {
-                              borderBottom: "2px solid transparent",
-                              borderImage: "var(--custom-gradient) 1",
-                            }
-                          : {
-                              borderBottom: "2px solid transparent",
-                            }
-                      }
-                    >
-                      {tab}
-                    </p>
-                  ))}
-                </div>
+    <div className="w-full">
+      <Header />
+      <BgImageOverlay bigTitle="MOJ NALOG" linkTitle="PROFIL" />
+      <div className="w-full flex justify-center">
+        <div className="p-12 w-full max-w-[1600px]">
+          <div className="w-full bg-dark-gray flex justify-between py-3 px-10 rounded-2xl">
+            <div className="flex gap-2 items-center">
+              <UserAvatar
+                firstname={user?.firstName ?? ""}
+                lastname={user?.lastName ?? ""}
+                sizeRem={60 / 16}
+              />
+              <div className="mr-10">
+                <p className="text-2xl">
+                  {user?.firstName} {user?.lastName}
+                </p>
+                <p className="text-base gray-text">{user?.email}</p>
               </div>
-              <div className="flex gap-3 items-center">
-                <p className="text-base gray-text">Odjavi se</p>
-                <Image
-                  src="/icons/logout.svg"
-                  alt="logout-icon"
-                  width={18}
-                  height={18}
-                />
+              <div className="flex gap-8">
+                {["Profil", "Reakcije", "Podesavanja"].map((tab) => (
+                  <p
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`pb-4 cursor-pointer ${
+                      activeTab === tab
+                        ? "bg-clip-text text-white bg-custom-gradient"
+                        : "text-gray-400"
+                    }`}
+                    style={
+                      activeTab === tab
+                        ? {
+                            borderBottom: "2px solid transparent",
+                            borderImage: "var(--custom-gradient) 1",
+                          }
+                        : {
+                            borderBottom: "2px solid transparent",
+                          }
+                    }
+                  >
+                    {tab}
+                  </p>
+                ))}
               </div>
             </div>
-            <div className="mt-8">
-              {activeTab === "Profil" && <Profile />}
-              {activeTab === "Reakcije" && <Reactions />}
-              {activeTab === "Podesavanja" && <UserSettings user={user!} />}
+            <div
+              className="flex gap-3 items-center cursor-pointer"
+              onClick={handleLogout}
+            >
+              <p className="text-base gray-text">Odjavi se</p>
+              <Image
+                src="/icons/logout.svg"
+                alt="logout-icon"
+                width={18}
+                height={18}
+              />
             </div>
           </div>
+          <div className="mt-8">
+            {activeTab === "Profil" && <Profile />}
+            {activeTab === "Reakcije" && <Reactions />}
+            {activeTab === "Podesavanja" && <UserSettings user={user!} />}
+          </div>
         </div>
-        <Footer />
       </div>
-    </>
+      <Footer />
+    </div>
   );
 }
