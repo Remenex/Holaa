@@ -107,4 +107,9 @@ export class MovieController {
   async getTopRatedMovies() {
     return this.movieService.getTopRatedMovies();
   }
+
+  @Get('by-category/:id')
+  async getMoviesByCategory(@Param('id') id: string) {
+    return this.movieService.getMoviesByCategory(id);
+  }
 }
