@@ -13,3 +13,16 @@ export async function register(registerUser: CreateUser) {
     body: JSON.stringify(registerUser),
   });
 }
+
+export async function signOut() {
+  return await http(`/auth/logout`, {
+    method: "POST",
+  });
+}
+
+export async function UpdateUser(id: string, data: UpdateUser) {
+  return await http(`/users/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+}

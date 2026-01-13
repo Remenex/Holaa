@@ -4,16 +4,20 @@ type Props = {
   label: string;
   icon: string;
   placeholder: string;
-  defaultValue: string;
   name: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
 };
 
 export default function SettingsInput({
   label,
   icon,
   placeholder,
-  defaultValue,
   name,
+  value,
+  onChange,
+  disabled = false,
 }: Props) {
   return (
     <div>
@@ -31,7 +35,9 @@ export default function SettingsInput({
           name={name}
           id={name}
           placeholder={placeholder}
-          defaultValue={defaultValue}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
         />
       </div>
     </div>

@@ -78,7 +78,7 @@ export default function MoviesTable({ refetch, changeRefetch }: Props) {
     <Table aria-label="Tabela filmova">
       <TableHeader>
         {columns.map((column) => (
-          <TableColumn key={column.uid} className="bg-gray-600 py-4 text-start">
+          <TableColumn key={column.uid} className="bg-zinc-800 py-4 text-start">
             {column.name}
           </TableColumn>
         ))}
@@ -88,7 +88,7 @@ export default function MoviesTable({ refetch, changeRefetch }: Props) {
         {movies.map((movie) => (
           <TableRow
             key={movie._id}
-            className="border-b border-gray-600 hover:bg-gray-600"
+            className="border-b border-zink-800 hover:bg-zinc-900"
           >
             <TableCell>
               <div className="flex items-center gap-3">
