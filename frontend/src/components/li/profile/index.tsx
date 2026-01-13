@@ -35,7 +35,7 @@ export default function Profile() {
         <div className="bg-dark-gray w-1/4 p-5 rounded-2xl">
           <p className="text-2xl mb-5">Broj prijatelja</p>
           <div className="flex justify-between">
-            <p className="text-2xl ">10</p>
+            <p className="text-2xl ">{friends.length}</p>
             <Image
               src="/icons/friends.svg"
               alt="movie-icon"

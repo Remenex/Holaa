@@ -4,6 +4,10 @@ import { useAuthUser } from "@/hooks/auth-user";
 import { useSocket } from "@/hooks/socket";
 import { getMovie } from "@/services/movies.service";
 import {
+  getUserReactionForMovie,
+  reactToMovie,
+} from "@/services/reactions.service";
+import {
   getIsRoomMember,
   getRoom,
   getRoomMemebers,
@@ -51,6 +55,7 @@ export function VideoPlayer() {
   const [currentlyWatchUsers, setCurrentlyWatchUsers] = useState<User[]>([]);
 
   const [room, setRoom] = useState<Room>();
+  const [reaction, setReaction] = useState<ReactionType>();
 
   const handleFriendsOpen = () => {
     setIsFriendsOpen(!isFriendsOpen);
@@ -70,6 +75,13 @@ export function VideoPlayer() {
     // }, 3000);
   };
 
+  const handleLike = async (type: ReactionType) => {
+    if (!user || !movie) return;
+
+    await reactToMovie(movie._id, type !== "LIKE" ? "DISLIKE" : "LIKE");
+    setReaction(type !== "LIKE" ? "DISLIKE" : "LIKE");
+  };
+
   const [movie, setMovie] = useState<Movie>();
 
   useEffect(() => {
@@ -78,6 +90,9 @@ export function VideoPlayer() {
       .then((movie) => {
         setMovie(movie);
         // setDuration(parseInt(movie.duration));
+        getUserReactionForMovie(movie_id as string).then((r) =>
+          setReaction(r?.type)
+        );
       })
       .catch(() => {
         router.replace("/");
@@ -89,7 +104,7 @@ export function VideoPlayer() {
     getRoom(roomId)
       .then((room) => {
         setRoom(room);
-        if (room.creatorId !== user._id) {
+        if (room.creatorId !== user._id && !notify) {
           getIsRoomMember(roomId, user._id)
             .then((isMember) => {
               if (!isMember) {
@@ -430,8 +445,23 @@ export function VideoPlayer() {
           </div>
           <div className="w-full flex mt-3 justify-between items-center">
             <div className="w-1/3 flex items-center gap-5">
-              <h2>The Fellowship of the Ring</h2>
-              <ModernIcon icon="heart_plus" iconSize={30} smallPadding={true} />
+              <h2>{movie?.title}</h2>
+              <div className="flex gap-2 bg-[#4d4d4d] py-2 px-4 rounded-full">
+                <Icon
+                  icon="thumb_up"
+                  iconSize={30}
+                  filled={reaction === "LIKE"}
+                  color="white"
+                  onClick={() => handleLike("LIKE")}
+                />
+                <Icon
+                  icon="thumb_down"
+                  iconSize={30}
+                  filled={reaction === "DISLIKE"}
+                  color="white"
+                  onClick={() => handleLike("DISLIKE")}
+                />
+              </div>
             </div>
             <div className="w-1/3 flex justify-center">
               <ModernIcon
