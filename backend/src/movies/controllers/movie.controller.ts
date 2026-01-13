@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -19,6 +20,21 @@ import { MovieService } from '../services/movie.service';
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
 
+  @Get('latest/:limit')
+  getLatestMovies(@Param('limit') limit: number) {
+    return this.movieService.getLatestMovies(limit);
+  }
+
+  @Get('top-rated')
+  async getTopRatedMovies(@Query('limit') limit?: string) {
+    const lim = limit ? parseInt(limit) : 10;
+    return this.movieService.getTopRatedMovies(lim);
+  }
+
+  @Get('by-category/:id')
+  async getMoviesByCategory(@Param('id') id: string) {
+    return this.movieService.getMoviesByCategory(id);
+  }
   @Get(':id')
   getMovie(@Param('id') id: string) {
     return this.movieService.getMovieById(id);
@@ -96,20 +112,5 @@ export class MovieController {
     @UploadedFiles() files: any,
   ) {
     return this.movieService.updateMovie(id, body, files);
-  }
-
-  @Get('latest')
-  async getLatestMovies() {
-    return this.movieService.getLatestMovies();
-  }
-
-  @Get('top-rated')
-  async getTopRatedMovies() {
-    return this.movieService.getTopRatedMovies();
-  }
-
-  @Get('by-category/:id')
-  async getMoviesByCategory(@Param('id') id: string) {
-    return this.movieService.getMoviesByCategory(id);
   }
 }
