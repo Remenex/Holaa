@@ -1,27 +1,23 @@
 import Icon from "@/components/lib/icon";
-import {
-  deleteFriendship,
-  getUserFriends,
-} from "@/services/friendships.service";
-import { getWatchedMovies } from "@/services/movies.service";
+import { deleteFriendship } from "@/services/friendships.service";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
 type Props = {
   reactions?: Reaction[];
+  friends: User[];
+  watchedMovies: Movie[];
+  onDeleteFriend: (friendId: string) => void;
 };
 
-export default function Profile({ reactions }: Props) {
-  const [friends, setFriends] = useState<User[]>([]);
-  const [watchedMovies, setWatchedMovies] = useState<Movie[]>([]);
-  useEffect(() => {
-    getUserFriends().then(setFriends);
-    getWatchedMovies().then(setWatchedMovies);
-  }, []);
-
+export default function Profile({
+  reactions,
+  friends,
+  watchedMovies,
+  onDeleteFriend,
+}: Props) {
   const handleDeleteFriend = (id: string) => {
     deleteFriendship(id).then(() => {
-      setFriends((prev) => prev.filter((friend) => friend._id !== id));
+      onDeleteFriend(id);
     });
   };
   return (

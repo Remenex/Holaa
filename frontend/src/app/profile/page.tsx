@@ -9,6 +9,8 @@ import UserAvatar from "@/components/lib/user-avatar";
 import UserContext from "@/context/user-context";
 import { useAuthUser } from "@/hooks/auth-user";
 import { logout } from "@/services/auth.service";
+import { getUserFriends } from "@/services/friendships.service";
+import { getWatchedMovies } from "@/services/movies.service";
 import { getUserReactions } from "@/services/reactions.service";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -21,7 +23,10 @@ export default function ProfilePage() {
   const { setUser } = useContext(UserContext);
   const router = useRouter();
   const user = useAuthUser();
+
   const [reactions, setReactions] = useState<Reaction[]>();
+  const [friends, setFriends] = useState<User[]>([]);
+  const [watchedMovies, setWatchedMovies] = useState<Movie[]>([]);
 
   const handleLogout = async () => {
     logout().then(() => {
@@ -33,6 +38,9 @@ export default function ProfilePage() {
 
   useEffect(() => {
     getUserReactions().then(setReactions);
+
+    getUserFriends().then(setFriends);
+    getWatchedMovies().then(setWatchedMovies);
   }, []);
 
   return (
@@ -94,7 +102,16 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="mt-8">
-            {activeTab === "Profil" && <Profile reactions={reactions} />}
+            {activeTab === "Profil" && (
+              <Profile
+                watchedMovies={watchedMovies}
+                friends={friends}
+                reactions={reactions}
+                onDeleteFriend={(friendId: string) =>
+                  setFriends((prev) => prev.filter((f) => f._id !== friendId))
+                }
+              />
+            )}
             {activeTab === "Reakcije" && <Reactions reactions={reactions} />}
             {activeTab === "Podesavanja" && <UserSettings user={user!} />}
           </div>
