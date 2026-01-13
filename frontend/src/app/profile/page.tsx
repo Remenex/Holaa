@@ -9,9 +9,10 @@ import UserAvatar from "@/components/lib/user-avatar";
 import UserContext from "@/context/user-context";
 import { useAuthUser } from "@/hooks/auth-user";
 import { logout } from "@/services/auth.service";
+import { getUserReactions } from "@/services/reactions.service";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -20,6 +21,7 @@ export default function ProfilePage() {
   const { setUser } = useContext(UserContext);
   const router = useRouter();
   const user = useAuthUser();
+  const [reactions, setReactions] = useState<Reaction[]>();
 
   const handleLogout = async () => {
     logout().then(() => {
@@ -28,6 +30,10 @@ export default function ProfilePage() {
       router.replace("/login");
     });
   };
+
+  useEffect(() => {
+    getUserReactions().then(setReactions);
+  }, []);
 
   return (
     <div className="w-full">
@@ -88,8 +94,8 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="mt-8">
-            {activeTab === "Profil" && <Profile />}
-            {activeTab === "Reakcije" && <Reactions />}
+            {activeTab === "Profil" && <Profile reactions={reactions} />}
+            {activeTab === "Reakcije" && <Reactions reactions={reactions} />}
             {activeTab === "Podesavanja" && <UserSettings user={user!} />}
           </div>
         </div>

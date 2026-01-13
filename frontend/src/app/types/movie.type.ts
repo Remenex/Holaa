@@ -1,6 +1,6 @@
 type Movie = {
   _id: string;
-  categories: string[];
+  categories: Category[];
   description: string;
   mainCharacterImage: string;
   ownerId: string;
@@ -10,4 +10,9 @@ type Movie = {
   video: string;
   imdb: number;
   duration: string;
+};
+
+type Category = {
+  _id: string;
+  name: string;
 };

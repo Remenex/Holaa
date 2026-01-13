@@ -21,5 +21,5 @@ export async function getUserReactions() {
 }
 
 export async function getUserReactionForMovie(movieId: string) {
-  return await http<Reaction | null>(`/reactions/user/movie/${movieId}`);
+  return await http<Reaction | "empty">(`/reactions/user/movie/${movieId}`);
 }

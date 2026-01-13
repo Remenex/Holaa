@@ -2,7 +2,7 @@
 
 import { useAuthUser } from "@/hooks/auth-user";
 import { useSocket } from "@/hooks/socket";
-import { getMovie } from "@/services/movies.service";
+import { getMovie, setWatchedMovie } from "@/services/movies.service";
 import {
   getUserReactionForMovie,
   reactToMovie,
@@ -90,9 +90,11 @@ export function VideoPlayer() {
       .then((movie) => {
         setMovie(movie);
         // setDuration(parseInt(movie.duration));
-        getUserReactionForMovie(movie_id as string).then((r) =>
-          setReaction(r?.type)
-        );
+        getUserReactionForMovie(movie_id as string).then((r) => {
+          if (r !== "empty") setReaction(r.type);
+        });
+
+        setWatchedMovie(movie_id as string);
       })
       .catch(() => {
         router.replace("/");

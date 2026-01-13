@@ -1,7 +1,9 @@
+import { Movie } from 'src/movies/entities/movie.entity';
+
 export type ReactionType = 'LIKE' | 'DISLIKE';
 
 export type Reaction = {
-  movieId: string;
+  movie: Movie;
   type: ReactionType;
   updatedAt: string;
 };

@@ -1,7 +1,7 @@
 type ReactionType = "LIKE" | "DISLIKE";
 
 type Reaction = {
-  movieId: string;
+  movie: Movie;
   type: ReactionType;
   updatedAt: string;
 };

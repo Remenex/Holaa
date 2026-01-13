@@ -52,42 +52,51 @@ export class ReactionsService {
 
   async getUserReactions(userId: string) {
     const query = `
-    MATCH (u:User {id: $userId})-[r:REACTED]->(m:Movie)
-    RETURN 
-      m.id AS movieId,
-      r.type AS type,
-      r.updatedAt AS updatedAt
-    ORDER BY r.updatedAt DESC
-  `;
+      MATCH (u:User {id: $userId})-[r:REACTED]->(m:Movie)
+      RETURN 
+        m.id AS movieId,
+        r.type AS type,
+        r.updatedAt AS updatedAt
+      ORDER BY r.updatedAt DESC
+    `;
 
     const result = await this.neo4j.run(query, { userId });
 
-    return result.map((record) => ({
-      movieId: record.get('movieId'),
-      type: record.get('type'),
-      updatedAt: record.get('updatedAt'),
-    })) as Reaction[];
+    const reactions = await Promise.all(
+      result.map(async (record) => ({
+        movie: await this.moviesService.getMovieById(record.get('movieId')),
+        type: record.get('type'),
+        updatedAt: record.get('updatedAt'),
+      })),
+    );
+
+    return reactions;
   }
 
   async getUserReactionForMovie(userId: string, movieId: string) {
     const query = `
-    MATCH (u:User {id: $userId})-[r:REACTED]->(m:Movie {id: $movieId})
-    RETURN 
-      r.type AS type,
-      r.updatedAt AS updatedAt
-    LIMIT 1
-  `;
+      MATCH (u:User {id: $userId})-[r:REACTED]->(m:Movie {id: $movieId})
+      RETURN 
+        r.type AS type,
+        r.updatedAt AS updatedAt
+      LIMIT 1
+    `;
 
+    const movie = await this.moviesService.getMovieById(movieId);
+
+    if (!movie) {
+      throw new NotFoundException('Film ne postoji');
+    }
     const result = await this.neo4j.run(query, { userId, movieId });
 
     if (result.length === 0) {
-      return null;
+      return 'empty';
     }
 
     const record = result[0];
 
     return {
-      movieId: movieId,
+      movie: movie,
       type: record.get('type'),
       updatedAt: record.get('updatedAt'),
     } as Reaction;

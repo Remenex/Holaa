@@ -3,13 +3,20 @@ import {
   deleteFriendship,
   getUserFriends,
 } from "@/services/friendships.service";
+import { getWatchedMovies } from "@/services/movies.service";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-export default function Profile() {
+type Props = {
+  reactions?: Reaction[];
+};
+
+export default function Profile({ reactions }: Props) {
   const [friends, setFriends] = useState<User[]>([]);
+  const [watchedMovies, setWatchedMovies] = useState<Movie[]>([]);
   useEffect(() => {
     getUserFriends().then(setFriends);
+    getWatchedMovies().then(setWatchedMovies);
   }, []);
 
   const handleDeleteFriend = (id: string) => {
@@ -23,7 +30,9 @@ export default function Profile() {
         <div className="bg-dark-gray w-1/4 p-5 rounded-2xl">
           <p className="text-2xl mb-5">Odgledano filmova</p>
           <div className="flex justify-between">
-            <p className="text-2xl ">25</p>
+            <p className="text-2xl ">
+              {watchedMovies ? watchedMovies.length : 0}
+            </p>
             <Image
               src="/icons/movie.svg"
               alt="movie-icon"
@@ -47,7 +56,7 @@ export default function Profile() {
         <div className="bg-dark-gray w-1/4 p-5 rounded-2xl">
           <p className="text-xl mb-5">Reakcije</p>
           <div className="flex justify-between">
-            <p className="text-2xl ">24</p>
+            <p className="text-2xl ">{reactions ? reactions.length : 0}</p>
             <Image
               src="/icons/recommend.svg"
               alt="movie-icon"
@@ -59,7 +68,9 @@ export default function Profile() {
         <div className="bg-dark-gray w-1/4 p-5 rounded-2xl">
           <p className="text-2xl mb-5">Odgledano filmova</p>
           <div className="flex justify-between">
-            <p className="text-2xl ">25</p>
+            <p className="text-2xl ">
+              {watchedMovies ? watchedMovies.length : 0}
+            </p>
             <Image
               src="/icons/movie.svg"
               alt="movie-icon"
@@ -95,51 +106,30 @@ export default function Profile() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="py-2 text-left">The Lord Of The Rings</td>
-                  <td className="py-2 text-left">Film, Drama</td>
-                  <td className="py-2 flex items-center gap-1 text-left">
-                    <Image
-                      src="/icons/kid_star.svg"
-                      alt="star-icon"
-                      width={15}
-                      height={14}
-                    />
-                    <p>9.2</p>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="py-2 text-left">The Lord Of The Rings</td>
-                  <td className="py-2 text-left">Film, Drama</td>
-                  <td className="py-2 flex items-center gap-1 text-left">
-                    <Image
-                      src="/icons/kid_star.svg"
-                      alt="star-icon"
-                      width={15}
-                      height={14}
-                    />
-                    <p>9.2</p>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="py-2 text-left">The Lord Of The Rings</td>
-                  <td className="py-2 text-left">Film, Drama</td>
-                  <td className="py-2 flex items-center gap-1 text-left">
-                    <Image
-                      src="/icons/kid_star.svg"
-                      alt="star-icon"
-                      width={15}
-                      height={14}
-                    />
-                    <p>9.2</p>
-                  </td>
-                </tr>
+                {watchedMovies &&
+                  watchedMovies.map((m) => (
+                    <tr key={m._id}>
+                      <td className="py-2 text-left">{m.title}</td>
+                      <td className="py-2 text-left">
+                        {m.categories.map((c) => c.name).join(", ")}
+                      </td>
+                      <td className="py-2 flex items-center gap-1 text-left">
+                        <Image
+                          src="/icons/kid_star.svg"
+                          alt="star-icon"
+                          width={15}
+                          height={14}
+                        />
+                        <p>{m.imdb}</p>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
         </div>
         <div className="w-1/2 bg-dark-gray rounded-lg">
-          <div className="flex items-center gap-4 border-color border-b p-5">
+          <div className="flex items-center gap-4 border-b p-5">
             <Image
               src="/icons/friends.svg"
               alt="friends-icon"
