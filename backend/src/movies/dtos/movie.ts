@@ -12,6 +12,7 @@ export interface Movie {
   video: string;
   imdb: number;
   duration: string;
+  abstract: boolean;
 }
 
 export interface CreateMovie {

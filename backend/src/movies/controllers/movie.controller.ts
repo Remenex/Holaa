@@ -28,6 +28,11 @@ export class MovieController {
     return this.movieService.getLatestMovies(limit);
   }
 
+  @Get('abstract')
+  async getAbstractMovies() {
+    return this.movieService.getAbstractMovies();
+  }
+
   @Get('top-rated')
   async getTopRatedMovies(@Query('limit') limit?: string) {
     const lim = limit ? parseInt(limit) : 10;

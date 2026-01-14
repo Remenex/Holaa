@@ -185,4 +185,8 @@ export class MovieService {
 
     return movies;
   }
+
+  async getAbstractMovies() {
+    return this.movieModel.find({ abstract: true }).exec();
+  }
 }

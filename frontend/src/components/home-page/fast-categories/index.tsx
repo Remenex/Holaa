@@ -1,5 +1,9 @@
+"use client";
+import { useEffect, useState } from "react";
 import CategoryWidget from "./category-card";
 import RedirectButtonSecond from "@/components/lib/button/redirect-button-second";
+import { toast } from "sonner";
+import { getCategoriesWithLimit } from "@/services/categories.service";
 
 interface fastMovie {
   image: string;
@@ -30,23 +34,38 @@ const movies = [
 ];
 
 export default function FastCategories() {
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const handleCategories = async () => {
+      try {
+        const res = await getCategoriesWithLimit(5);
+        setCategories(res);
+      } catch (err) {
+        toast.error("Doslo je do greske prilikom preuzimanja kategorija");
+      }
+    };
+    handleCategories();
+  }, []);
+
   return (
     <section className="fastCategories w-full flex flex-col items-center mt-[150px]">
       <div className="flex items-center main-container justify-center relative w-full max-w-[1720px]">
         <h2 className="text-5xl text-center">PRETRAZI PO KATEGORIJI</h2>
         <div className="absolute right-[20px]">
-            <RedirectButtonSecond text="PRIKAZI JOS" url="/categories"/>
+          <RedirectButtonSecond text="PRIKAZI JOS" url="/categories" />
         </div>
       </div>
       <div className="w-full flex justify-center mt-[50px]">
         <div className="w-full main-container flex justify-between max-w-[1720px]">
           <div className="w-full max-w-[1720px] flex justify-between items-center">
-            {movies.map((element, index) => {
+            {categories.map((element, index) => {
               return (
                 <CategoryWidget
-                  key={index}
-                  image={element.image}
-                  genre={element.genre}
+                  key={element._id}
+                  id={element._id}
+                  image={`http://localhost:8000/uploads/categories/images/${element._id}.jpg`}
+                  genre={element.name}
                   isReverse={index % 2 !== 0}
                 />
               );

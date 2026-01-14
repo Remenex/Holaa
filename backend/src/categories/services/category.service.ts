@@ -24,6 +24,10 @@ export class CategoryService {
     return category;
   }
 
+  async findWithLimit(limit: number) {
+    return this.categoryModel.find().limit(limit).exec();
+  }
+
   async delete(id: string) {
     const category = await this.categoryModel.findByIdAndDelete(id);
     if (!category) throw new NotFoundException('Category not found');

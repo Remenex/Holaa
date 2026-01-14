@@ -1,4 +1,12 @@
-import { Controller, Post, Get, Delete, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Delete,
+  Param,
+  Body,
+  Query,
+} from '@nestjs/common';
 import { CategoryService } from '../services/category.service';
 
 @Controller('categories')
@@ -8,6 +16,11 @@ export class CategoryController {
   @Post()
   async createCategory(@Body('name') name: string) {
     return this.categoryService.create(name);
+  }
+
+  @Get()
+  async getCategoriestWithLimit(@Query('limit') limit: number) {
+    return this.categoryService.findWithLimit(limit);
   }
 
   @Get()

@@ -16,10 +16,6 @@ export async function getMovies() {
   return http<Movie[]>("/movies");
 }
 
-export async function getCategories() {
-  return http<Category[]>("/categories");
-}
-
 export async function getMoviesByCategory(id: string) {
   return http<Movie[]>(`/movies/by-category/${id}`);
 }
@@ -30,4 +26,8 @@ export async function getLatestMovies() {
 
 export async function getTopRatedMovies() {
   return http<Movie[]>(`/movies/top-rated?limit=10`);
+}
+
+export async function getAbstractMovies() {
+  return http<Movie[]>("/movies/abstract");
 }
