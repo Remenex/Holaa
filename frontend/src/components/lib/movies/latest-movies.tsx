@@ -1,20 +1,28 @@
 import Image from "next/image";
-import { Movie } from "../../../app/types/movie.type";
 import Icon from "../icon";
 import { ModernIcon } from "../modern-icon";
 
+interface LatestMovieProps {
+  _id: string;
+  thumbnail: string;
+  title: string;
+  imdb: number;
+  duration: string;
+  categories: string[];
+}
+
 export default function LatestMovie({
-  image,
+  _id,
+  thumbnail,
   title,
-  rate,
+  imdb,
   duration,
-  quality,
-  genre,
-}: Movie) {
+  categories,
+}: LatestMovieProps) {
   return (
     <div className="w-full max-w-[320px] h-[370px] rounded-[30px] cursor-pointer group relative">
       <Image
-        src={image}
+        src={thumbnail}
         fill={true}
         alt={title}
         className="h-full object-cover rounded-[30px] pointer-events-none"
@@ -26,7 +34,7 @@ export default function LatestMovie({
       >
         <div className="relative w-full h-full">
           <Image
-            src={image}
+            src={thumbnail}
             fill={true}
             alt={title}
             className="h-full object-cover rounded-[30px] absolute top-0 pointer-events-none"
@@ -36,7 +44,11 @@ export default function LatestMovie({
 
           <div className="w-full absolute h-full top-0 px-4 py-8 flex flex-col justify-between">
             <div className="flex justify-center items-center w-full h-full">
-              <ModernIcon icon="play_arrow" iconSize={40} link="/player/1" />
+              <ModernIcon
+                icon="play_arrow"
+                iconSize={40}
+                link={`/player/${_id}`}
+              />
             </div>
 
             <div className="select-none">
@@ -44,7 +56,7 @@ export default function LatestMovie({
               <div className="w-full flex justify-between items-center">
                 <div className="flex items-center mt-2">
                   <Icon icon="kid_star" variation="text-yellow-600" />
-                  <p className="font-bold ml-1 text-lg">{rate} IMDB</p>
+                  <p className="font-bold ml-1 text-lg">{imdb} IMDB</p>
                 </div>
                 <div className="flex items-center mt-2">
                   <Icon icon="schedule" variation="text-white" />
@@ -52,11 +64,11 @@ export default function LatestMovie({
                 </div>
                 <div className="flex items-center mt-2">
                   <Icon icon="4k" variation="text-white" />
-                  <p className="font-bold ml-1 text-lg">{quality}</p>
+                  <p className="font-bold ml-1 text-lg">Full HD</p>
                 </div>
               </div>
               <p className="gray-text text-lg mt-2">
-                {genre.map((element) => element + ", ")}
+                {/* {genre.map((element) => element + ", ")} */}
               </p>
             </div>
           </div>

@@ -70,7 +70,7 @@ export default function PeopleTable() {
     <Table aria-label="Tabela korisnika">
       <TableHeader>
         {columns.map((column) => (
-          <TableColumn key={column.uid} className="bg-gray-600 py-4 text-start">
+          <TableColumn key={column.uid} className="bg-zinc-800 py-4 text-start">
             <div className="flex gap-3">
               {column.name}
               {column.name !== "AKCIJE" && (
@@ -112,7 +112,7 @@ export default function PeopleTable() {
         {users.map((user) => (
           <TableRow
             key={user._id}
-            className="border-b border-gray-600 hover:bg-gray-600"
+            className="border-b border-gray-600 hover:bg-zinc-900"
           >
             <TableCell>
               <div className="flex items-center gap-3">

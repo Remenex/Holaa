@@ -1,90 +1,47 @@
+"use client";
 import FansyMovie from "@/components/lib/movies/fansy-movies";
 import { EmblaOptionsType } from "embla-carousel";
-import { Movie } from "../../../app/types/movie.type";
 import "./css/embla.css";
 import FansySliderComponent from "./fansy";
-
-const movies = [
-  {
-    image: "/images/interstellar.png",
-    title: "Interstellar",
-    rate: 9.9,
-    duration: "2h 30min",
-    quality: "4k Kvalitet",
-    genre: ["Akcija", "Fantazija", "Sci-Fi"],
-  } as Movie,
-  {
-    image: "/images/hangover.png",
-    title: "Hangover",
-    rate: 8.0,
-    duration: "2h 10min",
-    quality: "4k Kvalitet",
-    genre: ["Porodicni", "Komedija"],
-  } as Movie,
-  {
-    image: "/images/interstellar.png",
-    title: "Interstellar2",
-    rate: 9.9,
-    duration: "2h 30min",
-    quality: "4k Kvalitet",
-    genre: ["Akcija", "Fantazija", "Sci-Fi"],
-  } as Movie,
-  {
-    image: "/images/woman.png",
-    title: "Hangover2",
-    rate: 8.0,
-    duration: "2h 10min",
-    quality: "4k Kvalitet",
-    genre: ["Porodicni", "Komedija"],
-  } as Movie,
-  {
-    image: "/images/rocket.png",
-    title: "Interstellar",
-    rate: 9.9,
-    duration: "2h 30min",
-    quality: "4k Kvalitet",
-    genre: ["Akcija", "Fantazija", "Sci-Fi"],
-  } as Movie,
-  {
-    image: "/images/hulk.png",
-    title: "Hangover",
-    rate: 8.0,
-    duration: "2h 10min",
-    quality: "4k Kvalitet",
-    genre: ["Porodicni", "Komedija"],
-  } as Movie,
-  {
-    image: "/images/spiderman.png",
-    title: "Interstellar2",
-    rate: 9.9,
-    duration: "2h 30min",
-    quality: "4k Kvalitet",
-    genre: ["Akcija", "Fantazija", "Sci-Fi"],
-  } as Movie,
-  {
-    image: "/images/hangover.png",
-    title: "Hangover2",
-    rate: 8.0,
-    duration: "2h 10min",
-    quality: "4k Kvalitet",
-    genre: ["Porodicni", "Komedija"],
-  } as Movie,
-];
-const SLIDES = movies.map((movie) => (
-  <FansyMovie
-    key={movie.title}
-    title={movie.title}
-    image={movie.image}
-    rate={movie.rate}
-    duration={movie.duration}
-    quality={movie.quality}
-    genre={movie.genre}
-    iscenter={false}
-  />
-));
+import { ReactNode, useEffect, useState } from "react";
+import { toast } from "sonner";
+import { getTopRatedMovies } from "@/services/movies.service";
 
 const OPTIONS: EmblaOptionsType = { loop: false };
 
 export default function FansySlider() {
-  return <FansySliderComponent slides={SLIDES} options={OPTIONS} />;
+  const [slides, setSlides] = useState<ReactNode[]>([]);
+
+  useEffect(() => {
+    const handleMovies = async () => {
+      try {
+        const res = await getTopRatedMovies();
+        setSlides(
+          res.map((movie) => {
+            return (
+              <FansyMovie
+                id={movie._id}
+                key={movie.title}
+                title={movie.title}
+                image={`http://localhost:8000${movie.thumbnail}`}
+                rate={movie.imdb}
+                duration={movie.duration}
+                quality="Full HD"
+                genre={movie.categories}
+                iscenter={false}
+              />
+            );
+          })
+        );
+      } catch (err) {
+        toast.error(
+          "Doslo je do greske prilikom preuzimanja najboljih filmova"
+        );
+      }
+    };
+
+    handleMovies();
+  }, []);
+
+  return <FansySliderComponent slides={slides} options={OPTIONS} />;
 }

@@ -171,5 +171,17 @@ export class MovieService {
       .filter((m) => m !== undefined);
 
     return sortedMovies;
+  async getMoviesByCategory(categoryId: string) {
+    if (!Types.ObjectId.isValid(categoryId)) {
+      throw new NotFoundException('Invalid category ID');
+    }
+
+    const movies = await this.movieModel
+      .find({ categories: new Types.ObjectId(categoryId) })
+      .populate('categories', 'name')
+      .sort({ createdAt: -1 })
+      .exec();
+
+    return movies;
   }
 }

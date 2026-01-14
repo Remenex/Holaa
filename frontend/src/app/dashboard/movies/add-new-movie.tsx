@@ -50,7 +50,7 @@ export default function AddNewMovie({
     <div className="w-full px-4">
       <div className="grid grid-cols-5 gap-8">
         <div className="col-span-5 xl:col-span-12">
-          <div className="rounded-sm border border-gray-600 shadow-default dashboard-main">
+          <div className="rounded-sm border border-gray-600 shadow-default bg-dark-gray">
             <div className="border-b px-7 py-4 border-gray-600">
               <h3 className="font-medium text-white">Informacije o Filmu</h3>
             </div>
@@ -112,7 +112,7 @@ export default function AddNewMovie({
                 <div className="w-full flex gap-4">
                   <div
                     id="FileUpload"
-                    className="relative mb-5 block w-full cursor-pointer appearance-none rounded border border-dashed border-blue-600 bg-gray-800 px-4 py-4 sm:py-7"
+                    className="relative mb-5 block w-full cursor-pointer appearance-none rounded border border-dashed border-blue-600 px-4 py-4 sm:py-7"
                   >
                     <input
                       type="file"
@@ -121,7 +121,7 @@ export default function AddNewMovie({
                       className="absolute inset-0 z-50 m-0 h-full w-full cursor-pointer p-0 opacity-0 outline-none"
                     />
                     <div className="flex flex-col items-center justify-center space-y-3">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full border border-stroke dashboard-main border-gray-600">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full border border-stroke bg-dark-gray border-gray-600">
                         <svg
                           width="16"
                           height="16"
@@ -161,7 +161,7 @@ export default function AddNewMovie({
                   </div>
                   <div
                     id="FileUpload"
-                    className="relative mb-5 block w-full cursor-pointer appearance-none rounded border border-dashed border-green-600 bg-gray-800 px-4 py-4 sm:py-7"
+                    className="relative mb-5 block w-full cursor-pointer appearance-none rounded border border-dashed border-green-600  px-4 py-4 sm:py-7"
                   >
                     <input
                       type="file"
@@ -212,7 +212,7 @@ export default function AddNewMovie({
                 <div className="w-full flex gap-4">
                   <div
                     id="FileUpload"
-                    className="relative mb-5 block w-full cursor-pointer appearance-none rounded border border-dashed border-yellow-500 bg-gray-800 px-4 py-4 sm:py-7"
+                    className="relative mb-5 block w-full cursor-pointer appearance-none rounded border border-dashed border-yellow-500px-4 py-4 sm:py-7"
                   >
                     <input
                       type="file"
@@ -260,7 +260,7 @@ export default function AddNewMovie({
                   </div>
                   <div
                     id="FileUpload"
-                    className="relative mb-5 block w-full cursor-pointer appearance-none rounded border border-dashed border-red-500 bg-gray-800 px-4 py-4 sm:py-7"
+                    className="relative mb-5 block w-full cursor-pointer appearance-none rounded border border-dashed border-red-500 px-4 py-4 sm:py-7"
                   >
                     <input
                       type="file"
