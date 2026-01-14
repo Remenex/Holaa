@@ -14,12 +14,11 @@ export function IndexHeader() {
             iconImage="crown"
             iconSize={30}
             iconMargin="10"
-            url=""
+            url="/#popular-movies"
           />
           {/* <ModernIcon icon="person" /> */}
           <div className="relative">
-          <UserDropdown/>
-
+            <UserDropdown />
           </div>
         </div>
       </div>

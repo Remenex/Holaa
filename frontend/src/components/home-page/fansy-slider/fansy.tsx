@@ -1,6 +1,5 @@
 "use client";
 import Arrow from "@/components/lib/arrow";
-import FansyMovie from "@/components/lib/movies/fansy-movies";
 import { EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
@@ -29,7 +28,10 @@ const FansySliderComponent: React.FC<PropType> = (props) => {
   const { onPrevButtonClick, onNextButtonClick } = usePrevNextButtons(emblaApi);
 
   return (
-    <section className="w-full flex justify-center bg-dark-gray mt-[150px] pt-32 pb-16">
+    <section
+      className="w-full flex justify-center bg-dark-gray mt-[150px] pt-32 pb-16"
+      id="popular-movies"
+    >
       <div className="fansySliderSection fansy-embla w-full">
         <div className="fansy-embla__viewport" ref={emblaRef}>
           <div className="fansy-embla__container">
