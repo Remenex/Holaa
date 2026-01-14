@@ -47,7 +47,7 @@ export default function Movies() {
           <p className="text-2xl text-blue-600">Lista Filmova</p>
         </div>
       </div>
-      <div className="w-full rounded-sm px-8 py-6 dashboard-main border border-gray-600">
+      <div className="w-full rounded-sm px-8 py-6 bg-dark-gray border border-gray-600">
         <div className="w-full flex justify-end">
           <Link
             href=""

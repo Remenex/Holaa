@@ -13,3 +13,5 @@ type LoginUser = Pick<User, "email" | "password">;
 type CreateUser = Omit<User, "_id" | "createdAt">;
 
 type SearchUser = User & { pending?: boolean };
+
+type UpdateUser = Pick<User, "firstName" | "lastName">;

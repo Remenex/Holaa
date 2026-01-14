@@ -18,8 +18,8 @@ export default function DashboardPeople() {
         </div>
       </div>
 
-      <div className="w-full rounded-sm px-8 py-6 dashboard-main border border-gray-600">
-        <PeopleTable/>
+      <div className="w-full rounded-sm px-8 py-6 bg-dark-gray border border-gray-600">
+        <PeopleTable />
       </div>
     </div>
   );

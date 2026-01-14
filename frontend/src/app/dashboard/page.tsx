@@ -1,3 +1,5 @@
-export default function Dashboard(){
-    return <h1>Djole</h1>
+import DashboardPeople from "./people/page";
+
+export default function Dashboard() {
+  return <DashboardPeople />;
 }

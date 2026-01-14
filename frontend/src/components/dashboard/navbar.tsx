@@ -1,4 +1,5 @@
 "use client";
+import { useAuthUser } from "@/hooks/auth-user";
 import { Search } from "../ui/search";
 import UserDropdown from "../user-dropdown";
 
@@ -9,6 +10,8 @@ const placeholders = [
 ];
 
 export default function DashboardNavbar() {
+  const user = useAuthUser();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log(e.target.value);
   };
@@ -18,7 +21,7 @@ export default function DashboardNavbar() {
   };
 
   return (
-    <div className="w-full px-8 py-5 flex justify-between dashboard-main items-center">
+    <div className="w-full px-8 py-5 flex justify-between bg-dark-gray items-center">
       <Search
         placeholders={placeholders}
         onChange={handleChange}
@@ -27,7 +30,9 @@ export default function DashboardNavbar() {
       />
       <div className="flex items-center gap-4">
         <div>
-          <h4>Djordje Ivanovic</h4>
+          <h4>
+            {user?.firstName} {user?.lastName}
+          </h4>
           <p className="gray-text text-xl">Admin</p>
         </div>
         <UserDropdown />

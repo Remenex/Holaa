@@ -3,6 +3,7 @@ import HeroInfo from "../hero-info";
 import { ModernIcon } from "../modern-icon";
 
 type Props = {
+  id: string;
   image: string;
   title: string;
   rate: number;
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export default function FansyMovie({
+  id,
   image,
   title,
   rate,
@@ -34,7 +36,7 @@ export default function FansyMovie({
             iscenter ? "opacity-100" : ""
           }`}
         >
-          <ModernIcon icon="play_arrow" iconSize={50} link="/player/1" />
+          <ModernIcon icon="play_arrow" iconSize={50} link={`/player/${id}`} />
           <div className="w-full mt-24 mb-10 flex flex-col items-center gap-4 px-8 text-center select-none">
             <h2 className="text-[70px] uppercase">{title}</h2>
             <div className="flex gap-4 mt-6">

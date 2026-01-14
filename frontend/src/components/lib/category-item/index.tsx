@@ -1,26 +1,31 @@
 import Image from "next/image";
+import Link from "next/link";
 
 type Props = {
+  id: string;
   image: string;
   name: string;
 };
 
-export default function CategoryItem({ image, name }: Props) {
+export default function CategoryItem({ id, image, name }: Props) {
   return (
-    <div className="bg-dark-gray w-1/5 min-w-[252px] flex flex-col items-center p-10 gap-5 rounded-xl">
-      <div>
-        <Image src={image} alt="category-image" width={262} height={218} />
+    <div className="bg-dark-gray w-1/5 min-w-[252px] flex flex-col items-center justify-between p-10 gap-5 rounded-xl">
+      <div className="relative w-[262px] h-[218px]">
+        <Image src={image} alt="category-image" fill />
       </div>
-      <div className="flex w-full justify-between">
+      <div className="flex w-full justify-between items-center">
         <h2 className="text-3xl">{name}</h2>
-        <div className=" flex p-1 items-center justify-center border-s-white rounded-[50%] border-2 cursor-pointer">
+        <Link
+          href={`/movies?category=${id}`}
+          className=" flex p-1 items-center justify-center border-s-white rounded-[50%] border-2 cursor-pointer"
+        >
           <Image
             src="/icons/arrow.svg"
             alt="arrow-icon"
             width={29}
             height={29}
           />
-        </div>
+        </Link>
       </div>
     </div>
   );

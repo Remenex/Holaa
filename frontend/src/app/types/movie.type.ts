@@ -11,3 +11,8 @@ type Movie = {
   imdb: number;
   duration: string;
 };
+
+type Category = {
+  _id: string;
+  name: string;
+};

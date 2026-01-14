@@ -19,7 +19,7 @@ export default function CategoriesPage() {
           <CategoryItems />
         </section>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 }

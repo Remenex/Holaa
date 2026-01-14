@@ -4,9 +4,10 @@ import Header from "@/components/li/header";
 import MovieItems from "@/components/li/movies-items";
 import BgImageOverlay from "@/components/lib/bg-image";
 import { Search } from "@/components/ui/search";
+import { getMovies, getMoviesByCategory } from "@/services/movies.service";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { toast } from "sonner";
 
 const placeholders = [
   "Pretraži svoj omiljeni film...",
@@ -16,25 +17,39 @@ const placeholders = [
   "Tražiš klasike poput Kuma?",
 ];
 
-export interface Movie {
-  _id: string;
-  title: string;
-  thumbnail: string;
-}
-
 export default function MoviesPage() {
   const [allMovies, setAllMovies] = useState<Movie[]>([]);
   const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
   const [searchValue, setSearchValue] = useState("");
 
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category");
+  const [category, setCategory] = useState<string | null>(null);
+
   useEffect(() => {
-    fetch(`${API_URL}/movies`)
-      .then((res) => res.json())
-      .then((data: Movie[]) => {
-        setAllMovies(data);
-        setFilteredMovies(data);
-      });
-  }, []);
+    if (categoryParam) {
+      setCategory(categoryParam);
+      const handleMovieCategories = async () => {
+        try {
+          const res = await getMoviesByCategory(categoryParam);
+          setAllMovies(res);
+        } catch (err) {
+          toast.error("Doslo je do greske prilikom preuzimanja filmova");
+        }
+      };
+      handleMovieCategories();
+    } else {
+      const handleMovies = async () => {
+        try {
+          const res = await getMovies();
+          setAllMovies(res);
+        } catch (err) {
+          toast.error("Doslo je do greske prilikom preuzimanja filmova");
+        }
+      };
+      handleMovies();
+    }
+  }, [categoryParam]);
 
   useEffect(() => {
     const value = searchValue.toLowerCase().trim();
@@ -63,7 +78,11 @@ export default function MoviesPage() {
       </div>
 
       <section className="movies w-full flex justify-center">
-        <MovieItems movies={filteredMovies} />
+        {filteredMovies.length > 0 ? (
+          <MovieItems movies={filteredMovies} />
+        ) : (
+          <h2>Nije pronadjen nijedan rezultat</h2>
+        )}
       </section>
 
       <Footer />
