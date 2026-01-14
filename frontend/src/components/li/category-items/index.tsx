@@ -1,6 +1,6 @@
 "use client";
 import CategoryItem from "@/components/lib/category-item";
-import { getCategories } from "@/services/movies.service";
+import { getCategories } from "@/services/categories.service";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 

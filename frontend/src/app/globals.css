@@ -47,6 +47,9 @@
   .first-slide-gradient {
     background-image: var(--first-slide-gradient);
   }
+  .second-slide-gradient {
+    background-image: var(--second-slide-gradient);
+  }
   .hero-info-gradient {
     background-image: var(--hero-info-gradient);
   }
@@ -98,6 +101,12 @@
       #000 0%,
       #be3a29 48%,
       #ff581c 100%
+    );
+    --second-slide-gradient: linear-gradient(
+      to right,
+      #000 0%,
+      #7c2b21 48%,
+      rgb(143, 9, 9) 100%
     );
     --hero-info-gradient: linear-gradient(to right, #2f2f2f 0%, #161616 100%);
     --notification-gradient: linear-gradient(

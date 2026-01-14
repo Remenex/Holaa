@@ -35,6 +35,9 @@ export class Movie {
 
   @Prop()
   duration: string;
+
+  @Prop()
+  abstract: boolean;
 }
 
 export const MovieSchema = SchemaFactory.createForClass(Movie);
