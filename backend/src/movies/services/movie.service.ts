@@ -142,7 +142,6 @@ export class MovieService {
   }
 
   async getWatchedMovies(userId: string) {
-    // 1. Dohvati watched filmove iz Neo4j
     const query = `
     MATCH (u:User {id: $userId})-[w:WATCHED]->(m:Movie)
     RETURN m.id AS movieId, w.createdAt AS watchedAt
@@ -171,6 +170,8 @@ export class MovieService {
       .filter((m) => m !== undefined);
 
     return sortedMovies;
+  }
+
   async getMoviesByCategory(categoryId: string) {
     if (!Types.ObjectId.isValid(categoryId)) {
       throw new NotFoundException('Invalid category ID');

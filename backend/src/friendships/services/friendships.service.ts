@@ -33,7 +33,6 @@ export class FriendshipsService {
     `;
 
     const result = await this.neo4j.run(query, { userId, friendId });
-    console.log(result);
 
     return true;
   }

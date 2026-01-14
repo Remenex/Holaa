@@ -5,5 +5,5 @@ export type ReactionType = 'LIKE' | 'DISLIKE';
 export type Reaction = {
   movie: Movie;
   type: ReactionType;
-  updatedAt: string;
+  createdAt: string;
 };

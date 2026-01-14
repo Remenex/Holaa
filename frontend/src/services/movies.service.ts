@@ -10,6 +10,8 @@ export async function setWatchedMovie(id: string) {
 
 export async function getWatchedMovies() {
   return http<Movie[]>(`/movies/watched/user`);
+}
+
 export async function getMovies() {
   return http<Movie[]>("/movies");
 }

@@ -56,8 +56,8 @@ export class ReactionsService {
       RETURN 
         m.id AS movieId,
         r.type AS type,
-        r.updatedAt AS updatedAt
-      ORDER BY r.updatedAt DESC
+        r.createdAt AS createdAt
+      ORDER BY r.createdAt DESC
     `;
 
     const result = await this.neo4j.run(query, { userId });
@@ -66,7 +66,7 @@ export class ReactionsService {
       result.map(async (record) => ({
         movie: await this.moviesService.getMovieById(record.get('movieId')),
         type: record.get('type'),
-        updatedAt: record.get('updatedAt'),
+        createdAt: record.get('createdAt'),
       })),
     );
 
@@ -78,7 +78,7 @@ export class ReactionsService {
       MATCH (u:User {id: $userId})-[r:REACTED]->(m:Movie {id: $movieId})
       RETURN 
         r.type AS type,
-        r.updatedAt AS updatedAt
+        r.createdAt AS createdAt
       LIMIT 1
     `;
 
@@ -98,7 +98,7 @@ export class ReactionsService {
     return {
       movie: movie,
       type: record.get('type'),
-      updatedAt: record.get('updatedAt'),
+      createdAt: record.get('createdAt'),
     } as Reaction;
   }
 }
