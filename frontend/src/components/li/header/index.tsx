@@ -45,7 +45,7 @@ export default function Header() {
           iconImage="crown"
           iconSize={30}
           iconMargin="10"
-          url="#popular-movies"
+          url="/#popular-movies"
         />
       </div>
     </header>
