@@ -8,9 +8,13 @@ import BgImageOverlay from "@/components/lib/bg-image";
 import UserAvatar from "@/components/lib/user-avatar";
 import UserContext from "@/context/user-context";
 import { useAuthUser } from "@/hooks/auth-user";
+import { logout } from "@/services/auth.service";
+import { getUserFriends } from "@/services/friendships.service";
+import { getWatchedMovies } from "@/services/movies.service";
+import { getUserReactions } from "@/services/reactions.service";
 import Image from "next/image";
-import { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useContext, useEffect, useState } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -20,22 +24,24 @@ export default function ProfilePage() {
   const router = useRouter();
   const user = useAuthUser();
 
+  const [reactions, setReactions] = useState<Reaction[]>();
+  const [friends, setFriends] = useState<User[]>([]);
+  const [watchedMovies, setWatchedMovies] = useState<Movie[]>([]);
+
   const handleLogout = async () => {
-    try {
-      const res = await fetch(`${API_URL}/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (!res.ok) throw new Error("Logout failed");
-
+    logout().then(() => {
       setUser(null);
 
       router.replace("/login");
-    } catch (err) {
-      console.error(err);
-    }
+    });
   };
+
+  useEffect(() => {
+    getUserReactions().then(setReactions);
+
+    getUserFriends().then(setFriends);
+    getWatchedMovies().then(setWatchedMovies);
+  }, []);
 
   return (
     <div className="w-full">
@@ -96,8 +102,17 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="mt-8">
-            {activeTab === "Profil" && <Profile />}
-            {activeTab === "Reakcije" && <Reactions />}
+            {activeTab === "Profil" && (
+              <Profile
+                watchedMovies={watchedMovies}
+                friends={friends}
+                reactions={reactions}
+                onDeleteFriend={(friendId: string) =>
+                  setFriends((prev) => prev.filter((f) => f._id !== friendId))
+                }
+              />
+            )}
+            {activeTab === "Reakcije" && <Reactions reactions={reactions} />}
             {activeTab === "Podesavanja" && <UserSettings user={user!} />}
           </div>
         </div>

@@ -2,8 +2,16 @@
 
 import { useAuthUser } from "@/hooks/auth-user";
 import { useSocket } from "@/hooks/socket";
-import { getMovie } from "@/services/movies.service";
-import { getRoom, getRoomMemebers } from "@/services/rooms.service";
+import { getMovie, setWatchedMovie } from "@/services/movies.service";
+import {
+  getUserReactionForMovie,
+  reactToMovie,
+} from "@/services/reactions.service";
+import {
+  getIsRoomMember,
+  getRoom,
+  getRoomMemebers,
+} from "@/services/rooms.service";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -47,6 +55,7 @@ export function VideoPlayer() {
   const [currentlyWatchUsers, setCurrentlyWatchUsers] = useState<User[]>([]);
 
   const [room, setRoom] = useState<Room>();
+  const [reaction, setReaction] = useState<ReactionType>();
 
   const handleFriendsOpen = () => {
     setIsFriendsOpen(!isFriendsOpen);
@@ -66,6 +75,13 @@ export function VideoPlayer() {
     // }, 3000);
   };
 
+  const handleLike = async (type: ReactionType) => {
+    if (!user || !movie) return;
+
+    await reactToMovie(movie._id, type !== "LIKE" ? "DISLIKE" : "LIKE");
+    setReaction(type !== "LIKE" ? "DISLIKE" : "LIKE");
+  };
+
   const [movie, setMovie] = useState<Movie>();
 
   useEffect(() => {
@@ -74,6 +90,11 @@ export function VideoPlayer() {
       .then((movie) => {
         setMovie(movie);
         // setDuration(parseInt(movie.duration));
+        getUserReactionForMovie(movie_id as string).then((r) => {
+          if (r !== "empty") setReaction(r.type);
+        });
+
+        setWatchedMovie(movie_id as string);
       })
       .catch(() => {
         router.replace("/");
@@ -81,20 +102,62 @@ export function VideoPlayer() {
   }, [movie_id]);
 
   useEffect(() => {
-    if (!roomId) return;
+    if (!roomId || !user) return;
     getRoom(roomId)
-      .then(setRoom)
+      .then((room) => {
+        setRoom(room);
+        if (room.creatorId !== user._id && !notify) {
+          getIsRoomMember(roomId, user._id)
+            .then((isMember) => {
+              if (!isMember) {
+                router.replace("/");
+              }
+            })
+            .catch(() => {
+              router.replace("/");
+            });
+        }
+      })
       .catch(() => {
         router.replace("/");
       });
     getRoomMemebers(roomId).then(setCurrentlyWatchUsers);
-  }, [roomId]);
+  }, [roomId, user]);
 
   const handleUsers = (users: User[]) => {
     setCurrentlyWatchUsers(users);
   };
 
   const hasUserInteractedRef = useRef(false);
+
+  useEffect(() => {
+    if (!roomsSocket) return;
+
+    roomsSocket.on("room:users", handleUsers);
+
+    roomsSocket.on("room:play", () => handlePlaying("play"));
+
+    roomsSocket.on("room:pause", () => handlePlaying("pause"));
+
+    return () => {
+      roomsSocket.off("room:users", handleUsers);
+    };
+  }, [roomsSocket]);
+
+  useEffect(() => {
+    if (!roomsSocket) return;
+
+    if (notify === "true") {
+      roomsSocket.emit("room:join", {
+        roomId,
+      });
+
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("notify");
+
+      router.replace(`?${params.toString()}`, { scroll: false });
+    }
+  }, [notify, roomsSocket]);
 
   const registerUserInteraction = () => {
     if (!hasUserInteractedRef.current) {
@@ -125,35 +188,6 @@ export function VideoPlayer() {
       setIsPlaying(false);
     }
   };
-
-  useEffect(() => {
-    if (!roomsSocket) return;
-
-    roomsSocket.on("room:users", handleUsers);
-
-    roomsSocket.on("room:play", () => handlePlaying("play"));
-
-    roomsSocket.on("room:pause", () => handlePlaying("pause"));
-
-    return () => {
-      roomsSocket.off("room:users", handleUsers);
-    };
-  }, [roomsSocket]);
-
-  useEffect(() => {
-    if (!roomsSocket) return;
-
-    if (notify === "true") {
-      roomsSocket.emit("room:join", {
-        roomId,
-      });
-
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete("notify");
-
-      router.replace(`?${params.toString()}`, { scroll: false });
-    }
-  }, [notify, roomsSocket]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -413,8 +447,23 @@ export function VideoPlayer() {
           </div>
           <div className="w-full flex mt-3 justify-between items-center">
             <div className="w-1/3 flex items-center gap-5">
-              <h2>The Fellowship of the Ring</h2>
-              <ModernIcon icon="heart_plus" iconSize={30} smallPadding={true} />
+              <h2>{movie?.title}</h2>
+              <div className="flex gap-2 bg-[#4d4d4d] py-2 px-4 rounded-full">
+                <Icon
+                  icon="thumb_up"
+                  iconSize={30}
+                  filled={reaction === "LIKE"}
+                  color="white"
+                  onClick={() => handleLike("LIKE")}
+                />
+                <Icon
+                  icon="thumb_down"
+                  iconSize={30}
+                  filled={reaction === "DISLIKE"}
+                  color="white"
+                  onClick={() => handleLike("DISLIKE")}
+                />
+              </div>
             </div>
             <div className="w-1/3 flex justify-center">
               <ModernIcon

@@ -21,6 +21,14 @@ export class RoomsController {
     return this.roomsService.findByCreator(req.user.sub);
   }
 
+  @Get('member/:roomId/:userId')
+  async getIsRoomMember(
+    @Param('roomId') roomId: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.roomsService.findRoomMember(roomId, userId);
+  }
+
   @Get('/members/:id')
   getRoomMembers(@Param('id') id: string) {
     return this.roomsService.findRoomMembers(id);

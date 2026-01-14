@@ -14,6 +14,7 @@ import { Neo4jModule } from './neo4j/neo4j.module';
 import { RedisModule } from './redis/redis.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { UsersModule } from './users/users.module';
+import { ReactionsModule } from './reactions/reactions.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { UsersModule } from './users/users.module';
     MessagesModule,
     Neo4jModule,
     FriendshipsModule,
+    ReactionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

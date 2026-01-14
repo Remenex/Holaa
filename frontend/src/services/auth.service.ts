@@ -14,6 +14,12 @@ export async function register(registerUser: CreateUser) {
   });
 }
 
+export async function logout() {
+  return await http<Response>("/auth/logout", {
+    method: "POST",
+  });
+}
+
 export async function signOut() {
   return await http(`/auth/logout`, {
     method: "POST",

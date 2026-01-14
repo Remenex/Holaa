@@ -6,13 +6,16 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   Query,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth-guard';
 import { CreateMovie, UpdateMovie } from '../dtos/movie';
 import { MovieService } from '../services/movie.service';
 
@@ -73,6 +76,18 @@ export class MovieController {
   )
   async create(@UploadedFiles() files: any, @Body() body: CreateMovie) {
     return this.movieService.create(body, files);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('watched/:id')
+  async setWacthedMovie(@Req() req, @Param('id') movieId: string) {
+    return this.movieService.setWatchedMovie(req.user.sub, movieId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('watched/user')
+  async getWatchedMovies(@Req() req) {
+    return this.movieService.getWatchedMovies(req.user.sub);
   }
 
   @Delete(':id')

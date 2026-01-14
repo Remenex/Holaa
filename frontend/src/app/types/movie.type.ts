@@ -1,6 +1,6 @@
 type Movie = {
   _id: string;
-  categories: string[];
+  categories: Category[];
   description: string;
   mainCharacterImage: string;
   ownerId: string;

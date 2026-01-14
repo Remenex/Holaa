@@ -28,21 +28,32 @@ export class FriendshipsService {
     const query = `
       MERGE (u:User {id: $userId})
       MERGE (f:User {id: $friendId})
-      MERGE (u)-[:FRIEND_WITH]-(f)
+      MERGE (u)-[:FRIEND_WITH]->(f)
+      MERGE (f)-[:FRIEND_WITH]->(u)
     `;
 
-    await this.neo4j.run(query, { userId, friendId });
+    const result = await this.neo4j.run(query, { userId, friendId });
+    console.log(result);
 
     return true;
   }
 
   async getFriends(userId: string) {
     const query = `
-      MATCH (u:User {id: $userId})-[:FRIEND_WITH]->(f)
-      RETURN f
-    `;
+    MATCH (u:User {id: $userId})-[:FRIEND_WITH]->(f)
+    RETURN f
+  `;
 
-    return this.neo4j.run(query, { userId });
+    const result = await this.neo4j.run(query, { userId });
+
+    const friendNodes = result.map((r) => r.get('f'));
+    const friendIds = friendNodes.map((node) => node.properties.id);
+
+    const members = await Promise.all(
+      friendIds.map((id) => this.usersService.getCachedUser(id)),
+    );
+
+    return members.filter(Boolean);
   }
 
   async deleteFriend(userId: string, friendId: string) {
@@ -57,7 +68,7 @@ export class FriendshipsService {
       throw new NotFoundException('User ne postoji');
     }
 
-    const query = `
+    const query = `  
       MATCH (u:User {id: $userId})-[r:FRIEND_WITH]-(f:User {id: $friendId})
       DELETE r
     `;

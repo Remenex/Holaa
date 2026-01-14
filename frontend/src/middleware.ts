@@ -1,7 +1,6 @@
 import { jwtVerify } from "jose";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { useAuthUser } from "./hooks/auth-user";
 
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get("access_token");

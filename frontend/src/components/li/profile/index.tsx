@@ -1,13 +1,34 @@
+import Icon from "@/components/lib/icon";
+import { deleteFriendship } from "@/services/friendships.service";
 import Image from "next/image";
 
-export default function Profile() {
+type Props = {
+  reactions?: Reaction[];
+  friends: User[];
+  watchedMovies: Movie[];
+  onDeleteFriend: (friendId: string) => void;
+};
+
+export default function Profile({
+  reactions,
+  friends,
+  watchedMovies,
+  onDeleteFriend,
+}: Props) {
+  const handleDeleteFriend = (id: string) => {
+    deleteFriendship(id).then(() => {
+      onDeleteFriend(id);
+    });
+  };
   return (
     <div>
       <div className="py-8 flex gap-5">
         <div className="bg-dark-gray w-1/4 p-5 rounded-2xl">
           <p className="text-2xl mb-5">Odgledano filmova</p>
           <div className="flex justify-between">
-            <p className="text-2xl ">25</p>
+            <p className="text-2xl ">
+              {watchedMovies ? watchedMovies.length : 0}
+            </p>
             <Image
               src="/icons/movie.svg"
               alt="movie-icon"
@@ -19,7 +40,7 @@ export default function Profile() {
         <div className="bg-dark-gray w-1/4 p-5 rounded-2xl">
           <p className="text-2xl mb-5">Broj prijatelja</p>
           <div className="flex justify-between">
-            <p className="text-2xl ">10</p>
+            <p className="text-2xl ">{friends.length}</p>
             <Image
               src="/icons/friends.svg"
               alt="movie-icon"
@@ -31,7 +52,7 @@ export default function Profile() {
         <div className="bg-dark-gray w-1/4 p-5 rounded-2xl">
           <p className="text-xl mb-5">Reakcije</p>
           <div className="flex justify-between">
-            <p className="text-2xl ">24</p>
+            <p className="text-2xl ">{reactions ? reactions.length : 0}</p>
             <Image
               src="/icons/recommend.svg"
               alt="movie-icon"
@@ -43,7 +64,9 @@ export default function Profile() {
         <div className="bg-dark-gray w-1/4 p-5 rounded-2xl">
           <p className="text-2xl mb-5">Odgledano filmova</p>
           <div className="flex justify-between">
-            <p className="text-2xl ">25</p>
+            <p className="text-2xl ">
+              {watchedMovies ? watchedMovies.length : 0}
+            </p>
             <Image
               src="/icons/movie.svg"
               alt="movie-icon"
@@ -79,51 +102,30 @@ export default function Profile() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="py-2 text-left">The Lord Of The Rings</td>
-                  <td className="py-2 text-left">Film, Drama</td>
-                  <td className="py-2 flex items-center gap-1 text-left">
-                    <Image
-                      src="/icons/kid_star.svg"
-                      alt="star-icon"
-                      width={15}
-                      height={14}
-                    />
-                    <p>9.2</p>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="py-2 text-left">The Lord Of The Rings</td>
-                  <td className="py-2 text-left">Film, Drama</td>
-                  <td className="py-2 flex items-center gap-1 text-left">
-                    <Image
-                      src="/icons/kid_star.svg"
-                      alt="star-icon"
-                      width={15}
-                      height={14}
-                    />
-                    <p>9.2</p>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="py-2 text-left">The Lord Of The Rings</td>
-                  <td className="py-2 text-left">Film, Drama</td>
-                  <td className="py-2 flex items-center gap-1 text-left">
-                    <Image
-                      src="/icons/kid_star.svg"
-                      alt="star-icon"
-                      width={15}
-                      height={14}
-                    />
-                    <p>9.2</p>
-                  </td>
-                </tr>
+                {watchedMovies &&
+                  watchedMovies.map((m) => (
+                    <tr key={m._id}>
+                      <td className="py-2 text-left">{m.title}</td>
+                      <td className="py-2 text-left">
+                        {m.categories.map((c) => c.name).join(", ")}
+                      </td>
+                      <td className="py-2 flex items-center gap-1 text-left">
+                        <Image
+                          src="/icons/kid_star.svg"
+                          alt="star-icon"
+                          width={15}
+                          height={14}
+                        />
+                        <p>{m.imdb}</p>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
         </div>
         <div className="w-1/2 bg-dark-gray rounded-lg">
-          <div className="flex items-center gap-4 border-color border-b p-5">
+          <div className="flex items-center gap-4 border-b p-5">
             <Image
               src="/icons/friends.svg"
               alt="friends-icon"
@@ -145,18 +147,22 @@ export default function Profile() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="py-2 text-left">Djordje Ivanovic</td>
-                  <td className="py-2 text-left">idjordje63@gmail.com</td>
-                </tr>
-                <tr>
-                  <td className="py-2 text-left">Djordje Ivanovic</td>
-                  <td className="py-2 text-left">idjordje63@gmail.com</td>
-                </tr>
-                <tr>
-                  <td className="py-2 text-left">Djordje Ivanovic</td>
-                  <td className="py-2 text-left">idjordje63@gmail.com</td>
-                </tr>
+                {friends &&
+                  friends.map((u) => (
+                    <tr key={u._id}>
+                      <td className="py-2 text-left">
+                        {u.firstName} {u.lastName}
+                      </td>
+                      <td className="py-2 text-left">{u.email}</td>
+                      <td className="py-2 text-left">
+                        <Icon
+                          icon="person_cancel"
+                          variation="text-red-500 cursor-pointer"
+                          onClick={() => handleDeleteFriend(u._id)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>

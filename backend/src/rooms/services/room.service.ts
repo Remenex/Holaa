@@ -46,6 +46,11 @@ export class RoomsService {
     return (await this.roomModel.create(roomData)).toObject();
   }
 
+  async findRoomMember(roomId: string, userId: string) {
+    const redisRoomId = await this.redis.get(`user:${userId}:room`);
+    return redisRoomId === roomId ? true : false;
+  }
+
   async findRoomMembers(id: string) {
     const ids = await this.redis.smembers(`room:${id}:users`);
 

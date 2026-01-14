@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
 import { Model, Types } from 'mongoose';
 import * as path from 'path';
+import { Neo4jService } from 'src/neo4j/services/neo4j.service';
 import { CreateMovie, UpdateMovie } from '../dtos/movie';
 import { Movie } from '../entities/movie.entity';
 
@@ -11,6 +12,7 @@ export class MovieService {
   constructor(
     @InjectModel(Movie.name)
     private movieModel: Model<Movie>,
+    private readonly neo4j: Neo4jService,
   ) {}
 
   async create(movieData: CreateMovie, files: any) {
@@ -123,6 +125,52 @@ export class MovieService {
       .exec();
   }
 
+  async setWatchedMovie(userId: string, movieId: string) {
+    const query = `
+      MERGE (u:User {id: $userId})
+      MERGE (m:Movie {id: $movieId})
+      MERGE (u)-[w:WATCHED]->(m)
+      SET w.createdAt = datetime()`;
+
+    const movie = await this.getMovieById(movieId);
+
+    if (!movie) {
+      throw new NotFoundException('Film ne postoji');
+    }
+
+    return await this.neo4j.run(query, { userId, movieId });
+  }
+
+  async getWatchedMovies(userId: string) {
+    // 1. Dohvati watched filmove iz Neo4j
+    const query = `
+    MATCH (u:User {id: $userId})-[w:WATCHED]->(m:Movie)
+    RETURN m.id AS movieId, w.createdAt AS watchedAt
+    ORDER BY w.createdAt DESC
+  `;
+    const result = await this.neo4j.run(query, { userId });
+
+    const movieIds: string[] = result.map((record) => record.get('movieId'));
+
+    if (movieIds.length === 0) return [];
+
+    const objectIds: Types.ObjectId[] = movieIds.map(
+      (id) => new Types.ObjectId(id),
+    );
+
+    const movies = await this.movieModel
+      .find({
+        _id: { $in: objectIds } as any,
+      })
+      .populate('categories', 'name')
+      .lean();
+
+    const moviesMap = new Map(movies.map((m) => [m._id.toString(), m]));
+    const sortedMovies = movieIds
+      .map((id) => moviesMap.get(id))
+      .filter((m) => m !== undefined);
+
+    return sortedMovies;
   async getMoviesByCategory(categoryId: string) {
     if (!Types.ObjectId.isValid(categoryId)) {
       throw new NotFoundException('Invalid category ID');

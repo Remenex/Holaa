@@ -42,7 +42,7 @@ export default function MainHeader() {
   return (
     <div className="py-5 px-4 bg-gradient-to-r from-[#1a1a1a] to-[#2c2c2c] flex flex-col gap-4 rounded-[50px]">
       <SimpleLink icon="home" title="POCETNA" url="/" />
-      <SimpleLink icon="search" title="PRETRAZI" url="/movies" />
+      <SimpleLink icon="movie" title="FILMOVI" url="/movies" />
       <SimpleLink icon="person" title="PROFIL" url="/profile" />
       <NotificationLink icon="notifications" invites={invites} />
     </div>
