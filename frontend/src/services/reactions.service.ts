@@ -23,3 +23,7 @@ export async function getUserReactions() {
 export async function getUserReactionForMovie(movieId: string) {
   return await http<Reaction | "empty">(`/reactions/user/movie/${movieId}`);
 }
+
+export async function getUsersWithSimilarTaste() {
+  return await http<User[]>("/reactions/similar-taste/movies");
+}

@@ -172,6 +172,36 @@ export class MovieService {
     return sortedMovies;
   }
 
+  async getMoviesWatchedByFriends(userId: string) {
+    const query = `
+      MATCH (me:User {id: $userId})-[:FRIEND_WITH]->(friend:User)
+      MATCH (friend)-[w:WATCHED]->(m:Movie)
+      WHERE NOT (me)-[:WATCHED]->(m)
+      RETURN DISTINCT m.id AS movieId, w.createdAt AS watchedAt
+      ORDER BY w.createdAt DESC
+      LIMIT 10
+    `;
+
+    const result = await this.neo4j.run(query, { userId });
+
+    const movieIds: string[] = result.map((r) => r.get('movieId'));
+
+    if (movieIds.length === 0) return [];
+
+    const objectIds = movieIds.map((id) => new Types.ObjectId(id));
+
+    const movies = await this.movieModel
+      .find({ _id: { $in: objectIds } as any })
+      .populate('categories', 'name')
+      .lean();
+
+    const movieMap = new Map(
+      movies.map((movie) => [movie._id.toString(), movie]),
+    );
+
+    return movieIds.map((id) => movieMap.get(id)).filter(Boolean);
+  }
+
   async getMoviesByCategory(categoryId: string) {
     if (!Types.ObjectId.isValid(categoryId)) {
       throw new NotFoundException('Invalid category ID');

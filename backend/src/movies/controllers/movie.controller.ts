@@ -6,8 +6,8 @@ import {
   Param,
   Patch,
   Post,
-  Req,
   Query,
+  Req,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -37,6 +37,12 @@ export class MovieController {
   async getTopRatedMovies(@Query('limit') limit?: string) {
     const lim = limit ? parseInt(limit) : 10;
     return this.movieService.getTopRatedMovies(lim);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('friends/watched')
+  getMoviesWatchedByFriends(@Req() req) {
+    return this.movieService.getMoviesWatchedByFriends(req.user.sub);
   }
 
   @Get('by-category/:id')

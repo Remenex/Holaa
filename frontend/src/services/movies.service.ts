@@ -31,3 +31,7 @@ export async function getTopRatedMovies() {
 export async function getAbstractMovies() {
   return http<Movie[]>("/movies/abstract");
 }
+
+export async function getMoviesWatchedByFriends() {
+  return http<Movie[]>("/movies/friends/watched");
+}
