@@ -1,6 +1,7 @@
 import { CreateInvite, InviteStatus } from "@/app/types/invite.type";
 import { getErrorMsg } from "@/lib/helpers/get-error-msg";
 import { createInvite } from "@/services/invites.service";
+import { getUsersWithSimilarTaste } from "@/services/reactions.service";
 import { createRoom } from "@/services/rooms.service";
 import { getUsers } from "@/services/users.service";
 import { motion } from "framer-motion";
@@ -42,6 +43,7 @@ export function CurrentlyWatchingComponent({
   const [currentlyWatchUsers, setCurrentlyWatchUsers] = useState(
     currentlyWatchUsersData
   );
+  const [searchQuery, setSearchQuery] = useState("");
 
   const router = useRouter();
   const pathname = usePathname();
@@ -51,7 +53,7 @@ export function CurrentlyWatchingComponent({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
+    setSearchQuery(e.target.value.toLowerCase());
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -74,8 +76,17 @@ export function CurrentlyWatchingComponent({
   }, [currentlyWatchUsersData]);
 
   useEffect(() => {
-    getUsers()
-      .then(setFindFriends)
+    Promise.all([getUsers(), getUsersWithSimilarTaste()])
+      .then(([users, sameUsers]) => {
+        const sameTasteUserIds = new Set(sameUsers.map((u) => u._id));
+
+        setFindFriends(
+          users.map((u) => ({
+            ...u,
+            sameTaste: sameTasteUserIds.has(u._id),
+          }))
+        );
+      })
       .catch((error) => {
         toast.error("Greška pri dobijanju korisnika", {
           description: getErrorMsg(error),
@@ -182,17 +193,47 @@ export function CurrentlyWatchingComponent({
             onSubmit={onSubmit}
           />
           <div className="w-full mt-6 flex flex-col gap-3">
+            <div className="flex gap-2">
+              <Icon icon="favorite" />
+
+              <p>Korisnici koji vole iste filmove</p>
+            </div>
             {findFriends &&
-              findFriends.length > 0 &&
-              findFriends.map((element, index) =>
-                element._id !== user?._id ? (
+              findFriends
+                .filter(
+                  (element) =>
+                    element._id !== user?._id &&
+                    element.sameTaste === true &&
+                    element.firstName.toLowerCase().includes(searchQuery)
+                )
+                .map((element) => (
                   <FindFriend
                     key={element._id}
                     user={element}
                     add={() => sendInvite(element._id)}
                   />
-                ) : null
-              )}
+                ))}
+            <div className="flex gap-2 mt-6">
+              <Icon icon="groups" />
+
+              <p>Ostali korisnici</p>
+            </div>
+
+            {findFriends &&
+              findFriends
+                .filter(
+                  (element) =>
+                    element._id !== user?._id &&
+                    element.sameTaste === false &&
+                    element.firstName.toLowerCase().includes(searchQuery)
+                )
+                .map((element) => (
+                  <FindFriend
+                    key={element._id}
+                    user={element}
+                    add={() => sendInvite(element._id)}
+                  />
+                ))}
           </div>
         </div>
       </motion.div>

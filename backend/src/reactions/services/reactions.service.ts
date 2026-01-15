@@ -101,4 +101,27 @@ export class ReactionsService {
       createdAt: record.get('createdAt'),
     } as Reaction;
   }
+
+  async getUsersWithSimilarTaste(userId: string) {
+    const query = `
+      MATCH (me:User {id: $userId})-[r1:REACTED {type: 'LIKE'}]->(m:Movie)
+      MATCH (other:User)-[r2:REACTED {type: 'LIKE'}]->(m)
+      WHERE other.id <> $userId
+      RETURN 
+        other.id AS userId,
+        count(m) AS commonLikes
+      ORDER BY commonLikes DESC
+      LIMIT 10
+    `;
+
+    const result = await this.neo4j.run(query, { userId });
+
+    const users = await Promise.all(
+      result.map(async (record) => {
+        return await this.usersService.findById(record.get('userId'));
+      }),
+    );
+
+    return users;
+  }
 }

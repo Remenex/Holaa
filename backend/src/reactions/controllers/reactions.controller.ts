@@ -42,4 +42,9 @@ export class ReactionsController {
   getUserReactionForMovie(@Req() req, @Param('movieId') movieId: string) {
     return this.reactionsService.getUserReactionForMovie(req.user.sub, movieId);
   }
+
+  @Get('/similar-taste/movies')
+  getUsersWithSimilarTaste(@Req() req) {
+    return this.reactionsService.getUsersWithSimilarTaste(req.user.sub);
+  }
 }

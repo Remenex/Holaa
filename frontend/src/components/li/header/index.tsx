@@ -7,7 +7,9 @@ export default function Header() {
   return (
     <header className="w-full flex justify-center main-container fixed top-0 left-[50%] -translate-x-[50%] z-10">
       <div className="w-full max-w-[1600px] backdrop-blur-md bg-white/[.1] rounded-b-[30px] px-10 py-5 flex justify-between align-middle">
-        <Logo />
+        <Link className="flex items-center" href="/">
+          <Logo />
+        </Link>
         <nav className="flex justify-center items-center">
           <ul className="flex gap-5">
             <li>
@@ -45,7 +47,7 @@ export default function Header() {
           iconImage="crown"
           iconSize={30}
           iconMargin="10"
-          url=""
+          url="/#popular-movies"
         />
       </div>
     </header>
