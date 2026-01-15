@@ -100,7 +100,7 @@ export default async function BestChoose() {
           <h2 className="mb-12">Filmovi koje su gledali tvoji prijatelji</h2>
 
           <div
-            className={`flex justify-between transition-all duration-300 ${
+            className={`flex justify-start gap-6 transition-all duration-300 ${
               !token ? "blur-lg pointer-events-none select-none" : ""
             }`}
           >
