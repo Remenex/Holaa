@@ -70,7 +70,7 @@ export class MovieService {
     });
 
     await this.movieModel.findByIdAndDelete(id);
-
+    await this.deleteMovie(id);
     return { message: 'Movie and all related files deleted successfully' };
   }
 
@@ -218,5 +218,14 @@ export class MovieService {
 
   async getAbstractMovies() {
     return this.movieModel.find({ abstract: true }).exec();
+  }
+
+  async deleteMovieNode(movieId: string) {
+    const query = `
+    MATCH (m:Movie {id: $movieId})
+    DETACH DELETE m
+  `;
+
+    return await this.neo4j.run(query, { movieId });
   }
 }

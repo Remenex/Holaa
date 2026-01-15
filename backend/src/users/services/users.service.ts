@@ -9,6 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import Redis from 'ioredis';
 import { Model } from 'mongoose';
+import { Neo4jService } from 'src/neo4j/services/neo4j.service';
 import { CreateUser, UpdatePassword } from '../dtos/user';
 import { User } from '../entities/user.entity';
 
@@ -18,6 +19,7 @@ export class UsersService {
     @InjectModel(User.name)
     private userModel: Model<User>,
     @Inject('RedisClient') private readonly redis: Redis,
+    private readonly neo4jService: Neo4jService,
   ) {}
 
   async findAll() {
@@ -81,6 +83,7 @@ export class UsersService {
 
   async deleteUser(userId: string) {
     await this.invalidate(userId);
+    await this.deleteUserNode(userId);
     await this.userModel.findByIdAndDelete(userId);
   }
 
@@ -148,5 +151,14 @@ export class UsersService {
     await this.invalidate(userId);
 
     return { message: 'Lozinka uspesno azurirana' };
+  }
+
+  async deleteUserNode(userId: string) {
+    const query = `
+    MATCH (u:User {id: $userId})
+    DETACH DELETE u
+  `;
+
+    return await this.neo4jService.run(query, { userId });
   }
 }
