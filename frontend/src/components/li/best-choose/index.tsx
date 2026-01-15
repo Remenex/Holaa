@@ -91,6 +91,8 @@ export default async function BestChoose() {
     movies = await res.json();
   }
 
+  if (!movies || movies.length === 0) return null;
+
   return (
     <section className="bestChoose w-full relative -top-[50px]">
       <div className="w-full flex justify-center">
@@ -103,6 +105,7 @@ export default async function BestChoose() {
             }`}
           >
             {movies &&
+              movies.length > 0 &&
               movies.map((movie) => (
                 <BestMovieWidget key={movie._id} movie={movie} token={token} />
               ))}
