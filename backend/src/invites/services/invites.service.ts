@@ -59,7 +59,7 @@ export class InvitesService {
       },
       {
         new: true, // vrati updated dokument
-        upsert: true, // ako ne postoji → napravi
+        upsert: true, // ako ne postoji => napravi
       },
     );
 

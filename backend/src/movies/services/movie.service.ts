@@ -161,7 +161,7 @@ export class MovieService {
       .find({
         _id: { $in: objectIds } as any,
       })
-      .populate('categories', 'name')
+      .populate('categories')
       .lean();
 
     const moviesMap = new Map(movies.map((m) => [m._id.toString(), m]));
@@ -192,7 +192,7 @@ export class MovieService {
 
     const movies = await this.movieModel
       .find({ _id: { $in: objectIds } as any })
-      .populate('categories', 'name')
+      .populate('categories')
       .lean();
 
     const movieMap = new Map(
@@ -209,7 +209,7 @@ export class MovieService {
 
     const movies = await this.movieModel
       .find({ categories: new Types.ObjectId(categoryId) })
-      .populate('categories', 'name')
+      .populate('categories')
       .sort({ createdAt: -1 })
       .exec();
 
